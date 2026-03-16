@@ -40,3 +40,4 @@ capacitor.config.ts
 node_modules/
 
 .vercel
+.env*.local
