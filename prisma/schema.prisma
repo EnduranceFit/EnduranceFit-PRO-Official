@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TRAINER
+  STUDENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Goal {
+  HYPERTROPHY
+  WEIGHT_LOSS
+  MAINTENANCE
+  PERFORMANCE
+}
+
+// ==========================================
+// 1. ARQUITETURA DE USUÁRIOS (RBAC)
+// ==========================================
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String
+  role          Role      @default(STUDENT)
+  avatarUrl     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relacionamento: Um treinador tem vários alunos
+  students      Profile[] @relation("TrainerStudents")
+
+  // Relacionamento: Um aluno tem um perfil com suas métricas
+  profile       Profile?  @relation("StudentProfile")
+}
+
+model Profile {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation("StudentProfile", fields: [userId], references: [id], onDelete: Cascade)
+  
+  trainerId     String?
+  trainer       User?     @relation("TrainerStudents", fields: [trainerId], references: [id], onDelete: SetNull)
+
+  // Métricas e Calculadora Metabólica
+  weight        Float?
+  height        Float?
+  age           Int?
+  gender        Gender?
+  activityLevel Float?    // Fator de atividade (1.2 a 1.9)
+  goal          Goal?
+  
+  // Resultados caculados (podem ser caculados on-the-fly, mas salvos para histórico)
+  imc           Float?
+  tmb           Float?
+  get           Float?
+
+  workouts      Workout[]
+  diets         Diet[]
+  workoutLogs   WorkoutLog[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ==========================================
+// 2. ENGENHARIA DE TREINOS
+// ==========================================
+
+model Exercise {
+  id            String    @id @default(uuid())
+  name          String
+  muscleGroup   String
+  videoUrl      String?
+  
+  workoutItems  WorkoutItem[]
+  logItems      WorkoutLogItem[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Workout {
+  id            String    @id @default(uuid())
+  profileId     String
+  profile       Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  name          String
+  description   String?
+  isActive      Boolean   @default(true)
+
+  items         WorkoutItem[]
+  logs          WorkoutLog[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model WorkoutItem {
+  id            String    @id @default(uuid())
+  workoutId     String
+  workout       Workout   @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  
+  exerciseId    String
+  exercise      Exercise  @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  
+  order         Int
+  sets          Int
+  reps          String    // Ex: "10-12" ou "Falha"
+  targetLoad    Float?    // Carga alvo em kg
+  rir           Int?      // Repetições na Reserva (Reps in Reserve)
+  restTime      Int?      // Tempo de descanso em segundos
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Tracking de Progresso e Logs
+model WorkoutLog {
+  id            String    @id @default(uuid())
+  profileId     String
+  profile       Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  workoutId     String
+  workout       Workout   @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  
+  date          DateTime  @default(now())
+  duration      Int?      // Duração em minutos
+  totalVolume   Float?    // Volume Total (Séries x Reps x Carga) calculado
+
+  items         WorkoutLogItem[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model WorkoutLogItem {
+  id            String    @id @default(uuid())
+  workoutLogId  String
+  workoutLog    WorkoutLog @relation(fields: [workoutLogId], references: [id], onDelete: Cascade)
+  
+  exerciseId    String
+  exercise      Exercise  @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  
+  setNumber     Int
+  repsCompleted Int
+  loadUsed      Float     // Carga real utilizada em kg
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ==========================================
+// 3. ENGENHARIA DE DIETAS
+// ==========================================
+
+model Food {
+  id            String    @id @default(uuid())
+  name          String
+  baseAmount    Float     @default(100) // Base de cálculo (ex: 100g)
+  calories      Float
+  carbs         Float
+  protein       Float
+  fat           Float
+
+  mealItems     MealItem[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Diet {
+  id            String    @id @default(uuid())
+  profileId     String
+  profile       Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  name          String
+  description   String?
+  isActive      Boolean   @default(true)
+
+  meals         Meal[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Meal {
+  id            String    @id @default(uuid())
+  dietId        String
+  diet          Diet      @relation(fields: [dietId], references: [id], onDelete: Cascade)
+  
+  name          String    // Ex: "Café da Manhã", "Pré-treino"
+  time          String?   // Horário sugerido, ex: "08:00"
+  order         Int
+
+  items         MealItem[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model MealItem {
+  id            String    @id @default(uuid())
+  mealId        String
+  meal          Meal      @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  
+  foodId        String
+  food          Food      @relation(fields: [foodId], references: [id], onDelete: Restrict)
+  
+  amount        Float     // Quantidade em gramas consumida nesta refeição
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
