@@ -38,3 +38,5 @@ next-env.d.ts
 /www/
 capacitor.config.ts
 node_modules/
+
+.vercel
