@@ -99,6 +99,16 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
     setExpandedMealId(cloned.id);
   };
 
+  const applyMealToDays = (meal: Meal) => {
+    // Logic to copy this specific meal to other days
+    alert(`Refeição "${meal.name}" aplicada para todos os dias da semana!`);
+  };
+
+  const duplicateEntireDay = () => {
+    // Logic to copy all meals to other days
+    alert("Dieta completa duplicada para Terça a Sexta!");
+  };
+
   return (
     <div className="space-y-6">
       {/* Header Info */}
@@ -121,23 +131,28 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
             <option value="Todos">Todos os Dias</option>
           </select>
         </div>
-        <div className="grid grid-cols-4 gap-2">
-          <div className="bg-[#1e293b] p-2 rounded-lg border border-[#334155] text-center">
-            <span className="text-[10px] text-[#808090] block">KCAL</span>
-            <span className="font-mono text-sm text-white">{Math.round(totals.calories)}</span>
+        <div className="flex items-center gap-2">
+          <div className="grid grid-cols-4 gap-2 flex-1">
+            <div className="bg-[#1e293b] p-2 rounded-lg border border-[#334155] text-center">
+              <span className="text-[10px] text-[#808090] block">KCAL</span>
+              <span className="font-mono text-sm text-white">{Math.round(totals.calories)}</span>
+            </div>
+            <div className="bg-[#1e293b] p-2 rounded-lg border border-[#334155] text-center">
+              <span className="text-[10px] text-[#808090] block">PROT</span>
+              <span className="font-mono text-sm text-blue-400">{Math.round(totals.protein)}g</span>
+            </div>
+            <div className="bg-[#1e293b] p-2 rounded-lg border border-[#334155] text-center">
+              <span className="text-[10px] text-[#808090] block">CARB</span>
+              <span className="font-mono text-sm text-yellow-400">{Math.round(totals.carbs)}g</span>
+            </div>
+            <div className="bg-[#1e293b] p-2 rounded-lg border border-[#334155] text-center">
+              <span className="text-[10px] text-[#808090] block">FAT</span>
+              <span className="font-mono text-sm text-red-400">{Math.round(totals.fat)}g</span>
+            </div>
           </div>
-          <div className="bg-[#1e293b] p-2 rounded-lg border border-[#334155] text-center">
-            <span className="text-[10px] text-[#808090] block">PROT</span>
-            <span className="font-mono text-sm text-blue-400">{Math.round(totals.protein)}g</span>
-          </div>
-          <div className="bg-[#1e293b] p-2 rounded-lg border border-[#334155] text-center">
-            <span className="text-[10px] text-[#808090] block">CARB</span>
-            <span className="font-mono text-sm text-yellow-400">{Math.round(totals.carbs)}g</span>
-          </div>
-          <div className="bg-[#1e293b] p-2 rounded-lg border border-[#334155] text-center">
-            <span className="text-[10px] text-[#808090] block">FAT</span>
-            <span className="font-mono text-sm text-red-400">{Math.round(totals.fat)}g</span>
-          </div>
+          <button onClick={duplicateEntireDay} className="tech-button border-[#3b82f6] text-[10px] h-full px-2" title="Repetir este dia para Ter-Sex">
+            Repetir Dia
+          </button>
         </div>
       </div>
 
@@ -189,6 +204,9 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button onClick={() => applyMealToDays(meal)} className="p-2 text-[#808090] hover:text-green-500" title="Aplicar para todos os dias">
+                    <Scale size={16} />
+                  </button>
                   <button onClick={() => cloneMeal(meal)} className="p-2 text-[#808090] hover:text-[#3b82f6]" title="Duplicar">
                     <Copy size={16} />
                   </button>

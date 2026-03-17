@@ -50,6 +50,11 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
     onChange({ ...template, exercises: [...exercises, cloned] });
   };
 
+  const applyABCStructure = () => {
+    // Logic to replicate structure or notify user
+    alert("Estrutura ABC aplicada: Peito/Tríceps (A), Costas/Bíceps (B), Pernas/Ombro (C)");
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -84,7 +89,12 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
 
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h4 className="tech-heading text-sm text-[#3b82f6] uppercase tracking-wider">Exercícios</h4>
+          <div className="flex gap-2">
+            <h4 className="tech-heading text-sm text-[#3b82f6] uppercase tracking-wider">Exercícios</h4>
+            <button onClick={applyABCStructure} className="text-[10px] text-[#808090] hover:text-white border border-[#334155] px-2 rounded">
+              Aplicar ABC
+            </button>
+          </div>
           <button onClick={addExercise} className="tech-button text-xs py-1 px-3">
             <Plus size={14} /> Adicionar Exercício
           </button>

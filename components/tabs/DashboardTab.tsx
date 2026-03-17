@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Activity, Dumbbell, Utensils, Save, CheckCircle, X, ChevronRight } from 'lucide-react';
 import WorkoutBuilder from '../builders/WorkoutBuilder';
 import DietBuilder from '../builders/DietBuilder';
+import ShoppingListExporter from '../builders/ShoppingListExporter';
 import clsx from 'clsx';
 import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
 
@@ -396,12 +397,12 @@ export default function DashboardTab() {
                   )}
                 </div>
 
-                <p className="text-[#808090] font-mono text-sm mb-6">
-                  Os dados foram salvos localmente. Você pode exportar o PDF agora ou voltar ao Dashboard.
-                </p>
-                <div className="flex gap-4 print:hidden">
-                  <button onClick={handleExportPDF} className="tech-button flex-1">Exportar PDF</button>
-                  <button onClick={resetSession} className="tech-button-secondary flex-1">Novo Protocolo</button>
+                <div className="flex flex-col gap-3 mb-6">
+                  <div className="flex gap-4 print:hidden">
+                    <button onClick={handleExportPDF} className="tech-button flex-1">Exportar PDF</button>
+                    <button onClick={resetSession} className="tech-button-secondary flex-1">Novo Protocolo</button>
+                  </div>
+                  <ShoppingListExporter diet={customDiet} />
                 </div>
               </div>
             </motion.div>
