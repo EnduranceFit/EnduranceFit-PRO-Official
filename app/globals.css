@@ -2,12 +2,13 @@
 
 @theme {
   --color-tech-bg: #000000;
-  --color-tech-panel: #0f172a;
-  --color-tech-border: #334155;
-  --color-tech-accent: #3b82f6;
-  --color-tech-accent-hover: #2563eb;
-  --color-tech-text: #e0e0e0;
-  --color-tech-muted: #808090;
+  --color-tech-panel: #050505;
+  --color-tech-border: #001F3F;
+  --color-tech-accent: #004080;
+  --color-tech-accent-hover: #0059b3;
+  --color-tech-navy: #001F3F;
+  --color-tech-text: #ffffff;
+  --color-tech-muted: #607080;
 }
 
 @layer base {
@@ -107,19 +108,99 @@
   }
 
   .tech-input {
-    @apply w-full bg-[#1e293b] border border-[#334155] rounded px-3 py-2 text-white focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition-colors font-mono text-sm;
+    width: 100%;
+    background-color: #050505;
+    border: 1px solid #001F3F;
+    border-radius: 2px;
+    padding: 0.5rem 0.75rem;
+    color: #ffffff;
+    transition: all 0.2s ease;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+  
+  .tech-input:focus {
+    outline: none;
+    border-color: #004080;
+    box-shadow: 0 0 0 1px #004080;
   }
 
   .tech-button {
-    @apply px-4 py-2 bg-[#3b82f6] text-white font-mono font-bold uppercase tracking-wider text-sm rounded hover:bg-[#2563eb] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    padding: 0.5rem 1rem;
+    background-color: #001F3F;
+    border: 1px solid #004080;
+    color: #ffffff;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 15px rgba(0, 31, 63, 0.3);
+    cursor: pointer;
+  }
+  
+  .tech-button:hover {
+    background-color: #003366;
+  }
+  
+  .tech-button:active {
+    transform: scale(0.98);
+  }
+  
+  .tech-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
   
   .tech-button-secondary {
-    @apply px-4 py-2 bg-transparent border border-[#3b82f6] text-[#3b82f6] font-mono font-bold uppercase tracking-wider text-sm rounded hover:bg-[rgba(59,130,246,0.1)] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: 1px solid #001F3F;
+    color: #607080;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+  
+  .tech-button-secondary:hover {
+    border-color: #003366;
+    color: #ffffff;
   }
   
   .tech-button-danger {
-    @apply px-4 py-2 bg-transparent border border-red-500 text-red-500 font-mono font-bold uppercase tracking-wider text-sm rounded hover:bg-[rgba(239,68,68,0.1)] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+  
+  .tech-button-danger:hover {
+    background-color: rgba(239, 68, 68, 0.1);
   }
 }
 

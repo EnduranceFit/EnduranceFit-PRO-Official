@@ -62,11 +62,11 @@ export default function NutritionTab() {
               exit={{ scale: 0.95, y: 20 }}
               className="glass-panel hardware-card p-6 max-w-2xl w-full flex flex-col gap-6 my-8"
             >
-              <div className="flex justify-between items-center border-b border-[#334155] pb-4">
+              <div className="flex justify-between items-center border-b border-[#001F3F] pb-4">
                 <h3 className="tech-heading text-xl text-white">
-                  {state.dietTemplates.some(t => t.id === editingTemplate.id) ? 'Editar Modelo de Dieta' : 'Novo Modelo de Dieta'}
+                  {state.dietTemplates.some(t => t.id === editingTemplate.id) ? 'CONFIGURAR_DIETA' : 'NOVA_DIETA'}
                 </h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-[#808090] hover:text-white transition-colors">
+                <button onClick={() => setIsModalOpen(false)} className="text-[#607080] hover:text-white transition-colors">
                   <X size={24} />
                 </button>
               </div>
@@ -137,13 +137,13 @@ export default function NutritionTab() {
         )}
       </AnimatePresence>
 
-      <div className="flex justify-between items-center bg-tech-pattern glass-panel hardware-card p-6">
+      <div className="flex justify-between items-center bg-[#050505] p-6 border border-[#001F3F] rounded-sm shadow-[0_0_20px_rgba(0,31,63,0.2)]">
         <div>
-          <h2 className="tech-heading text-2xl text-[#3b82f6] mb-2">Nutrição</h2>
-          <p className="tech-label">Gerenciamento de modelos de dieta</p>
+          <h2 className="tech-heading text-2xl text-white mb-2 tracking-tighter">ESTRUTURA_NUTRICIONAL</h2>
+          <p className="tech-label text-[#004080]">SISTEMA_GESTAO_V2.0</p>
         </div>
         <button onClick={() => handleOpenModal()} className="tech-button">
-          <Plus size={18} /> Novo Modelo
+          <Plus size={18} /> CRIAR_MODELO
         </button>
       </div>
 
@@ -161,43 +161,46 @@ export default function NutritionTab() {
         {filteredTemplates.map(template => (
           <motion.div 
             key={template.id}
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass-panel hardware-card p-6 flex flex-col gap-4"
+            className="bg-[#050505] border border-[#001F3F] p-6 flex flex-col gap-4 rounded-sm hover:border-[#004080] transition-all group"
           >
             <div className="flex items-start gap-4">
-              <div className="p-3 bg-[#1e293b] border border-[#334155] rounded-xl text-[#3b82f6]">
+              <div className="p-3 bg-[#001F3F]/20 border border-[#001F3F] text-[#004080] group-hover:text-white transition-colors">
                 <Utensils size={24} />
               </div>
               <div>
-                <h3 className="tech-heading text-lg text-white">{template.name}</h3>
-                <p className="font-mono text-xs text-[#808090] mt-1 line-clamp-2">{template.description}</p>
+                <h3 className="tech-heading text-lg text-white group-hover:text-[#004080] transition-colors">{template.name}</h3>
+                <p className="font-mono text-xs text-[#607080] mt-1 line-clamp-2 uppercase tracking-tighter">{template.description}</p>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-[#334155]">
-              <button onClick={() => handleOpenModal(template)} className="tech-button-secondary text-xs py-1 px-3">
-                <Edit size={14} /> Editar
+            <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-[#001F3F]">
+              <button onClick={() => handleOpenModal(template)} className="tech-button-secondary text-[10px] py-1 px-3">
+                EDITAR
               </button>
               <button 
                 onClick={() => {
                   setModal({
                     type: 'confirm',
-                    message: 'Tem certeza que deseja excluir este modelo?',
+                    message: 'CONFIRMAR_EXCLUSAO_DIETA?',
                     onConfirm: () => deleteDietTemplate(template.id)
                   });
                 }}
-                className="tech-button-danger text-xs py-1 px-3"
+                className="tech-button-danger text-[10px] py-1 px-3 opacity-50 hover:opacity-100"
               >
-                <Trash2 size={14} /> Excluir
+                DELETAR
               </button>
             </div>
           </motion.div>
         ))}
         
         {filteredTemplates.length === 0 && (
-          <div className="col-span-full py-12 text-center text-[#808090] font-mono">
-            Nenhum modelo de dieta encontrado.
+          <div className="col-span-full py-20 flex flex-col items-center justify-center border border-dashed border-[#001F3F] rounded-sm bg-[#050505]/50">
+            <div className="w-16 h-16 border border-[#001F3F] rounded-full flex items-center justify-center mb-4 opacity-20">
+               <Utensils size={32} className="text-[#004080]" />
+            </div>
+            <span className="text-[#607080] font-mono text-xs tracking-[0.3em] uppercase opacity-40">DATABASE_EMPTY: NENHUMA_DIETA</span>
           </div>
         )}
       </div>

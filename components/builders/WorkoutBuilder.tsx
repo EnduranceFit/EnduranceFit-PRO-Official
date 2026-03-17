@@ -88,16 +88,29 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
       </div>
 
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <div className="flex gap-2">
-            <h4 className="tech-heading text-sm text-[#3b82f6] uppercase tracking-wider">Exercícios</h4>
-            <button onClick={applyABCStructure} className="text-[10px] text-[#808090] hover:text-white border border-[#334155] px-2 rounded">
-              Aplicar ABC
+        <div className="flex justify-between items-center border-b border-[#001F3F] pb-4">
+          <div className="flex gap-3 items-center">
+            <h4 className="tech-heading text-sm text-white uppercase tracking-widest">Protocolo de Treino</h4>
+            <div className="h-4 w-px bg-[#001F3F]" />
+            <button 
+              onClick={applyABCStructure} 
+              className="px-3 py-1 bg-[#001F3F]/50 border border-[#004080] text-[#607080] hover:text-white hover:bg-[#001F3F] text-[10px] font-mono transition-all rounded-sm uppercase tracking-tighter"
+            >
+              [ + ] Aplicar Estrutura ABC
             </button>
           </div>
-          <button onClick={addExercise} className="tech-button text-xs py-1 px-3">
-            <Plus size={14} /> Adicionar Exercício
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => alert("AI_ENGINE_v2.0: AGUARDANDO_INTEGRACAO_API\nPrompt Mestre será processado aqui.")}
+              className="px-3 py-1.5 bg-[#001F3F]/20 border border-[#004080] text-[#004080] hover:text-white transition-all rounded-sm flex items-center gap-2 text-[10px] font-mono group"
+            >
+              <div className="w-2 h-2 rounded-full bg-[#004080] group-hover:bg-white animate-pulse" />
+              GERAR_COM_IA
+            </button>
+            <button onClick={addExercise} className="tech-button text-xs py-1.5 px-4 h-9">
+              <Plus size={16} /> Novo Exercício
+            </button>
+          </div>
         </div>
 
         <Reorder.Group axis="y" values={exercises} onReorder={(newOrder) => onChange({ ...template, exercises: newOrder.map((ex, i) => ({ ...ex, order: i })) })} className="space-y-3">
@@ -105,12 +118,12 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
             <Reorder.Item 
               key={ex.id} 
               value={ex}
-              className="glass-panel border-[#334155] p-4 relative group"
+              className="bg-[#050505] border border-[#001F3F] p-4 relative group hover:border-[#004080] transition-colors rounded-sm"
             >
               <div className="flex gap-4">
-                <div className="flex flex-col items-center gap-2 text-[#808090] cursor-grab active:cursor-grabbing">
-                  <GripVertical size={20} />
-                  <span className="font-mono text-[10px]">{ex.order + 1}</span>
+                <div className="flex flex-col items-center gap-2 text-[#607080] cursor-grab active:cursor-grabbing">
+                  <GripVertical size={18} />
+                  <span className="font-mono text-[9px] opacity-50 tracking-tighter">0{ex.order + 1}</span>
                 </div>
                 
                 <div className="flex-1 space-y-4">
@@ -191,11 +204,11 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => cloneExercise(ex)} className="p-2 text-[#3b82f6] hover:bg-[#3b82f6]/10 rounded-lg" title="Duplicar">
+                <div className="flex flex-col gap-1 border-l border-[#001F3F] pl-2">
+                  <button onClick={() => cloneExercise(ex)} className="p-2 text-[#607080] hover:text-white transition-colors" title="Duplicar">
                     <Copy size={16} />
                   </button>
-                  <button onClick={() => removeExercise(ex.id)} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg" title="Remover">
+                  <button onClick={() => removeExercise(ex.id)} className="p-2 text-red-900/50 hover:text-red-500 transition-colors" title="Remover">
                     <Trash2 size={16} />
                   </button>
                 </div>

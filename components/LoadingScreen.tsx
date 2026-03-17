@@ -5,19 +5,20 @@ import { motion } from "framer-motion";
 import { Activity, Cpu, Database, ShieldCheck } from "lucide-react";
 
 const loadingSteps = [
-  { text: "INICIALIZANDO NÚCLEO...", icon: Cpu },
-  { text: "CARREGANDO DADOS...", icon: Database },
-  { text: "VERIFICANDO SEGURANÇA...", icon: ShieldCheck },
-  { text: "SISTEMA PRONTO.", icon: Activity },
+  { text: "INITIALIZING KERNEL...", icon: Cpu },
+  { text: "MOUNTING DATA_STORE...", icon: Database },
+  { text: "ENCRYPT_CHECK_v2.0...", icon: ShieldCheck },
+  { text: "SYSTEM_ONLINE_READY.", icon: Activity },
 ];
 
 export default function LoadingScreen() {
   const [progress, setProgress] = useState(0);
   const [showFailSafe, setShowFailSafe] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
 
   useEffect(() => {
-    const duration = 2500; // 2.5 seconds
-    const intervalTime = 25;
+    const duration = 1500; // Faster boot (1.5s)
+    const intervalTime = 20;
     const steps = duration / intervalTime;
     const increment = 100 / steps;
 
@@ -31,12 +32,19 @@ export default function LoadingScreen() {
       });
     }, intervalTime);
 
+    // Dynamic log simulation
+    const logInterval = setInterval(() => {
+      const newLog = `> [${new Date().toLocaleTimeString()}] ${loadingSteps[Math.floor(Math.random() * loadingSteps.length)].text}`;
+      setLogs(prev => [...prev.slice(-4), newLog]);
+    }, 300);
+
     const failSafeTimer = setTimeout(() => {
       setShowFailSafe(true);
-    }, 5000);
+    }, 4000);
 
     return () => {
       clearInterval(interval);
+      clearInterval(logInterval);
       clearTimeout(failSafeTimer);
     };
   }, []);
@@ -49,82 +57,60 @@ export default function LoadingScreen() {
   const CurrentIcon = loadingSteps[stepIndex]?.icon || Activity;
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-[#000000] text-white overflow-hidden relative">
+    <div className="flex h-screen flex-col items-center justify-center bg-[#000000] text-white overflow-hidden relative font-mono">
       {/* Background effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.15)_0%,transparent_50%)]" />
-      <div className="absolute inset-0 bg-tech-pattern opacity-50" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,31,63,0.3)_0%,transparent_70%)]" />
+      <div className="absolute inset-0 bg-tech-pattern opacity-30" />
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 flex flex-col items-center w-full max-w-md px-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="relative z-10 flex flex-col items-center w-full max-w-lg px-8"
       >
-        {/* Logo / Icon */}
-        <div className="relative mb-12">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="absolute -inset-6 rounded-full border border-dashed border-[#3b82f6]/40"
+        {/* SYS BOOT HEADER */}
+        <div className="w-full flex justify-between mb-8 pb-2 border-b border-[#001F3F] text-[10px] text-[#607080] tracking-[0.2em]">
+          <span>ENDURANCEFIT_SYS_v2.0</span>
+          <span>BOOT_SEQ: 0x88AF</span>
+        </div>
+
+        <div className="relative flex h-20 w-20 items-center justify-center rounded-sm bg-[#050505] border border-[#001F3F] mb-8 shadow-[0_0_30px_rgba(0,31,63,0.4)]">
+          <CurrentIcon className="text-[#004080]" size={36} />
+          <motion.div 
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 0.5, repeat: Infinity }}
+            className="absolute inset-0 border-2 border-[#004080] rounded-sm"
           />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute -inset-10 rounded-full border border-[#3b82f6]/20"
-          />
-          <div className="relative flex h-24 w-24 items-center justify-center rounded-2xl bg-[#0f172a] border border-[#3b82f6] shadow-[0_0_40px_rgba(59,130,246,0.5)]">
-            <CurrentIcon className="text-[#3b82f6]" size={48} />
+        </div>
+
+        {/* LOG CONSOLE */}
+        <div className="w-full bg-[#050505] border border-[#001F3F] p-4 mb-8 h-32 overflow-hidden rounded-sm">
+          {logs.map((log, i) => (
+            <div key={i} className="text-[10px] text-[#004080] opacity-80 mb-1 leading-tight">
+              {log}
+            </div>
+          ))}
+          <div className="text-[10px] text-white flex items-center gap-2">
+             <span className="w-2 h-3 bg-[#004080] animate-pulse" />
+             EXECUTING_INIT...
           </div>
         </div>
 
-        {/* App Name */}
-        <div className="text-center font-mono tracking-[0.3em] mb-12">
-          <span className="text-white text-2xl font-bold">ENDURANCE</span>
-          <span className="text-[#3b82f6] text-2xl font-bold">FIT</span>
-          <div className="text-xs text-[#808090] mt-3 tracking-widest">PRO SYSTEM v2.0</div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-full mb-6">
-          <div className="flex justify-between text-xs font-mono text-[#3b82f6] mb-3 tracking-widest">
+        {/* PROG BAR */}
+        <div className="w-full">
+          <div className="flex justify-between text-[10px] text-[#607080] mb-2 tracking-[0.2em]">
             <span>{loadingSteps[stepIndex].text}</span>
-            <span>{Math.floor(progress)}%</span>
+            <span className="text-white">{Math.floor(progress)}%</span>
           </div>
-          <div className="h-1.5 w-full bg-[#1e293b] rounded-full overflow-hidden relative">
+          <div className="h-1 w-full bg-[#0a0a0a] border border-[#001F3F] rounded-sm overflow-hidden p-[1px]">
             <motion.div
-              className="absolute top-0 left-0 h-full bg-[#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.8)]"
+              className="h-full bg-[#004080]"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
-        
-        {/* Fail-safe button */}
-        {showFailSafe && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 border border-[#3b82f6] text-[#3b82f6] text-xs font-mono tracking-widest rounded hover:bg-[#3b82f6]/10 transition-colors"
-          >
-            FORÇAR INICIALIZAÇÃO
-          </motion.button>
-        )}
 
-        {/* Decorative Tech Elements */}
-        <div className="w-full flex justify-between mt-8 opacity-60">
-          <div className="flex gap-1.5">
-            {[...Array(6)].map((_, i) => (
-              <motion.div
-                key={i}
-                animate={{ opacity: [0.2, 1, 0.2] }}
-                transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
-                className="h-3 w-1.5 bg-[#3b82f6] rounded-sm"
-              />
-            ))}
-          </div>
-          <div className="font-mono text-[9px] text-[#808090] tracking-widest uppercase">
-            SYS_BOOT_SEQ_INIT
-          </div>
+        <div className="mt-12 text-[9px] text-[#607080] uppercase tracking-[0.5em] opacity-50">
+          SYS_BOOT_SEQ_INIT
         </div>
       </motion.div>
     </div>

@@ -35,15 +35,15 @@ export default function Wizard() {
         <div className="flex flex-col items-center gap-8 w-full">
           {/* Logo */}
           <div className="flex flex-col items-center gap-3 w-full">
-            <div className="relative w-12 h-12 flex items-center justify-center rounded-xl bg-[#0f172a] border border-[#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-              <Activity className="text-[#3b82f6]" size={24} />
+            <div className="relative w-12 h-12 flex items-center justify-center rounded-sm bg-[#050505] border border-[#001F3F] shadow-[0_0_20px_rgba(0,31,63,0.4)]">
+              <Activity className="text-[#004080]" size={24} />
             </div>
             <div className="text-center font-mono text-[10px] tracking-widest leading-tight">
               {(state.settings?.appName || 'ENDURANCEFIT PRO').toUpperCase().startsWith('ENDURANCEFIT') ? (
                 <>
                   <span className="text-white block">ENDURANCE</span>
-                  <span className="text-blue-700 block">FIT</span>
-                  {(state.settings?.appName || 'ENDURANCEFIT PRO').substring(12) && <span className="text-[#3b82f6] block">{(state.settings?.appName || 'ENDURANCEFIT PRO').substring(12)}</span>}
+                  <span className="text-[#004080] block">FIT</span>
+                  {(state.settings?.appName || 'ENDURANCEFIT PRO').substring(12) && <span className="text-[#607080] block">{(state.settings?.appName || 'ENDURANCEFIT PRO').substring(12)}</span>}
                 </>
               ) : (
                 <span className="text-white block">{state.settings?.appName || 'ENDURANCEFIT PRO'}</span>
@@ -60,8 +60,8 @@ export default function Wizard() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={clsx(
-                    "relative flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 group",
-                    isActive ? "text-[#3b82f6] bg-[rgba(59,130,246,0.1)]" : "text-[#808090] hover:text-white hover:bg-[#1e293b]"
+                    "relative flex flex-col items-center justify-center p-3 rounded-sm transition-all duration-300 group",
+                    isActive ? "text-white bg-[rgba(0,31,63,0.3)] border border-[#004080]" : "text-[#607080] hover:text-white hover:bg-[#050505]"
                   )}
                   title={tab.label}
                 >
@@ -72,7 +72,7 @@ export default function Wizard() {
                   {isActive && (
                     <motion.div
                       layoutId="active-nav-indicator"
-                      className="absolute left-0 w-1 h-8 bg-[#3b82f6] rounded-r-full"
+                      className="absolute left-0 w-1 h-8 bg-[#004080] rounded-r-full shadow-[0_0_10px_rgba(0,64,128,0.8)]"
                       initial={false}
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
@@ -88,10 +88,10 @@ export default function Wizard() {
           {/* System Status Indicator */}
           <div className="flex flex-col items-center gap-2">
             <div className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#3b82f6] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#3b82f6]"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#004080] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#004080]"></span>
             </div>
-            <span className="text-[9px] font-mono text-[#3b82f6] uppercase tracking-widest">Online</span>
+            <span className="text-[9px] font-mono text-[#004080] uppercase tracking-widest">Active</span>
           </div>
 
           <button

@@ -155,9 +155,9 @@ export default function DashboardTab() {
               exit={{ scale: 0.95 }}
               className="glass-panel hardware-card p-6 max-w-md w-full flex flex-col gap-4"
             >
-              <div className="flex justify-between items-center border-b border-[#334155] pb-2">
-                <h3 className="tech-heading text-lg text-white">Aviso</h3>
-                <button onClick={() => setModal({ type: null, message: '' })} className="text-[#808090] hover:text-white">
+              <div className="flex justify-between items-center border-b border-[#001F3F] pb-2">
+                <h3 className="tech-heading text-lg text-white">AVISO_SISTEMA</h3>
+                <button onClick={() => setModal({ type: null, message: '' })} className="text-[#607080] hover:text-white">
                   <X size={20} />
                 </button>
               </div>
@@ -177,17 +177,17 @@ export default function DashboardTab() {
 
       {/* Main Wizard Area */}
       <div className="flex-1 flex flex-col gap-6 print:hidden">
-        <div className="glass-panel hardware-card p-6">
-          <h2 className="tech-heading text-2xl text-[#3b82f6] mb-2">Assistente de Criação</h2>
-          <p className="tech-label">Configure um novo protocolo para o atleta</p>
+        <div className="bg-[#050505] border border-[#001F3F] p-6 rounded-sm shadow-[0_0_20px_rgba(0,31,63,0.3)]">
+          <h2 className="tech-heading text-2xl text-white mb-2 tracking-tighter">ASSISTENTE_CRIACAO_v2.0</h2>
+          <p className="tech-label text-[#004080]">CONFIGURAR_NOVO_PROTOCOLO</p>
           
           {/* Progress Bar */}
           <div className="flex items-center justify-between mt-8 mb-4 relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-[#334155] -z-10"></div>
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[1px] bg-[#001F3F] -z-10"></div>
             {[1, 2, 3, 4].map(s => (
               <div key={s} className={clsx(
-                "w-8 h-8 rounded-full flex items-center justify-center font-mono text-sm border-2 transition-colors",
-                step >= s ? "bg-[#3b82f6] border-[#3b82f6] text-white" : "bg-[#0f172a] border-[#334155] text-[#808090]"
+                "w-8 h-8 rounded-sm flex items-center justify-center font-mono text-xs border transition-all",
+                step >= s ? "bg-[#001F3F] border-[#004080] text-white shadow-[0_0_10px_rgba(0,31,63,0.5)]" : "bg-[#050505] border-[#001F3F] text-[#607080]"
               )}>
                 {s}
               </div>
@@ -195,10 +195,10 @@ export default function DashboardTab() {
           </div>
         </div>
 
-        <div className="glass-panel hardware-card p-6 flex-1 overflow-y-auto">
+        <div className="bg-[#050505] border border-[#001F3F] p-6 flex-1 overflow-y-auto rounded-sm">
           {step === 1 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <h3 className="tech-heading text-xl text-white border-b border-[#334155] pb-2">1. Perfil do Atleta</h3>
+              <h3 className="tech-heading text-xl text-white border-b border-[#001F3F] pb-2">01. PERFIL_ATLETA</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -268,10 +268,10 @@ export default function DashboardTab() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <button 
                     onClick={() => setCreationType('both')}
-                    className={clsx("p-4 border rounded-xl flex flex-col items-center gap-2 transition-all", creationType === 'both' ? "border-[#3b82f6] bg-[rgba(59,130,246,0.1)] text-[#3b82f6]" : "border-[#334155] text-[#808090] hover:border-[#808090]")}
+                    className={clsx("p-4 border rounded-sm flex flex-col items-center gap-2 transition-all group", creationType === 'both' ? "border-[#004080] bg-[#001F3F]/20 text-white" : "border-[#001F3F] text-[#607080] hover:border-[#004080]")}
                   >
-                    <div className="flex gap-2"><Dumbbell size={24} /><Utensils size={24} /></div>
-                    <span className="font-mono uppercase tracking-wider text-xs">Treino & Dieta</span>
+                    <div className="flex gap-2 group-hover:scale-110 transition-transform"><Dumbbell size={24} /><Utensils size={24} /></div>
+                    <span className="font-mono uppercase tracking-widest text-[10px]">TREINO_DIETA</span>
                   </button>
                   <button 
                     onClick={() => setCreationType('workout')}
@@ -412,41 +412,41 @@ export default function DashboardTab() {
 
       {/* Metabolic Sidebar */}
       <div className="w-full lg:w-80 flex flex-col gap-6 print:hidden">
-        <div className="glass-panel hardware-card p-6 h-full">
-          <h3 className="tech-heading text-lg text-white border-b border-[#334155] pb-2 mb-6 flex items-center gap-2">
-            <Activity size={20} className="text-[#3b82f6]" />
-            Dados Metabólicos
+        <div className="bg-[#050505] border border-[#001F3F] p-6 h-full rounded-sm shadow-[0_0_30px_rgba(0,31,63,0.2)]">
+          <h3 className="tech-heading text-sm text-white border-b border-[#001F3F] pb-4 mb-6 flex items-center gap-2 tracking-[0.2em]">
+            <Activity size={18} className="text-[#004080]" />
+            METRIC_ENGINE_v2.0
           </h3>
 
           <div className="space-y-6">
-            <div className="bg-[#1e293b] p-4 rounded-xl border border-[#334155]">
+            <div className="bg-[#050505] p-4 border border-[#001F3F] rounded-sm shadow-[inset_0_0_15px_rgba(0,31,63,0.1)]">
               <div className="flex justify-between items-end mb-2">
-                <span className="tech-label">IMC</span>
+                <span className="text-[10px] text-[#607080] font-mono uppercase tracking-widest">IMC_INDEX</span>
                 <span className="font-mono text-2xl text-white">{imc > 0 ? imc.toFixed(1) : '--'}</span>
               </div>
               {imcClass && (
                 <div className={clsx(
-                  "text-xs font-mono uppercase tracking-wider px-2 py-1 rounded inline-block",
-                  imcClass === 'Peso Normal' ? "bg-green-500/20 text-green-400" : 
-                  imcClass === 'Abaixo do Peso' ? "bg-yellow-500/20 text-yellow-400" : 
-                  "bg-red-500/20 text-red-400"
+                  "text-[9px] font-mono uppercase tracking-widest px-2 py-1 rounded-sm border inline-block",
+                  imcClass === 'Peso Normal' ? "border-green-500/30 text-green-400 bg-green-500/5" : 
+                  imcClass === 'Abaixo do Peso' ? "border-yellow-500/30 text-yellow-400 bg-yellow-500/5" : 
+                  "border-red-500/30 text-red-400 bg-red-500/5"
                 )}>
                   {imcClass}
                 </div>
               )}
             </div>
 
-            <div className="bg-[#1e293b] p-4 rounded-xl border border-[#334155]">
+            <div className="bg-[#050505] p-4 border border-[#001F3F] rounded-sm shadow-[inset_0_0_15px_rgba(0,31,63,0.1)]">
               <div className="flex justify-between items-end">
-                <span className="tech-label">TMB (Basal)</span>
-                <span className="font-mono text-2xl text-[#3b82f6]">{tmb > 0 ? Math.round(tmb) : '--'} <span className="text-sm text-[#808090]">kcal</span></span>
+                <span className="text-[10px] text-[#607080] font-mono uppercase tracking-widest">TMB_BASAL</span>
+                <span className="font-mono text-2xl text-white">{tmb > 0 ? Math.round(tmb) : '--'} <span className="text-[10px] text-[#607080]">KCAL</span></span>
               </div>
             </div>
 
-            <div className="bg-[#1e293b] p-4 rounded-xl border border-[#334155]">
+            <div className="bg-[#050505] p-4 border border-[#001F3F] rounded-sm shadow-[inset_0_0_15px_rgba(0,31,63,0.1)]">
               <div className="flex justify-between items-end">
-                <span className="tech-label">GET (Total)</span>
-                <span className="font-mono text-2xl text-[#3b82f6]">{get > 0 ? Math.round(get) : '--'} <span className="text-sm text-[#808090]">kcal</span></span>
+                <span className="text-[10px] text-[#607080] font-mono uppercase tracking-widest">GET_TOTAL</span>
+                <span className="font-mono text-2xl text-white">{get > 0 ? Math.round(get) : '--'} <span className="text-[10px] text-[#607080]">KCAL</span></span>
               </div>
             </div>
 

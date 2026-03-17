@@ -85,11 +85,11 @@ export default function AthletesTab() {
               exit={{ scale: 0.95, y: 20 }}
               className="glass-panel hardware-card p-6 max-w-2xl w-full flex flex-col gap-6 my-8"
             >
-              <div className="flex justify-between items-center border-b border-[#334155] pb-4">
+              <div className="flex justify-between items-center border-b border-[#001F3F] pb-4">
                 <h3 className="tech-heading text-xl text-white">
-                  {state.athletes.some(a => a.id === editingAthlete.id) ? 'Editar Atleta' : 'Novo Atleta'}
+                  {state.athletes.some(a => a.id === editingAthlete.id) ? 'CONFIGURAR_ATLETA' : 'NOVO_ATLETA'}
                 </h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-[#808090] hover:text-white transition-colors">
+                <button onClick={() => setIsModalOpen(false)} className="text-[#607080] hover:text-white transition-colors">
                   <X size={24} />
                 </button>
               </div>
@@ -199,13 +199,13 @@ export default function AthletesTab() {
         )}
       </AnimatePresence>
 
-      <div className="flex justify-between items-center bg-tech-pattern glass-panel hardware-card p-6">
+      <div className="flex justify-between items-center bg-[#050505] p-6 border border-[#001F3F] rounded-sm shadow-[0_0_20px_rgba(0,31,63,0.2)]">
         <div>
-          <h2 className="tech-heading text-2xl text-[#3b82f6] mb-2">Atletas</h2>
-          <p className="tech-label">Gerenciamento de alunos e clientes</p>
+          <h2 className="tech-heading text-2xl text-white mb-2 tracking-tighter">CENTRAL_ATLETAS</h2>
+          <p className="tech-label text-[#004080]">SISTEMA_GESTAO_V2.0</p>
         </div>
         <button onClick={() => handleOpenModal()} className="tech-button">
-          <Plus size={18} /> Novo Aluno
+          <Plus size={18} /> CADASTRAR_ALUNO
         </button>
       </div>
 
@@ -237,33 +237,33 @@ export default function AthletesTab() {
         {filteredAthletes.map(athlete => (
           <motion.div 
             key={athlete.id}
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass-panel hardware-card p-6 flex flex-col gap-4"
+            className="bg-[#050505] border border-[#001F3F] p-6 flex flex-col gap-4 rounded-sm hover:border-[#004080] transition-all group"
           >
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="tech-heading text-lg text-white">{athlete.name}</h3>
-                <p className="font-mono text-xs text-[#808090] mt-1">{athlete.email}</p>
+                <h3 className="tech-heading text-lg text-white group-hover:text-[#004080] transition-colors">{athlete.name}</h3>
+                <p className="font-mono text-xs text-[#607080] mt-1 uppercase tracking-tighter">{athlete.email}</p>
               </div>
               <div className={clsx(
-                "px-2 py-1 rounded text-[10px] font-mono uppercase tracking-wider",
-                athlete.status === 'Ativo' ? "bg-green-500/20 text-green-400 border border-green-500/50" :
-                athlete.status === 'Pendente' ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/50" :
-                "bg-red-500/20 text-red-400 border border-red-500/50"
+                "px-2 py-1 rounded-sm text-[10px] font-mono uppercase tracking-wider",
+                athlete.status === 'Ativo' ? "bg-green-500/10 text-green-400 border border-green-500/30" :
+                athlete.status === 'Pendente' ? "bg-yellow-500/10 text-yellow-400 border border-yellow-500/30" :
+                "bg-red-500/10 text-red-400 border border-red-500/30"
               )}>
                 {athlete.status}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 py-4 border-y border-[#334155]">
+            <div className="grid grid-cols-2 gap-2 py-4 border-y border-[#001F3F]">
               <div>
-                <span className="tech-label block text-[10px]">Categoria</span>
+                <span className="text-[9px] text-[#607080] block font-mono">CATEGORY</span>
                 <span className="font-mono text-sm text-white">{athlete.category}</span>
               </div>
               <div>
-                <span className="tech-label block text-[10px]">Peso / Altura</span>
-                <span className="font-mono text-sm text-white">{athlete.weight}kg / {athlete.height}cm</span>
+                <span className="text-[9px] text-[#607080] block font-mono">BIOMETRICS</span>
+                <span className="font-mono text-xs text-white uppercase">{athlete.weight}kg | {athlete.height}cm</span>
               </div>
             </div>
 
@@ -273,25 +273,18 @@ export default function AthletesTab() {
                   href={`https://wa.me/${(athlete.whatsapp || '').replace(/\D/g, '')}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-2 bg-[#1e293b] border border-[#334155] rounded hover:border-[#3b82f6] hover:text-[#3b82f6] transition-colors text-[#808090]"
+                  className="p-2 bg-[#050505] border border-[#001F3F] rounded-sm hover:border-[#004080] hover:text-[#004080] transition-colors text-[#607080]"
                   title="WhatsApp"
                 >
                   <MessageCircle size={16} />
                 </a>
-                <a 
-                  href={`mailto:${athlete.email}`}
-                  className="p-2 bg-[#1e293b] border border-[#334155] rounded hover:border-[#3b82f6] hover:text-[#3b82f6] transition-colors text-[#808090]"
-                  title="Email"
-                >
-                  <Mail size={16} />
-                </a>
               </div>
-              <div className="flex gap-2">
-                <button onClick={() => handleDelete(athlete.id)} className="p-2 text-red-500 hover:bg-red-500/10 rounded transition-colors" title="Excluir">
+              <div className="flex gap-1">
+                <button onClick={() => handleDelete(athlete.id)} className="p-2 text-red-900/50 hover:text-red-500 transition-colors" title="Excluir">
                   <Trash2 size={16} />
                 </button>
-                <button onClick={() => handleOpenModal(athlete)} className="tech-button-secondary text-xs py-1 px-3">
-                  <Edit size={14} /> Editar
+                <button onClick={() => handleOpenModal(athlete)} className="tech-button-secondary text-[10px] py-1 px-3">
+                  EDITAR
                 </button>
               </div>
             </div>
@@ -299,8 +292,11 @@ export default function AthletesTab() {
         ))}
         
         {filteredAthletes.length === 0 && (
-          <div className="col-span-full py-12 text-center text-[#808090] font-mono">
-            Nenhum atleta encontrado.
+          <div className="col-span-full py-20 flex flex-col items-center justify-center border border-dashed border-[#001F3F] rounded-sm bg-[#050505]/50">
+            <div className="w-16 h-16 border border-[#001F3F] rounded-full flex items-center justify-center mb-4 opacity-20">
+               <Search size={32} className="text-[#004080]" />
+            </div>
+            <span className="text-[#607080] font-mono text-xs tracking-[0.3em] uppercase opacity-40">DATABASE_EMPTY: NENHUM_ATLETA</span>
           </div>
         )}
       </div>
