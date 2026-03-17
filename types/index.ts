@@ -18,20 +18,55 @@ export interface Athlete {
   updatedAt: string;
 }
 
+export interface Exercise {
+  id: string;
+  name: string;
+  muscleGroup: string;
+  sets: number;
+  reps: string;
+  rir?: number;
+  targetLoad?: number;
+  advancedTechnique?: string; // e.g., Drop-set, Rest-pause
+  restTime?: number; // in seconds
+  videoUrl?: string;
+  order: number;
+}
+
 export interface WorkoutTemplate {
   id: string;
   name: string;
   description: string;
-  exercises: any[]; // simplify for now
+  dayOfWeek?: string;
+  focusMuscle?: string;
+  exercises: Exercise[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface MealItem {
+  id: string;
+  name: string;
+  amount: number; // in grams
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+export interface Meal {
+  id: string;
+  name: string;
+  time?: string;
+  items: MealItem[];
+  order: number;
 }
 
 export interface DietTemplate {
   id: string;
   name: string;
   description: string;
-  meals: any[]; // simplify for now
+  dayOfWeek?: string;
+  meals: Meal[];
   createdAt: string;
   updatedAt: string;
 }

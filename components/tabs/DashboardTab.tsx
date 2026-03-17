@@ -5,8 +5,10 @@ import { useAppContext } from '@/context/AppContext';
 import { v4 as uuidv4 } from 'uuid';
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity, Dumbbell, Utensils, Save, CheckCircle, X, ChevronRight } from 'lucide-react';
+import WorkoutBuilder from '../builders/WorkoutBuilder';
+import DietBuilder from '../builders/DietBuilder';
 import clsx from 'clsx';
-import { Athlete } from '@/types';
+import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
 
 type CreationType = 'both' | 'workout' | 'diet' | null;
 
@@ -18,6 +20,9 @@ export default function DashboardTab() {
   
   const [selectedWorkoutTemplateId, setSelectedWorkoutTemplateId] = useState<string>('');
   const [selectedDietTemplateId, setSelectedDietTemplateId] = useState<string>('');
+
+  const [customWorkout, setCustomWorkout] = useState<Partial<WorkoutTemplate>>({ exercises: [] });
+  const [customDiet, setCustomDiet] = useState<Partial<DietTemplate>>({ meals: [] });
 
   // Athlete Form State
   const [athlete, setAthlete] = useState<Partial<Athlete>>({
@@ -303,9 +308,16 @@ export default function DashboardTab() {
               <div>
                 <label className="tech-label block mb-1">Aplicar Modelo de Treino</label>
                 <select 
-                  className="tech-input"
+                  className="tech-input mb-4"
                   value={selectedWorkoutTemplateId}
-                  onChange={e => setSelectedWorkoutTemplateId(e.target.value)}
+                  onChange={e => {
+                    const id = e.target.value;
+                    setSelectedWorkoutTemplateId(id);
+                    if (id) {
+                      const template = state.workoutTemplates.find(t => t.id === id);
+                      if (template) setCustomWorkout({ ...template });
+                    }
+                  }}
                 >
                   <option value="">-- Selecionar Modelo --</option>
                   {state.workoutTemplates.map(t => (
@@ -314,8 +326,8 @@ export default function DashboardTab() {
                 </select>
               </div>
 
-              <div className="h-64 border border-dashed border-[#334155] rounded-xl flex items-center justify-center text-[#808090] font-mono text-sm">
-                Área de construção de treino (Em desenvolvimento)
+              <div className="border border-[#334155] rounded-xl p-4 bg-black/20">
+                <WorkoutBuilder template={customWorkout} onChange={setCustomWorkout} />
               </div>
 
               <div className="flex justify-between pt-6">
@@ -333,9 +345,16 @@ export default function DashboardTab() {
               <div>
                 <label className="tech-label block mb-1">Aplicar Modelo de Dieta</label>
                 <select 
-                  className="tech-input"
+                  className="tech-input mb-4"
                   value={selectedDietTemplateId}
-                  onChange={e => setSelectedDietTemplateId(e.target.value)}
+                  onChange={e => {
+                    const id = e.target.value;
+                    setSelectedDietTemplateId(id);
+                    if (id) {
+                      const template = state.dietTemplates.find(t => t.id === id);
+                      if (template) setCustomDiet({ ...template });
+                    }
+                  }}
                 >
                   <option value="">-- Selecionar Modelo --</option>
                   {state.dietTemplates.map(t => (
@@ -344,8 +363,8 @@ export default function DashboardTab() {
                 </select>
               </div>
 
-              <div className="h-64 border border-dashed border-[#334155] rounded-xl flex items-center justify-center text-[#808090] font-mono text-sm">
-                Área de construção de dieta (Em desenvolvimento)
+              <div className="border border-[#334155] rounded-xl p-4 bg-black/20">
+                <DietBuilder template={customDiet} onChange={setCustomDiet} />
               </div>
 
               <div className="flex justify-between pt-6">
@@ -482,8 +501,13 @@ export default function DashboardTab() {
               </h2>
               <p className="text-sm mb-6 text-gray-700">{state.workoutTemplates.find(t => t.id === selectedWorkoutTemplateId)?.description}</p>
               
-              <div className="bg-gray-50 p-8 rounded-lg border border-gray-200 text-center">
-                <p className="text-gray-500 italic">Os exercícios detalhados serão listados aqui na próxima fase.</p>
+              <div className="bg-gray-50 p-8 rounded-lg border border-gray-200">
+                {customWorkout.exercises?.map(ex => (
+                  <div key={ex.id} className="mb-4 border-l-2 border-gray-300 pl-4 py-1">
+                    <p className="font-bold">{ex.name} <span className="text-gray-500 font-normal">({ex.muscleGroup})</span></p>
+                    <p className="text-sm">{ex.sets}x {ex.reps} • Descanso: {ex.restTime}s {ex.advancedTechnique && `• Técnica: ${ex.advancedTechnique}`}</p>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -495,8 +519,15 @@ export default function DashboardTab() {
               </h2>
               <p className="text-sm mb-6 text-gray-700">{state.dietTemplates.find(t => t.id === selectedDietTemplateId)?.description}</p>
               
-              <div className="bg-gray-50 p-8 rounded-lg border border-gray-200 text-center">
-                <p className="text-gray-500 italic">As refeições detalhadas serão listadas aqui na próxima fase.</p>
+              <div className="bg-gray-50 p-8 rounded-lg border border-gray-200">
+                {customDiet.meals?.map(meal => (
+                  <div key={meal.id} className="mb-6 last:mb-0">
+                    <p className="font-bold border-b border-gray-200 mb-2 py-1">{meal.name} <span className="text-gray-500 font-normal">({meal.time})</span></p>
+                    {meal.items.map(item => (
+                      <p key={item.id} className="text-sm ml-4">• {item.name}: {item.amount}g</p>
+                    ))}
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -509,5 +540,3 @@ export default function DashboardTab() {
     </div>
   );
 }
-
-
