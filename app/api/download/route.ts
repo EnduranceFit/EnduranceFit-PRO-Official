@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
 import archiver from 'archiver';
 
-export const dynamic = 'force-dynamic';
+const isStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true';
+
+export const dynamic = isStaticExport ? 'auto' : 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET() {
+  if (isStaticExport) {
+    return new NextResponse('Not available in static export', { status: 404 });
+  }
   const archive = archiver('zip', { zlib: { level: 9 } });
 
   const stream = new ReadableStream({

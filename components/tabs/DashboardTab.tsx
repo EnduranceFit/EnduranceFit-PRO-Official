@@ -24,6 +24,7 @@ export default function DashboardTab() {
 
   const [customWorkout, setCustomWorkout] = useState<Partial<WorkoutTemplate>>({ exercises: [] });
   const [customDiet, setCustomDiet] = useState<Partial<DietTemplate>>({ meals: [] });
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Athlete Form State
   const [athlete, setAthlete] = useState<Partial<Athlete>>({
@@ -118,14 +119,23 @@ export default function DashboardTab() {
       if (!athlete.name) return setModal({ type: 'alert', message: 'Nome é obrigatório' });
       if (!creationType) return setModal({ type: 'alert', message: 'Selecione o que deseja montar' });
       
-      // Eager saving
-      saveAthlete(athlete as Athlete);
-      
-      if (creationType === 'diet') setStep(3);
-      else setStep(2);
+      setIsProcessing(true);
+      setTimeout(() => {
+        saveAthlete(athlete as Athlete);
+        if (creationType === 'diet') setStep(3);
+        else setStep(2);
+        setIsProcessing(false);
+      }, 800);
     } else if (step === 2) {
-      if (creationType === 'both') setStep(3);
-      else setStep(4);
+      if (creationType === 'both') {
+        setIsProcessing(true);
+        setTimeout(() => {
+          setStep(3);
+          setIsProcessing(false);
+        }, 600);
+      } else {
+        setStep(4);
+      }
     } else if (step === 3) {
       setStep(4);
     }
@@ -195,7 +205,21 @@ export default function DashboardTab() {
           </div>
         </div>
 
-        <div className="bg-[#050505] border border-[#001F3F] p-6 flex-1 overflow-y-auto rounded-sm">
+        <div className="bg-[#050505] border border-[#001F3F] p-6 flex-1 overflow-y-auto rounded-sm relative">
+          <AnimatePresence>
+            {isProcessing && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
+              >
+                <div className="w-16 h-16 border-4 border-t-[#004080] border-r-transparent border-b-[#004080] border-l-transparent rounded-full animate-spin mb-4" />
+                <h3 className="tech-heading text-white text-lg animate-pulse tracking-widest">INITIALIZING_MODULE...</h3>
+                <p className="font-mono text-[10px] text-[#004080] mt-2">ACCESSING_KERNEL_v2.0_ENGINE</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
           {step === 1 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
               <h3 className="tech-heading text-xl text-white border-b border-[#001F3F] pb-2">01. PERFIL_ATLETA</h3>
@@ -263,29 +287,45 @@ export default function DashboardTab() {
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-[#334155]">
-                <h4 className="tech-label mb-4">O que vamos montar?</h4>
+              <div className="pt-6 border-t border-[#001F3F]">
+                <h4 className="tech-label mb-4 text-[#004080]">GEN_MODULE_TARGET_SELECTOR</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <button 
                     onClick={() => setCreationType('both')}
-                    className={clsx("p-4 border rounded-sm flex flex-col items-center gap-2 transition-all group", creationType === 'both' ? "border-[#004080] bg-[#001F3F]/20 text-white" : "border-[#001F3F] text-[#607080] hover:border-[#004080]")}
+                    className={clsx(
+                      "p-6 border rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
+                      creationType === 'both' ? "border-[#004080] bg-[#001F3F]/20 text-white shadow-[0_0_20px_rgba(0,64,128,0.2)]" : "border-[#001F3F] text-[#607080] hover:border-[#004080] bg-transparent"
+                    )}
                   >
-                    <div className="flex gap-2 group-hover:scale-110 transition-transform"><Dumbbell size={24} /><Utensils size={24} /></div>
-                    <span className="font-mono uppercase tracking-widest text-[10px]">TREINO_DIETA</span>
+                    <div className="flex gap-3 group-hover:scale-110 transition-transform relative z-10">
+                      <Dumbbell size={28} className={creationType === 'both' ? "text-white" : "text-[#004080] opacity-50"} />
+                      <div className="w-px h-6 bg-[#001F3F] self-center" />
+                      <Utensils size={28} className={creationType === 'both' ? "text-white" : "text-[#004080] opacity-50"} />
+                    </div>
+                    <span className="font-mono uppercase tracking-[0.2em] text-[10px] relative z-10">CORE_SYNC_PROTOCOL</span>
+                    {creationType === 'both' && <div className="absolute inset-0 bg-gradient-to-br from-[#004080]/10 to-transparent animate-pulse" />}
                   </button>
+
                   <button 
                     onClick={() => setCreationType('workout')}
-                    className={clsx("p-4 border rounded-xl flex flex-col items-center gap-2 transition-all", creationType === 'workout' ? "border-[#3b82f6] bg-[rgba(59,130,246,0.1)] text-[#3b82f6]" : "border-[#334155] text-[#808090] hover:border-[#808090]")}
+                    className={clsx(
+                      "p-6 border rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
+                      creationType === 'workout' ? "border-[#004080] bg-[#001F3F]/20 text-white shadow-[0_0_20px_rgba(0,64,128,0.2)]" : "border-[#001F3F] text-[#607080] hover:border-[#004080]"
+                    )}
                   >
-                    <Dumbbell size={24} />
-                    <span className="font-mono uppercase tracking-wider text-xs">Apenas Treino</span>
+                    <Dumbbell size={28} className={creationType === 'workout' ? "text-white group-hover:scale-110 transition-transform" : "text-[#004080] opacity-50"} />
+                    <span className="font-mono uppercase tracking-[0.2em] text-[10px]">GEN_TRAINING_ONLY</span>
                   </button>
+
                   <button 
                     onClick={() => setCreationType('diet')}
-                    className={clsx("p-4 border rounded-xl flex flex-col items-center gap-2 transition-all", creationType === 'diet' ? "border-[#3b82f6] bg-[rgba(59,130,246,0.1)] text-[#3b82f6]" : "border-[#334155] text-[#808090] hover:border-[#808090]")}
+                    className={clsx(
+                      "p-6 border rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
+                      creationType === 'diet' ? "border-[#004080] bg-[#001F3F]/20 text-white shadow-[0_0_20px_rgba(0,64,128,0.2)]" : "border-[#001F3F] text-[#607080] hover:border-[#004080]"
+                    )}
                   >
-                    <Utensils size={24} />
-                    <span className="font-mono uppercase tracking-wider text-xs">Apenas Dieta</span>
+                    <Utensils size={28} className={creationType === 'diet' ? "text-white group-hover:scale-110 transition-transform" : "text-[#004080] opacity-50"} />
+                    <span className="font-mono uppercase tracking-[0.2em] text-[10px]">GEN_NUTRITION_ONLY</span>
                   </button>
                 </div>
               </div>
@@ -303,7 +343,7 @@ export default function DashboardTab() {
 
           {step === 2 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <h3 className="tech-heading text-xl text-white border-b border-[#334155] pb-2">2. Configuração de Treino</h3>
+              <h3 className="tech-heading text-xl text-white border-b border-[#001F3F] pb-2">02. GEN_MODULE_WORKOUT</h3>
               <p className="text-[#808090] font-mono text-sm">Selecione um modelo ou crie do zero.</p>
               
               <div>
@@ -340,7 +380,7 @@ export default function DashboardTab() {
 
           {step === 3 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <h3 className="tech-heading text-xl text-white border-b border-[#334155] pb-2">3. Configuração de Dieta</h3>
+              <h3 className="tech-heading text-xl text-white border-b border-[#001F3F] pb-2">03. GEN_MODULE_DIET</h3>
               <p className="text-[#808090] font-mono text-sm">Selecione um modelo ou crie do zero.</p>
               
               <div>
@@ -364,7 +404,7 @@ export default function DashboardTab() {
                 </select>
               </div>
 
-              <div className="border border-[#334155] rounded-xl p-4 bg-black/20">
+              <div className="border border-[#001F3F] rounded-sm p-4 bg-black/20">
                 <DietBuilder template={customDiet} onChange={setCustomDiet} />
               </div>
 
@@ -377,14 +417,14 @@ export default function DashboardTab() {
 
           {step === 4 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <h3 className="tech-heading text-xl text-white border-b border-[#334155] pb-2">4. Revisar e Exportar</h3>
+              <h3 className="tech-heading text-xl text-white border-b border-[#001F3F] pb-2">04. FINALIZAR_PROTOCOLO</h3>
               
-              <div className="bg-[#1e293b] p-6 rounded-xl border border-[#3b82f6]">
+              <div className="bg-[#050505] p-6 rounded-sm border border-[#004080] shadow-[0_0_20px_rgba(0,64,128,0.1)]">
                 <div className="flex items-center gap-4 mb-4">
-                  <CheckCircle className="text-[#3b82f6]" size={32} />
+                  <CheckCircle className="text-[#004080]" size={32} />
                   <div>
-                    <h4 className="tech-heading text-lg text-white">Protocolo Pronto</h4>
-                    <p className="tech-label text-[#3b82f6]">Atleta: {athlete.name}</p>
+                    <h4 className="tech-heading text-lg text-white uppercase">SUCCESS_PROTO_GEN</h4>
+                    <p className="tech-label text-[#004080]">Atleta: {athlete.name}</p>
                   </div>
                 </div>
                 
@@ -450,7 +490,7 @@ export default function DashboardTab() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-[#334155]">
+            <div className="pt-4 border-t border-[#001F3F]">
               <label className="tech-label block mb-2">Fator de Atividade</label>
               <select 
                 className="tech-input" 

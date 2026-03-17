@@ -82,7 +82,7 @@ export default function ProtocolsTab() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-[#334155]">
+              <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-[#001F3F]">
                 <button onClick={() => setIsModalOpen(false)} className="tech-button-secondary">
                   Cancelar
                 </button>
@@ -107,7 +107,7 @@ export default function ProtocolsTab() {
               exit={{ scale: 0.95 }}
               className="glass-panel hardware-card p-6 max-w-md w-full flex flex-col gap-4"
             >
-              <div className="flex justify-between items-center border-b border-[#334155] pb-2">
+              <div className="flex justify-between items-center border-b border-[#001F3F] pb-2">
                 <h3 className="tech-heading text-lg text-white">{modal.type === 'confirm' ? 'Confirmação' : 'Aviso'}</h3>
                 <button onClick={() => setModal({ type: null, message: '' })} className="text-[#808090] hover:text-white">
                   <X size={20} />

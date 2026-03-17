@@ -35,19 +35,24 @@ export default function Wizard() {
         <div className="flex flex-col items-center gap-8 w-full">
           {/* Logo */}
           <div className="flex flex-col items-center gap-3 w-full">
-            <div className="relative w-12 h-12 flex items-center justify-center rounded-sm bg-[#050505] border border-[#001F3F] shadow-[0_0_20px_rgba(0,31,63,0.4)]">
-              <Activity className="text-[#004080]" size={24} />
+            <div className="relative w-14 h-14 flex items-center justify-center">
+              <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_15px_rgba(0,64,128,0.5)]">
+                <defs>
+                  <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#004080" />
+                    <stop offset="100%" stopColor="#001F3F" />
+                  </linearGradient>
+                </defs>
+                <path d="M50 5 L90 27 V73 L50 95 L10 73 V27 Z" fill="none" stroke="url(#logo-grad)" strokeWidth="2" />
+                <path d="M50 12 L82 30 V70 L50 88 L18 70 V30 Z" fill="#050505" stroke="#001F3F" strokeWidth="1" />
+                <text x="50" y="60" textAnchor="middle" fill="white" className="font-sans font-black text-[28px] tracking-tighter">EF</text>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#004080" strokeWidth="0.5" strokeDasharray="4 8" className="animate-[spin_20s_linear_infinite]" />
+              </svg>
             </div>
-            <div className="text-center font-mono text-[10px] tracking-widest leading-tight">
-              {(state.settings?.appName || 'ENDURANCEFIT PRO').toUpperCase().startsWith('ENDURANCEFIT') ? (
-                <>
-                  <span className="text-white block">ENDURANCE</span>
-                  <span className="text-[#004080] block">FIT</span>
-                  {(state.settings?.appName || 'ENDURANCEFIT PRO').substring(12) && <span className="text-[#607080] block">{(state.settings?.appName || 'ENDURANCEFIT PRO').substring(12)}</span>}
-                </>
-              ) : (
-                <span className="text-white block">{state.settings?.appName || 'ENDURANCEFIT PRO'}</span>
-              )}
+            <div className="text-center font-mono text-[9px] tracking-[0.3em] leading-tight">
+              <span className="text-white block opacity-80">ENDURANCE</span>
+              <span className="text-[#004080] block font-bold">FIT_PRO</span>
+              <span className="text-[#607080] block text-[7px] mt-1">v2.0_SYSTEM</span>
             </div>
           </div>
 
@@ -107,19 +112,16 @@ export default function Wizard() {
       {/* Main Content Area */}
       <main className="flex-1 h-full relative z-0 flex flex-col overflow-hidden">
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 glass-panel border-b border-[#334155] z-20">
-          <div className="flex items-center gap-2">
-            <Activity className="text-[#3b82f6]" size={24} />
-            <span className="tech-heading text-lg">
-              {(state.settings?.appName || 'ENDURANCEFIT PRO').toUpperCase().startsWith('ENDURANCEFIT') ? (
-                <>
-                  <span className="text-white">ENDURANCE</span>
-                  <span className="text-blue-700">FIT</span>
-                  {(state.settings?.appName || 'ENDURANCEFIT PRO').substring(12)}
-                </>
-              ) : (
-                <span className="text-white">{state.settings?.appName || 'ENDURANCEFIT PRO'}</span>
-              )}
+        <header className="md:hidden flex items-center justify-between p-4 bg-[#050505] border-b border-[#001F3F] z-20">
+          <div className="flex items-center gap-3">
+             <div className="w-8 h-8 flex items-center justify-center">
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                  <path d="M50 5 L90 27 V73 L50 95 L10 73 V27 Z" fill="none" stroke="#004080" strokeWidth="4" />
+                  <text x="50" y="62" textAnchor="middle" fill="white" className="font-sans font-black text-[35px]">EF</text>
+                </svg>
+             </div>
+            <span className="tech-heading text-sm tracking-widest text-white uppercase">
+               SYSTEM_PRO_v2.0
             </span>
           </div>
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white">
