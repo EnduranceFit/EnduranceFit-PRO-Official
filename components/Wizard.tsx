@@ -147,7 +147,7 @@ export default function Wizard() {
                   }}
                   className={clsx(
                     "flex items-center gap-4 p-4 rounded-lg font-mono uppercase tracking-wider text-sm transition-colors",
-                    activeTab === tab.id ? "bg-[rgba(59,130,246,0.1)] text-[#3b82f6]" : "text-[#808090] hover:bg-[#1e293b] hover:text-white"
+                    activeTab === tab.id ? "bg-[#001F3F]/30 text-white" : "text-[#607080] hover:bg-[#050505] hover:text-white"
                   )}
                 >
                   <tab.icon size={20} />
@@ -184,14 +184,14 @@ export default function Wizard() {
       </main>
 
       {/* Mobile Bottom Navigation (Optional, but requested) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 glass-panel border-t border-[#334155] z-20 flex items-center justify-around p-2 pb-safe">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#050505] border-t border-[#001F3F] z-20 flex items-center justify-around p-2 pb-safe">
         {tabs.slice(0, 4).map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={clsx(
               "flex flex-col items-center p-2 rounded-lg transition-colors",
-              activeTab === tab.id ? "text-[#3b82f6]" : "text-[#808090]"
+              activeTab === tab.id ? "text-white" : "text-[#607080]"
             )}
           >
             <tab.icon size={20} className="mb-1" />
