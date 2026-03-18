@@ -138,7 +138,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // CRUD Operations with Supabase
   const saveAthlete = async (athlete: Athlete) => {
-    if (!supabase) return;
+    if (!supabase || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
+      console.error("Supabase not configured. Cannot save athlete.");
+      return;
+    }
+    
     const { error } = await (supabase as any).from('athletes').upsert({
       id: athlete.id,
       name: athlete.name,
@@ -155,13 +159,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updated_at: new Date().toISOString()
     });
 
-    if (!error) {
-      setState(s => {
-        const exists = s.athletes.find(a => a.id === athlete.id);
-        if (exists) return { ...s, athletes: s.athletes.map(a => a.id === athlete.id ? athlete : a) };
-        return { ...s, athletes: [...s.athletes, athlete] };
-      });
+    if (error) {
+      console.error("Error saving athlete:", error);
+      throw error;
     }
+
+    setState(s => {
+      const exists = s.athletes.find(a => a.id === athlete.id);
+      if (exists) return { ...s, athletes: s.athletes.map(a => a.id === athlete.id ? athlete : a) };
+      return { ...s, athletes: [...s.athletes, athlete] };
+    });
   };
 
   const deleteAthlete = async (id: string) => {
@@ -173,7 +180,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const saveWorkoutTemplate = async (template: WorkoutTemplate) => {
-    if (!supabase) return;
+    if (!supabase || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
+      console.error("Supabase not configured. Cannot save workout.");
+      return;
+    }
+
     // 1. Save main workout
     const { error: wError } = await (supabase as any).from('workouts').upsert({
       id: template.id,
@@ -183,7 +194,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updated_at: new Date().toISOString()
     });
 
-    if (wError) return;
+    if (wError) {
+      console.error("Error saving workout:", wError);
+      throw wError;
+    }
 
     // 2. Delete existing exercises and re-insert (simple sync strategy)
     await (supabase as any).from('workout_exercises').delete().eq('workout_id', template.id);
@@ -201,13 +215,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }))
     );
 
-    if (!eError) {
-      setState(s => {
-        const exists = s.workoutTemplates.find(t => t.id === template.id);
-        if (exists) return { ...s, workoutTemplates: s.workoutTemplates.map(t => t.id === template.id ? template : t) };
-        return { ...s, workoutTemplates: [...s.workoutTemplates, template] };
-      });
+    if (eError) {
+      console.error("Error saving workout exercises:", eError);
+      throw eError;
     }
+
+    setState(s => {
+      const exists = s.workoutTemplates.find(t => t.id === template.id);
+      if (exists) return { ...s, workoutTemplates: s.workoutTemplates.map(t => t.id === template.id ? template : t) };
+      return { ...s, workoutTemplates: [...s.workoutTemplates, template] };
+    });
   };
 
   const deleteWorkoutTemplate = async (id: string) => {
@@ -219,7 +236,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const saveDietTemplate = async (template: DietTemplate) => {
-    if (!supabase) return;
+    if (!supabase || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
+      console.error("Supabase not configured. Cannot save diet.");
+      return;
+    }
+
     // 1. Save main diet
     const { error: dError } = await (supabase as any).from('diets').upsert({
       id: template.id,
@@ -229,21 +250,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
       updated_at: new Date().toISOString()
     });
 
-    if (dError) return;
+    if (dError) {
+      console.error("Error saving diet:", dError);
+      throw dError;
+    }
 
     // 2. Re-insert meals and items (full sync)
     await (supabase as any).from('diet_meals').delete().eq('diet_id', template.id);
     
     for (const [mIdx, meal] of template.meals.entries()) {
-      const { data: mData } = await (supabase as any).from('diet_meals').insert({
+      const { data: mData, error: mError } = await (supabase as any).from('diet_meals').insert({
         diet_id: template.id,
         name: meal.name,
         time: meal.time,
         order_index: mIdx
       }).select().single();
 
+      if (mError) {
+        console.error("Error saving meal:", mError);
+        throw mError;
+      }
+
       if (mData) {
-        await (supabase as any).from('meal_items').insert(
+        const { error: iError } = await (supabase as any).from('meal_items').insert(
           meal.items.map((item, iIdx) => ({
             meal_id: mData.id,
             name: item.name,
@@ -255,6 +284,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
             order_index: iIdx
           }))
         );
+
+        if (iError) {
+          console.error("Error saving meal items:", iError);
+          throw iError;
+        }
       }
     }
 

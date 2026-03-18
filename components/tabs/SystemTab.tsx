@@ -12,12 +12,20 @@ export default function SystemTab() {
   const [modal, setModal] = useState<{ type: 'alert' | 'confirm' | 'prompt' | null, message: string, onConfirm?: (val?: string) => void }>({ type: null, message: '' });
   const [promptValue, setPromptValue] = useState('');
 
-  const handleSaveSettings = () => {
-    updateSettings({
-      pin: pin || null,
-      appName: appName || 'ENDURANCEFIT PRO'
-    });
-    setModal({ type: 'alert', message: 'Configurações salvas com sucesso.' });
+  const handleSaveSettings = async () => {
+    try {
+      if (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
+        throw new Error("Supabase não configurado. Por favor, adicione as chaves no arquivo .env.local");
+      }
+      await updateSettings({
+        pin: pin || null,
+        appName: appName || 'ENDURANCEFIT PRO'
+      });
+      setModal({ type: 'alert', message: 'Configurações salvas com sucesso.' });
+    } catch (error: any) {
+      console.error("Save settings error:", error);
+      setModal({ type: 'alert', message: `Erro ao salvar: ${error.message || 'Erro de conexão.'}` });
+    }
   };
 
   const handleExport = () => {
@@ -40,10 +48,15 @@ export default function SystemTab() {
         setModal({
           type: 'prompt',
           message: 'Digite "APAGAR TUDO" para confirmar a exclusão.',
-          onConfirm: (val) => {
+          onConfirm: async (val) => {
             if (val === 'APAGAR TUDO') {
-              wipeData();
-              setModal({ type: 'alert', message: 'Sistema resetado com sucesso.' });
+              try {
+                await wipeData();
+                setModal({ type: 'alert', message: 'Sistema resetado com sucesso.' });
+              } catch (error: any) {
+                console.error("Wipe data error:", error);
+                setModal({ type: 'alert', message: `Erro ao resetar: ${error.message || 'Erro de conexão.'}` });
+              }
             } else {
               setModal({ type: null, message: '' });
             }

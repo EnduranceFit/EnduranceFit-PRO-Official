@@ -53,21 +53,37 @@ export default function AthletesTab() {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!editingAthlete?.name) {
       setModal({ type: 'alert', message: 'Nome é obrigatório' });
       return;
     }
-    saveAthlete(editingAthlete as Athlete);
-    setIsModalOpen(false);
-    setEditingAthlete(null);
+    
+    try {
+      if (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
+        throw new Error("Supabase não configurado. Por favor, adicione as chaves no arquivo .env.local");
+      }
+      await saveAthlete(editingAthlete as Athlete);
+      setIsModalOpen(false);
+      setEditingAthlete(null);
+    } catch (error: any) {
+      console.error("Save athlete error:", error);
+      setModal({ type: 'alert', message: `Erro ao salvar: ${error.message || 'Erro de conexão.'}` });
+    }
   };
 
   const handleDelete = (id: string) => {
     setModal({
       type: 'confirm',
       message: 'Tem certeza que deseja excluir este atleta?',
-      onConfirm: () => deleteAthlete(id)
+      onConfirm: async () => {
+        try {
+          await deleteAthlete(id);
+        } catch (error: any) {
+          console.error("Delete athlete error:", error);
+          setModal({ type: 'alert', message: `Erro ao excluir: ${error.message || 'Erro de conexão.'}` });
+        }
+      }
     });
   };
 

@@ -111,45 +111,64 @@ export default function DashboardTab() {
   const handleSaveProfileOnly = async () => {
     if (!athlete.name) return setModal({ type: 'alert', message: 'Por favor, insira o nome do aluno.' });
     setIsProcessing(true);
-    await saveAthlete(athlete as Athlete);
-    resetSession();
-    setIsProcessing(false);
-    setModal({ type: 'alert', message: 'Aluno cadastrado com sucesso!' });
+    try {
+      if (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
+        throw new Error("Supabase não configurado. Por favor, adicione as chaves no arquivo .env.local");
+      }
+      await saveAthlete(athlete as Athlete);
+      resetSession();
+      setModal({ type: 'alert', message: 'Aluno cadastrado com sucesso!' });
+    } catch (error: any) {
+      console.error("Save error:", error);
+      setModal({ type: 'alert', message: `Erro ao salvar: ${error.message || 'Verifique a conexão com o banco de dados.'}` });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleFinalizeProtocol = async () => {
     if (!athlete.name) return setModal({ type: 'alert', message: 'O nome do aluno é obrigatório para gerar o protocolo.' });
     
     setIsProcessing(true);
-    const athleteData = { ...athlete } as Athlete;
-    
-    if (creationType === 'workout' || creationType === 'both') {
-      const workoutRepo = { 
-        ...customWorkout, 
-        id: uuidv4(), 
-        athleteId: athleteData.id,
-        name: `Treino: ${athlete.name}`,
-        description: `Prescrição gerada em ${new Date().toLocaleDateString()}`
-      } as WorkoutTemplate;
-      await saveWorkoutTemplate(workoutRepo);
-      athleteData.workoutTemplateId = workoutRepo.id;
-    }
+    try {
+      if (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
+        throw new Error("Supabase não configurado. Por favor, adicione as chaves no arquivo .env.local");
+      }
 
-    if (creationType === 'diet' || creationType === 'both') {
-      const dietRepo = { 
-        ...customDiet, 
-        id: uuidv4(), 
-        athleteId: athleteData.id,
-        name: `Dieta: ${athlete.name}`,
-        description: `Plano alimentar gerado em ${new Date().toLocaleDateString()}`
-      } as DietTemplate;
-      await saveDietTemplate(dietRepo);
-      athleteData.dietTemplateId = dietRepo.id;
-    }
+      const athleteData = { ...athlete } as Athlete;
+      
+      if (creationType === 'workout' || creationType === 'both') {
+        const workoutRepo = { 
+          ...customWorkout, 
+          id: uuidv4(), 
+          athleteId: athleteData.id,
+          name: `Treino: ${athlete.name}`,
+          description: `Prescrição gerada em ${new Date().toLocaleDateString()}`
+        } as WorkoutTemplate;
+        await saveWorkoutTemplate(workoutRepo);
+        athleteData.workoutTemplateId = workoutRepo.id;
+      }
 
-    await saveAthlete(athleteData);
-    setIsProcessing(false);
-    setStep(4);
+      if (creationType === 'diet' || creationType === 'both') {
+        const dietRepo = { 
+          ...customDiet, 
+          id: uuidv4(), 
+          athleteId: athleteData.id,
+          name: `Dieta: ${athlete.name}`,
+          description: `Plano alimentar gerado em ${new Date().toLocaleDateString()}`
+        } as DietTemplate;
+        await saveDietTemplate(dietRepo);
+        athleteData.dietTemplateId = dietRepo.id;
+      }
+
+      await saveAthlete(athleteData);
+      setStep(4);
+    } catch (error: any) {
+      console.error("Protocol save error:", error);
+      setModal({ type: 'alert', message: `Erro ao salvar protocolo: ${error.message || 'Erro de conexão.'}` });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleExportPDF = () => {

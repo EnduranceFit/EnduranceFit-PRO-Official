@@ -38,10 +38,18 @@ export default function ProtocolsTab() {
     setIsBuilderOpen(true);
   };
 
-  const handleSave = () => {
-    saveWorkoutTemplate(editingTemplate as WorkoutTemplate);
-    setIsBuilderOpen(false);
-    setEditingTemplate(null);
+  const handleSave = async () => {
+    try {
+      if (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
+        throw new Error("Supabase não configurado. Por favor, adicione as chaves no arquivo .env.local");
+      }
+      await saveWorkoutTemplate(editingTemplate as WorkoutTemplate);
+      setIsBuilderOpen(false);
+      setEditingTemplate(null);
+    } catch (error: any) {
+      console.error("Save protocol error:", error);
+      setModal({ type: 'alert', message: `Erro ao salvar: ${error.message || 'Erro de conexão.'}` });
+    }
   };
 
   return (
@@ -195,7 +203,14 @@ export default function ProtocolsTab() {
                   setModal({
                     type: 'confirm',
                     message: 'CONFIRMAR_EXCLUSAO_PROTOCOLO?',
-                    onConfirm: () => deleteWorkoutTemplate(template.id)
+                    onConfirm: async () => {
+                      try {
+                        await deleteWorkoutTemplate(template.id);
+                      } catch (error: any) {
+                        console.error("Delete protocol error:", error);
+                        setModal({ type: 'alert', message: `Erro ao excluir: ${error.message || 'Erro de conexão.'}` });
+                      }
+                    }
                   });
                 }}
                 className="tech-button-danger text-[10px] py-1 px-3 opacity-50 hover:opacity-100"
