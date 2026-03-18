@@ -36,17 +36,21 @@ export default function Wizard() {
           {/* Logo */}
           <div className="flex flex-col items-center gap-3 w-full">
             <div className="relative w-14 h-14 flex items-center justify-center">
-              <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_15px_rgba(0,64,128,0.5)]">
+              <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_20px_rgba(0,64,128,0.6)]">
                 <defs>
                   <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#004080" />
                     <stop offset="100%" stopColor="#001F3F" />
                   </linearGradient>
+                  <pattern id="hex-grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                    <path d="M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z" fill="none" stroke="#004080" strokeWidth="0.2" opacity="0.3" />
+                  </pattern>
                 </defs>
-                <path d="M50 5 L90 27 V73 L50 95 L10 73 V27 Z" fill="none" stroke="url(#logo-grad)" strokeWidth="2" />
+                <path d="M50 5 L90 27 V73 L50 95 L10 73 V27 Z" fill="none" stroke="url(#logo-grad)" strokeWidth="2" className="animate-pulse" />
                 <path d="M50 12 L82 30 V70 L50 88 L18 70 V30 Z" fill="#050505" stroke="#001F3F" strokeWidth="1" />
-                <text x="50" y="60" textAnchor="middle" fill="white" className="font-sans font-black text-[28px] tracking-tighter">EF</text>
-                <circle cx="50" cy="50" r="42" fill="none" stroke="#004080" strokeWidth="0.5" strokeDasharray="4 8" className="animate-[spin_20s_linear_infinite]" />
+                <path d="M50 12 L82 30 V70 L50 88 L18 70 V30 Z" fill="url(#hex-grid)" />
+                <text x="50" y="60" textAnchor="middle" fill="white" className="font-sans font-black text-[28px] tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">EF</text>
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#004080" strokeWidth="0.5" strokeDasharray="2 6" className="animate-[spin_30s_linear_infinite]" />
               </svg>
             </div>
             <div className="text-center font-mono text-[9px] tracking-[0.3em] leading-tight">

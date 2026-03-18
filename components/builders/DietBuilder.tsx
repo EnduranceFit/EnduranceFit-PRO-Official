@@ -100,21 +100,18 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
   };
 
   const applyMealToDays = (meal: Meal) => {
-    // Logic to copy this specific meal to other days
-    alert(`Refeição "${meal.name}" aplicada para todos os dias da semana!`);
+    alert(`CLONE_MEAL: Refeição "${meal.name}" aplicada em todos os dias da sequência.`);
   };
 
   const duplicateEntireDay = () => {
-    // Logic to copy all meals to other days
-    alert("Dieta completa duplicada para Terça a Sexta!");
+    alert("SYS_SYNC: Dieta completa replicada para o cronograma semanal.");
   };
 
   return (
     <div className="space-y-6">
-      {/* Header Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="tech-label block mb-1">Dia de Referência</label>
+          <label className="tech-label block mb-1">PROT_DIA_REFERENCIA</label>
           <select 
             className="tech-input" 
             value={template.dayOfWeek || ''} 
@@ -128,77 +125,74 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
             <option value="Sexta">Sexta-feira</option>
             <option value="Sábado">Sábado</option>
             <option value="Domingo">Domingo</option>
-            <option value="Todos">Todos os Dias</option>
+            <option value="Todos">Global (Todos os Dias)</option>
           </select>
         </div>
         <div className="flex items-center gap-3">
           <div className="grid grid-cols-4 gap-2 flex-1">
-            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[inset_0_0_10px_rgba(0,31,63,0.2)]">
-              <span className="text-[9px] text-[#607080] block font-mono">KCAL</span>
-              <span className="font-mono text-sm text-white">{Math.round(totals.calories)}</span>
+            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[0_0_10px_rgba(0,31,63,0.1)]">
+              <span className="text-[8px] text-[#607080] block font-mono">KCAL</span>
+              <span className="font-mono text-xs text-white">{Math.round(totals.calories)}</span>
             </div>
-            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[inset_0_0_10px_rgba(0,31,63,0.2)]">
-              <span className="text-[9px] text-[#607080] block font-mono">PROT</span>
-              <span className="font-mono text-sm text-[#004080]">{Math.round(totals.protein)}g</span>
+            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[0_0_10px_rgba(0,31,63,0.1)]">
+              <span className="text-[8px] text-[#004080] block font-mono">PROT</span>
+              <span className="font-mono text-xs text-white">{Math.round(totals.protein)}g</span>
             </div>
-            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[inset_0_0_10px_rgba(0,31,63,0.2)]">
-              <span className="text-[9px] text-[#607080] block font-mono">CARB</span>
-              <span className="font-mono text-sm text-yellow-600">{Math.round(totals.carbs)}g</span>
+            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[0_0_10px_rgba(0,31,63,0.1)]">
+              <span className="text-[8px] text-yellow-900 block font-mono">CARB</span>
+              <span className="font-mono text-xs text-white">{Math.round(totals.carbs)}g</span>
             </div>
-            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[inset_0_0_10px_rgba(0,31,63,0.2)]">
-              <span className="text-[9px] text-[#607080] block font-mono">FAT</span>
-              <span className="font-mono text-sm text-red-900">{Math.round(totals.fat)}g</span>
+            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[0_0_10px_rgba(0,31,63,0.1)]">
+              <span className="text-[8px] text-red-900 block font-mono">FAT</span>
+              <span className="font-mono text-xs text-white">{Math.round(totals.fat)}g</span>
             </div>
           </div>
-          <button onClick={duplicateEntireDay} className="tech-button border-[#004080] text-[10px] h-full px-3" title="Repetir este dia para Ter-Sex">
-             {"[ >> ]"} Repetir Dia
+          <button onClick={duplicateEntireDay} className="px-3 h-full bg-[#001F3F]/50 border border-[#004080] hover:bg-[#001F3F] text-[#004080] hover:text-white transition-all rounded-sm text-[10px] font-mono uppercase tracking-tighter">
+             [ >> ] DUPLICAR_DIA
           </button>
         </div>
       </div>
 
-      {/* Meals List */}
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h4 className="tech-heading text-sm text-[#3b82f6] uppercase tracking-wider">Refeições ({meals.length})</h4>
+        <div className="flex justify-between items-center border-b border-[#001F3F] pb-4">
+          <h4 className="tech-heading text-sm text-white uppercase tracking-widest">Protocolo Nutricional</h4>
           <div className="flex gap-2">
             <button 
-              onClick={() => alert("AI_ENGINE_v2.0: AGUARDANDO_INTEGRACAO_API\nPrompt Mestre será processado aqui.")}
+              onClick={() => alert("AI_ENGINE_v2.0: AGUARDANDO_INTEGRACAO_API")}
               className="px-3 py-1.5 bg-[#001F3F]/20 border border-[#004080] text-[#004080] hover:text-white transition-all rounded-sm flex items-center gap-2 text-[10px] font-mono group"
             >
               <div className="w-2 h-2 rounded-full bg-[#004080] group-hover:bg-white animate-pulse" />
-              GERAR_COM_IA
+              GERAR_IA
             </button>
-            <button onClick={addMeal} className="tech-button text-xs py-1 px-3">
-              <Plus size={14} /> Adicionar Refeição
+            <button onClick={addMeal} className="tech-button text-xs py-1.5 px-4 h-9">
+              <Plus size={16} /> Nova Refeição
             </button>
           </div>
         </div>
 
-        <Reorder.Group axis="y" values={meals} onReorder={(newOrder) => onChange({ ...template, meals: newOrder.map((m, i) => ({ ...m, order: i })) })} className="space-y-4">
+        <Reorder.Group axis="y" values={meals} onReorder={(newOrder) => onChange({ ...template, meals: newOrder.map((m, i) => ({ ...m, order: i })) })} className="space-y-3">
           {meals.map((meal) => (
             <Reorder.Item 
               key={meal.id} 
               value={meal}
-              className="bg-[#050505] border border-[#001F3F] overflow-hidden rounded-sm hover:border-[#004080] transition-colors"
+              className="bg-[#050505] border border-[#001F3F] rounded-sm hover:border-[#004080] transition-colors"
             >
-              {/* Meal Header */}
               <div className={clsx(
-                "p-4 flex items-center gap-4 transition-colors",
-                expandedMealId === meal.id ? "bg-[#001F3F]/10" : "hover:bg-white/5"
+                "p-4 flex items-center gap-4",
+                expandedMealId === meal.id ? "bg-[#001F3F]/10" : ""
               )}>
-                <div className="cursor-grab active:cursor-grabbing text-[#607080]">
+                <div className="cursor-grab active:cursor-grabbing text-[#607080] pt-1">
                   <GripVertical size={18} />
                 </div>
                 
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
                   <input 
-                    type="text" 
-                    className="tech-input font-bold text-white bg-transparent border-none p-0 focus:ring-0" 
+                    className="tech-input font-bold text-white uppercase tracking-tight bg-transparent border-none p-0 focus:ring-0" 
                     value={meal.name} 
                     onChange={e => updateMeal(meal.id, { name: e.target.value })} 
                   />
                   <div className="flex items-center gap-2">
-                    <Clock size={16} className="text-[#808090]" />
+                    <Clock size={16} className="text-[#004080]" />
                     <input 
                       type="time" 
                       className="tech-input text-xs w-24" 
@@ -206,14 +200,16 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
                       onChange={e => updateMeal(meal.id, { time: e.target.value })} 
                     />
                   </div>
-                  <div className="hidden md:flex items-center gap-4 text-[10px] font-mono text-[#808090]">
-                    <span>{meal.items.length} itens</span>
-                    <span>{Math.round(meal.items.reduce((sum, i) => sum + i.calories, 0))} kcal</span>
+                  <div className="flex items-center gap-4 text-[10px] font-mono text-[#607080]">
+                    <span className="hidden lg:inline">{meal.items.length} ITENS_SYNC</span>
+                    <span className="bg-[#001F3F]/30 px-2 py-0.5 rounded-sm border border-[#001F3F] text-white">
+                      {Math.round(meal.items.reduce((sum, i) => sum + i.calories, 0))} KCAL
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1 border-l border-[#001F3F] pl-2">
-                  <button onClick={() => applyMealToDays(meal)} className="p-2 text-[#607080] hover:text-green-900" title="Aplicar para todos os dias">
+                  <button onClick={() => applyMealToDays(meal)} className="p-2 text-[#607080] hover:text-white" title="Replicar">
                     <Scale size={16} />
                   </button>
                   <button onClick={() => cloneMeal(meal)} className="p-2 text-[#607080] hover:text-white" title="Duplicar">
@@ -224,37 +220,35 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
                   </button>
                   <button 
                     onClick={() => setExpandedMealId(expandedMealId === meal.id ? null : meal.id)}
-                    className="p-2 text-[#004080]"
+                    className="p-2 text-[#004080] hover:scale-110 transition-transform"
                   >
                     {expandedMealId === meal.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                   </button>
                 </div>
               </div>
 
-              {/* Meal Content (Expanded) */}
               <AnimatePresence>
                 {expandedMealId === meal.id && (
                   <motion.div 
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="border-t border-[#334155] p-4 bg-black/20"
+                    className="border-t border-[#001F3F] p-4 bg-black/40"
                   >
                     <div className="space-y-3">
                       {meal.items.map(item => (
-                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end border-b border-[#334155]/50 pb-3 last:border-0">
+                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end border-b border-[#001F3F]/30 pb-3 last:border-0 last:pb-0">
                           <div className="md:col-span-4">
-                            <label className="text-[10px] text-[#808090] uppercase block mb-1">Alimento</label>
+                            <label className="text-[9px] text-[#004080] uppercase block mb-1">ALIMENTO</label>
                             <input 
-                              type="text" 
-                              className="tech-input text-xs" 
                               placeholder="Nome do Alimento" 
+                              className="tech-input text-xs" 
                               value={item.name} 
                               onChange={e => updateFoodItem(meal.id, item.id, { name: e.target.value })} 
                             />
                           </div>
                           <div className="md:col-span-2">
-                            <label className="text-[10px] text-[#808090] uppercase block mb-1">Qtd (g)</label>
+                            <label className="text-[9px] text-[#004080] uppercase block mb-1">QTD (G/ML)</label>
                             <input 
                               type="number" 
                               className="tech-input text-xs text-center" 
@@ -262,24 +256,24 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
                               onChange={e => updateFoodItem(meal.id, item.id, { amount: Number(e.target.value) })} 
                             />
                           </div>
-                          <div className="md:col-span-1 text-center">
-                            <label className="text-[10px] text-[#808090] uppercase block mb-1">Kcal</label>
+                          <div className="md:col-span-1">
+                            <label className="text-[9px] text-[#004080] uppercase block mb-1 text-center">KCAL</label>
                             <input type="number" className="tech-input text-[10px] text-center p-1" value={item.calories} onChange={e => updateFoodItem(meal.id, item.id, { calories: Number(e.target.value) })} />
                           </div>
-                          <div className="md:col-span-1 text-center">
-                            <label className="text-[10px] text-[#808090] uppercase block mb-1">P</label>
+                          <div className="md:col-span-1">
+                            <label className="text-[9px] text-[#004080] uppercase block mb-1 text-center">P</label>
                             <input type="number" className="tech-input text-[10px] text-center p-1" value={item.protein} onChange={e => updateFoodItem(meal.id, item.id, { protein: Number(e.target.value) })} />
                           </div>
-                          <div className="md:col-span-1 text-center">
-                            <label className="text-[10px] text-[#808090] uppercase block mb-1">C</label>
+                          <div className="md:col-span-1">
+                            <label className="text-[9px] text-[#004080] uppercase block mb-1 text-center">C</label>
                             <input type="number" className="tech-input text-[10px] text-center p-1" value={item.carbs} onChange={e => updateFoodItem(meal.id, item.id, { carbs: Number(e.target.value) })} />
                           </div>
-                          <div className="md:col-span-1 text-center">
-                            <label className="text-[10px] text-[#808090] uppercase block mb-1">G</label>
+                          <div className="md:col-span-1">
+                            <label className="text-[9px] text-[#004080] uppercase block mb-1 text-center">G</label>
                             <input type="number" className="tech-input text-[10px] text-center p-1" value={item.fat} onChange={e => updateFoodItem(meal.id, item.id, { fat: Number(e.target.value) })} />
                           </div>
                           <div className="md:col-span-1 flex justify-end">
-                            <button onClick={() => removeFoodItem(meal.id, item.id)} className="p-2 text-[#808090] hover:text-red-500">
+                            <button onClick={() => removeFoodItem(meal.id, item.id)} className="p-2 text-[#607080] hover:text-red-500">
                               <Trash2 size={16} />
                             </button>
                           </div>
@@ -287,9 +281,9 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
                       ))}
                       <button 
                         onClick={() => addFoodItem(meal.id)}
-                        className="w-full py-2 border border-dashed border-[#334155] rounded-lg text-[#808090] hover:text-white hover:border-[#3b82f6] text-xs font-mono transition-all"
+                        className="w-full py-2 border border-dashed border-[#001F3F] rounded-sm text-[#004080] hover:text-white hover:border-[#004080] text-[10px] font-mono uppercase transition-all"
                       >
-                        + Adicionar Item ao {meal.name}
+                        [ + ] ADICIONAR_ALIMENTO
                       </button>
                     </div>
                   </motion.div>
@@ -300,8 +294,8 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
         </Reorder.Group>
 
         {meals.length === 0 && (
-          <div className="py-12 border-2 border-dashed border-[#334155] rounded-xl text-center text-[#808090] font-mono text-sm">
-            Nenhuma refeição adicionada. Clique em "Adicionar Refeição" para começar.
+          <div className="py-12 border border-dashed border-[#001F3F] rounded-sm text-center text-[#607080] font-mono text-xs uppercase tracking-widest">
+            Sem Refeições. Clique em [+] para iniciar protocolo.
           </div>
         )}
       </div>
