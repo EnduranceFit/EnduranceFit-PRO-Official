@@ -4,7 +4,7 @@ import archiver from 'archiver';
 const isStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === 'true';
 
 // We only export these statically to avoid build errors with 'output: export'
-export const dynamic = 'force-dynamic';
+export const dynamic = 'auto';
 export const runtime = 'nodejs';
 
 export async function GET() {

@@ -127,6 +127,7 @@ export default function DashboardTab() {
       const workoutRepo = { 
         ...customWorkout, 
         id: uuidv4(), 
+        athleteId: athleteData.id,
         name: `Treino: ${athlete.name}`,
         description: `Prescrição gerada em ${new Date().toLocaleDateString()}`
       } as WorkoutTemplate;
@@ -138,6 +139,7 @@ export default function DashboardTab() {
       const dietRepo = { 
         ...customDiet, 
         id: uuidv4(), 
+        athleteId: athleteData.id,
         name: `Dieta: ${athlete.name}`,
         description: `Plano alimentar gerado em ${new Date().toLocaleDateString()}`
       } as DietTemplate;

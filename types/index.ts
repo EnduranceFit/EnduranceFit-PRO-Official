@@ -36,6 +36,7 @@ export interface Exercise {
 
 export interface WorkoutTemplate {
   id: string;
+  athleteId?: string;
   name: string;
   description: string;
   dayOfWeek?: string;
@@ -65,6 +66,7 @@ export interface Meal {
 
 export interface DietTemplate {
   id: string;
+  athleteId?: string;
   name: string;
   description: string;
   dayOfWeek?: string;

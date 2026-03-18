@@ -41,25 +41,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // 1. Fetch initial data from Supabase
   useEffect(() => {
     const fetchData = async () => {
+      if (!supabase) {
+        console.warn("Supabase client not initialized - skipping hydration");
+        setIsHydrated(true);
+        return;
+      }
+
       try {
         // Fetch Athletes
-        const { data: athletes, error: aError } = await supabase
+        const { data: athletes, error: aError } = await (supabase as any)
           .from('athletes')
           .select('*')
           .order('name');
         
         // Fetch Workouts
-        const { data: workouts, error: wError } = await supabase
+        const { data: workouts, error: wError } = await (supabase as any)
           .from('workouts')
           .select('*, workout_exercises(*)');
         
         // Fetch Diets
-        const { data: diets, error: dError } = await supabase
+        const { data: diets, error: dError } = await (supabase as any)
           .from('diets')
           .select('*, diet_meals(*, meal_items(*))');
         
         // Fetch Settings
-        const { data: settings, error: sError } = await supabase
+        const { data: settings, error: sError } = await (supabase as any)
           .from('settings')
           .select('*')
           .single();
@@ -67,11 +73,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (aError || wError || dError) console.error("Error fetching data", { aError, wError, dError });
 
         setState({
-          athletes: (athletes || []).map(a => ({
+          athletes: (athletes || []).map((a: any) => ({
             ...a,
             activityLevel: a.activity_level, // Map snake_case to camelCase
           })),
-          workoutTemplates: (workouts || []).map(w => ({
+          workoutTemplates: (workouts || []).map((w: any) => ({
             id: w.id,
             name: w.name,
             description: w.description || '',
@@ -79,12 +85,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
             updatedAt: w.updated_at || new Date().toISOString(),
             exercises: w.workout_exercises.map((ex: any) => ({
               ...ex,
+              id: ex.id || '',
+              muscleGroup: ex.muscle_group,
               restTime: ex.rest_time,
               videoUrl: ex.video_url,
               order: ex.order_index
             }))
           })),
-          dietTemplates: (diets || []).map(d => ({
+          dietTemplates: (diets || []).map((d: any) => ({
             id: d.id,
             name: d.name,
             description: d.goal || '',
@@ -130,7 +138,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // CRUD Operations with Supabase
   const saveAthlete = async (athlete: Athlete) => {
-    const { error } = await supabase.from('athletes').upsert({
+    if (!supabase) return;
+    const { error } = await (supabase as any).from('athletes').upsert({
       id: athlete.id,
       name: athlete.name,
       email: athlete.email,
@@ -156,16 +165,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteAthlete = async (id: string) => {
-    const { error } = await supabase.from('athletes').delete().eq('id', id);
+    if (!supabase) return;
+    const { error } = await (supabase as any).from('athletes').delete().eq('id', id);
     if (!error) {
       setState(s => ({ ...s, athletes: s.athletes.filter(a => a.id !== id) }));
     }
   };
 
   const saveWorkoutTemplate = async (template: WorkoutTemplate) => {
+    if (!supabase) return;
     // 1. Save main workout
-    const { error: wError } = await supabase.from('workouts').upsert({
+    const { error: wError } = await (supabase as any).from('workouts').upsert({
       id: template.id,
+      athlete_id: template.athleteId || null,
       name: template.name,
       description: template.description,
       updated_at: new Date().toISOString()
@@ -174,9 +186,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (wError) return;
 
     // 2. Delete existing exercises and re-insert (simple sync strategy)
-    await supabase.from('workout_exercises').delete().eq('workout_id', template.id);
+    await (supabase as any).from('workout_exercises').delete().eq('workout_id', template.id);
     
-    const { error: eError } = await supabase.from('workout_exercises').insert(
+    const { error: eError } = await (supabase as any).from('workout_exercises').insert(
       template.exercises.map((ex, idx) => ({
         workout_id: template.id,
         name: ex.name,
@@ -199,16 +211,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteWorkoutTemplate = async (id: string) => {
-    const { error } = await supabase.from('workouts').delete().eq('id', id);
+    if (!supabase) return;
+    const { error } = await (supabase as any).from('workouts').delete().eq('id', id);
     if (!error) {
       setState(s => ({ ...s, workoutTemplates: s.workoutTemplates.filter(t => t.id !== id) }));
     }
   };
 
   const saveDietTemplate = async (template: DietTemplate) => {
+    if (!supabase) return;
     // 1. Save main diet
-    const { error: dError } = await supabase.from('diets').upsert({
+    const { error: dError } = await (supabase as any).from('diets').upsert({
       id: template.id,
+      athlete_id: template.athleteId || null,
       name: template.name,
       goal: template.description,
       updated_at: new Date().toISOString()
@@ -217,10 +232,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (dError) return;
 
     // 2. Re-insert meals and items (full sync)
-    await supabase.from('diet_meals').delete().eq('diet_id', template.id);
+    await (supabase as any).from('diet_meals').delete().eq('diet_id', template.id);
     
     for (const [mIdx, meal] of template.meals.entries()) {
-      const { data: mData } = await supabase.from('diet_meals').insert({
+      const { data: mData } = await (supabase as any).from('diet_meals').insert({
         diet_id: template.id,
         name: meal.name,
         time: meal.time,
@@ -228,7 +243,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }).select().single();
 
       if (mData) {
-        await supabase.from('meal_items').insert(
+        await (supabase as any).from('meal_items').insert(
           meal.items.map((item, iIdx) => ({
             meal_id: mData.id,
             name: item.name,
@@ -251,14 +266,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteDietTemplate = async (id: string) => {
-    const { error } = await supabase.from('diets').delete().eq('id', id);
+    if (!supabase) return;
+    const { error } = await (supabase as any).from('diets').delete().eq('id', id);
     if (!error) {
       setState(s => ({ ...s, dietTemplates: s.dietTemplates.filter(t => t.id !== id) }));
     }
   };
 
   const updateSettings = async (newSettings: Partial<SystemSettings>) => {
-    const { error } = await supabase.from('settings').upsert({
+    if (!supabase) return;
+    const { error } = await (supabase as any).from('settings').upsert({
       id: 'global-settings', // fixed ID for simple settings
       app_name: newSettings.appName || state.settings.appName,
       pin: newSettings.pin !== undefined ? newSettings.pin : state.settings.pin,

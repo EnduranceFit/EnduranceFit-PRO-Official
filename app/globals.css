@@ -26,138 +26,128 @@
   }
 }
 
-@layer components {
-  /* Material Design 3 Inspired Panels */
-  .app-card {
-    background: var(--color-app-card);
-    border: 1px solid var(--color-app-border);
-    border-radius: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .app-card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-    border-color: rgba(59, 130, 246, 0.3);
-  }
-
-  /* Professional Typography */
-  .app-heading {
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--color-app-text);
-  }
-
-  .app-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-app-muted);
-  }
-
-  /* Native Mobile Inputs */
-  .app-input {
-    width: 100%;
-    background-color: #1a1a1a;
-    border: 1.5px solid var(--color-app-border);
-    border-radius: 12px;
-    padding: 0.75rem 1rem;
-    color: #ffffff;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 1rem;
-  }
-  
-  .app-input:focus {
-    outline: none;
-    border-color: var(--color-app-accent);
-    background-color: #1e1e1e;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-  }
-
-  /* High-Performance Buttons */
-  .app-button-primary {
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: #ffffff;
-    font-weight: 700;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    border: none;
-  }
-  
-  .app-button-primary:hover {
-    filter: brightness(1.1);
-    transform: scale(1.02);
-  }
-
-  .app-button-primary:active {
-    transform: scale(0.98);
-  }
-
-  .app-button-success {
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    color: #ffffff;
-    font-weight: 700;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
-
-  .app-button-outline {
-    padding: 0.75rem 1.5rem;
-    background: transparent;
-    border: 1.5px solid var(--color-app-border);
-    color: var(--color-app-text);
-    font-weight: 600;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-  }
-  
-  .app-button-outline:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--color-app-accent);
-  }
-
-  /* Scrollbar Styling */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #2a2a2a;
-    border-radius: 10px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #3b82f6;
-  }
+/* Material Design 3 Inspired Panels */
+.app-card, .glass-panel, .hardware-card {
+  background: var(--color-app-card);
+  border: 1px solid var(--color-app-border);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Backward compatibility for utility classes during migration */
-.tech-heading { @apply app-heading; }
-.tech-label { @apply app-label; }
-.tech-input { @apply app-input; }
-.tech-button { @apply app-button-primary; }
-.tech-button-secondary { @apply app-button-outline; }
-.glass-panel { @apply app-card; }
-.hardware-card { @apply app-card; }
+.app-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Professional Typography */
+.app-heading, .tech-heading {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-app-text);
+}
+
+.app-label, .tech-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-app-muted);
+}
+
+/* Native Mobile Inputs */
+.app-input, .tech-input {
+  width: 100%;
+  background-color: #1a1a1a !important;
+  border: 1.5px solid var(--color-app-border) !important;
+  border-radius: 12px !important;
+  padding: 0.75rem 1rem !important;
+  color: #ffffff !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-size: 1rem !important;
+}
+
+.app-input:focus, .tech-input:focus {
+  outline: none !important;
+  border-color: var(--color-app-accent) !important;
+  background-color: #1e1e1e !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* High-Performance Buttons */
+.app-button-primary, .tech-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.app-button-primary:hover, .tech-button:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.app-button-primary:active, .tech-button:active {
+  transform: scale(0.98);
+}
+
+.app-button-success {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.app-button-outline, .tech-button-secondary {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 1.5px solid var(--color-app-border);
+  color: var(--color-app-text);
+  font-weight: 600;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.app-button-outline:hover, .tech-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--color-app-accent);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
 
 @media print {
   body {
