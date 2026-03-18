@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { Plus, Edit, Trash2, Utensils, X, Save } from 'lucide-react';
+import { Plus, Edit, Trash2, Utensils, X, Save, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { DietTemplate } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import DietBuilder from '../builders/DietBuilder';
 
 export default function NutritionTab() {
   const { state, saveDietTemplate, deleteDietTemplate } = useAppContext();
@@ -13,6 +14,7 @@ export default function NutritionTab() {
   const [modal, setModal] = useState<{ type: 'confirm' | 'alert' | null, message: string, onConfirm?: () => void }>({ type: null, message: '' });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Partial<DietTemplate> | null>(null);
 
   const filteredTemplates = state.dietTemplates.filter(t => {
@@ -20,77 +22,87 @@ export default function NutritionTab() {
     return nameStr.toLowerCase().includes(search.toLowerCase());
   });
 
-  const handleOpenModal = (template?: DietTemplate) => {
+  const handleOpenBuilder = (template?: DietTemplate) => {
     if (template) {
       setEditingTemplate({ ...template });
     } else {
       setEditingTemplate({
         id: uuidv4(),
-        name: '',
-        description: '',
+        name: 'NOVA_DIETA_v2',
+        description: 'MASTER_PROMPT_GENERATED',
         meals: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
     }
-    setIsModalOpen(true);
+    setIsBuilderOpen(true);
   };
 
   const handleSave = () => {
-    if (!editingTemplate?.name) {
-      setModal({ type: 'alert', message: 'Nome é obrigatório' });
-      return;
-    }
     saveDietTemplate(editingTemplate as DietTemplate);
-    setIsModalOpen(false);
+    setIsBuilderOpen(false);
     setEditingTemplate(null);
   };
 
   return (
     <div className="flex flex-col gap-6 h-full relative">
       <AnimatePresence>
-        {isModalOpen && editingTemplate && (
+        {isBuilderOpen && editingTemplate && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed inset-0 z-50 bg-[#000000] p-4 md:p-8 overflow-y-auto flex flex-col"
           >
-            <motion.div 
-              initial={{ scale: 0.95, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 20 }}
-              className="glass-panel hardware-card p-6 max-w-2xl w-full flex flex-col gap-6 my-8"
-            >
+            <div className="max-w-6xl mx-auto w-full flex flex-col gap-6">
               <div className="flex justify-between items-center border-b border-[#001F3F] pb-4">
-                <h3 className="tech-heading text-xl text-white">
-                  {state.dietTemplates.some(t => t.id === editingTemplate.id) ? 'CONFIGURAR_DIETA' : 'NOVA_DIETA'}
-                </h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-[#607080] hover:text-white transition-colors">
-                  <X size={24} />
+                <div className="flex items-center gap-4">
+                  <button onClick={() => setIsBuilderOpen(false)} className="tech-button-secondary p-2">
+                    <ArrowLeft size={20} />
+                  </button>
+                  <h3 className="tech-heading text-xl text-white italic tracking-widest uppercase">
+                    MASTER_AI_NUTRITION_v2.0
+                  </h3>
+                </div>
+                <button onClick={handleSave} className="tech-button py-2 px-8">
+                  <Save size={18} className="mr-2" /> FINALIZAR_DIETA
                 </button>
-              </div>
-              
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="tech-label block mb-1">Nome do Modelo *</label>
-                  <input type="text" className="tech-input" value={editingTemplate.name} onChange={e => setEditingTemplate({...editingTemplate, name: e.target.value})} />
-                </div>
-                <div>
-                  <label className="tech-label block mb-1">Descrição</label>
-                  <textarea className="tech-input min-h-[100px]" value={editingTemplate.description} onChange={e => setEditingTemplate({...editingTemplate, description: e.target.value})} />
-                </div>
               </div>
 
-              <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-[#001F3F]">
-                <button onClick={() => setIsModalOpen(false)} className="tech-button-secondary">
-                  Cancelar
-                </button>
-                <button onClick={handleSave} className="tech-button">
-                  <Save size={18} /> Salvar
-                </button>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                <div className="lg:col-span-1 space-y-4">
+                  <div className="glass-panel p-4 border-[#001F3F]">
+                    <label className="tech-label block mb-1">NOME_TECNICO</label>
+                    <input 
+                      type="text" 
+                      className="tech-input text-xs" 
+                      value={editingTemplate.name} 
+                      onChange={e => setEditingTemplate({...editingTemplate, name: e.target.value})} 
+                    />
+                  </div>
+                  <div className="glass-panel p-4 border-[#001F3F]">
+                    <label className="tech-label block mb-1">GOAL_PARAMETER</label>
+                    <select 
+                      className="tech-input text-xs"
+                      value={editingTemplate.description}
+                      onChange={e => setEditingTemplate({...editingTemplate, description: e.target.value})}
+                    >
+                      <option value="Bulking">Bulking</option>
+                      <option value="Cutting">Cutting</option>
+                      <option value="Manutenção">Manutenção</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="lg:col-span-3">
+                  <div className="bg-[#050505] border border-[#001F3F] p-6 rounded-sm shadow-[0_0_40px_rgba(0,31,63,0.3)]">
+                    <DietBuilder 
+                      template={editingTemplate} 
+                      onChange={(updated) => setEditingTemplate(updated)} 
+                    />
+                  </div>
+                </div>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
         {modal.type && (
@@ -142,8 +154,8 @@ export default function NutritionTab() {
           <h2 className="tech-heading text-2xl text-white mb-2 tracking-tighter">ESTRUTURA_NUTRICIONAL</h2>
           <p className="tech-label text-[#004080]">SISTEMA_GESTAO_V2.0</p>
         </div>
-        <button onClick={() => handleOpenModal()} className="tech-button">
-          <Plus size={18} /> CRIAR_MODELO
+        <button onClick={() => handleOpenBuilder()} className="tech-button py-2 px-8">
+          <Plus size={18} className="mr-2" /> CRIAR_DIETA_v2
         </button>
       </div>
 
@@ -176,8 +188,8 @@ export default function NutritionTab() {
             </div>
 
             <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-[#001F3F]">
-              <button onClick={() => handleOpenModal(template)} className="tech-button-secondary text-[10px] py-1 px-3">
-                EDITAR
+              <button onClick={() => handleOpenBuilder(template)} className="tech-button-secondary text-[10px] py-1 px-3">
+                ABRIR_BUILDER
               </button>
               <button 
                 onClick={() => {

@@ -6,6 +6,7 @@ import { Meal, MealItem, DietTemplate } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { motion, Reorder, AnimatePresence } from "framer-motion";
 import clsx from 'clsx';
+import { generateDietFromAI } from '@/utils/ai-handler';
 
 interface DietBuilderProps {
   template: Partial<DietTemplate>;
@@ -148,7 +149,7 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
             </div>
           </div>
           <button onClick={duplicateEntireDay} className="px-3 h-full bg-[#001F3F]/50 border border-[#004080] hover:bg-[#001F3F] text-[#004080] hover:text-white transition-all rounded-sm text-[10px] font-mono uppercase tracking-tighter">
-             [ >> ] DUPLICAR_DIA
+             {"[ >> ]"} DUPLICAR_DIA
           </button>
         </div>
       </div>
@@ -158,7 +159,10 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
           <h4 className="tech-heading text-sm text-white uppercase tracking-widest">Protocolo Nutricional</h4>
           <div className="flex gap-2">
             <button 
-              onClick={() => alert("AI_ENGINE_v2.0: AGUARDANDO_INTEGRACAO_API")}
+              onClick={async () => {
+                const aiData = await generateDietFromAI(template.description || 'Cutting');
+                onChange({ ...template, ...aiData });
+              }}
               className="px-3 py-1.5 bg-[#001F3F]/20 border border-[#004080] text-[#004080] hover:text-white transition-all rounded-sm flex items-center gap-2 text-[10px] font-mono group"
             >
               <div className="w-2 h-2 rounded-full bg-[#004080] group-hover:bg-white animate-pulse" />
@@ -283,7 +287,7 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
                         onClick={() => addFoodItem(meal.id)}
                         className="w-full py-2 border border-dashed border-[#001F3F] rounded-sm text-[#004080] hover:text-white hover:border-[#004080] text-[10px] font-mono uppercase transition-all"
                       >
-                        [ + ] ADICIONAR_ALIMENTO
+                        {"[ + ] ADICIONAR_ALIMENTO"}
                       </button>
                     </div>
                   </motion.div>

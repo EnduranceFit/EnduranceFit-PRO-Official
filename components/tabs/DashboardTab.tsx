@@ -14,7 +14,7 @@ import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
 type CreationType = 'both' | 'workout' | 'diet' | null;
 
 export default function DashboardTab() {
-  const { state, saveAthlete } = useAppContext();
+  const { state, saveAthlete, saveWorkoutTemplate, saveDietTemplate } = useAppContext();
   const [step, setStep] = useState(1);
   const [creationType, setCreationType] = useState<CreationType>(null);
   const [modal, setModal] = useState<{ type: 'alert' | null, message: string }>({ type: null, message: '' });
@@ -114,31 +114,38 @@ export default function DashboardTab() {
     setModal({ type: 'alert', message: 'Perfil salvo com sucesso!' });
   };
 
-  const handleNextStep = () => {
-    if (step === 1) {
-      if (!athlete.name) return setModal({ type: 'alert', message: 'Nome é obrigatório' });
-      if (!creationType) return setModal({ type: 'alert', message: 'Selecione o que deseja montar' });
-      
-      setIsProcessing(true);
-      setTimeout(() => {
-        saveAthlete(athlete as Athlete);
-        if (creationType === 'diet') setStep(3);
-        else setStep(2);
-        setIsProcessing(false);
-      }, 800);
-    } else if (step === 2) {
-      if (creationType === 'both') {
-        setIsProcessing(true);
-        setTimeout(() => {
-          setStep(3);
-          setIsProcessing(false);
-        }, 600);
-      } else {
-        setStep(4);
-      }
-    } else if (step === 3) {
-      setStep(4);
+  const handleFinalizeProtocol = () => {
+    if (!athlete.name) return;
+    
+    const athleteData = { ...athlete } as Athlete;
+    
+    // 1. Save Workout to Global & Athlete if exists
+    if (creationType === 'workout' || creationType === 'both') {
+      const workoutRepo = { 
+        ...customWorkout, 
+        id: uuidv4(), 
+        name: `TREINO_${athlete.name.toUpperCase()}`,
+        description: `GERADO_VIA_DASHBOARD_${new Date().toLocaleDateString()}`
+      } as WorkoutTemplate;
+      saveWorkoutTemplate(workoutRepo);
+      athleteData.workoutTemplateId = workoutRepo.id;
     }
+
+    // 2. Save Diet to Global & Athlete if exists
+    if (creationType === 'diet' || creationType === 'both') {
+      const dietRepo = { 
+        ...customDiet, 
+        id: uuidv4(), 
+        name: `DIETA_${athlete.name.toUpperCase()}`,
+        description: `GERADA_VIA_DASHBOARD_${new Date().toLocaleDateString()}`
+      } as DietTemplate;
+      saveDietTemplate(dietRepo);
+      athleteData.dietTemplateId = dietRepo.id;
+    }
+
+    // 3. Save Final Athlete with vinculated IDs
+    saveAthlete(athleteData);
+    setStep(4);
   };
 
   const handleExportPDF = () => {
@@ -288,44 +295,38 @@ export default function DashboardTab() {
               </div>
 
               <div className="pt-6 border-t border-[#001F3F]">
-                <h4 className="tech-label mb-4 text-[#004080]">GEN_MODULE_TARGET_SELECTOR</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex justify-between items-center mb-6">
+                  <h4 className="tech-label text-[#004080]">GEN_DIRECT_INITIALIZER</h4>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <button 
-                    onClick={() => setCreationType('both')}
-                    className={clsx(
-                      "p-6 border rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
-                      creationType === 'both' ? "border-[#004080] bg-[#001F3F]/20 text-white shadow-[0_0_20px_rgba(0,64,128,0.2)]" : "border-[#001F3F] text-[#607080] hover:border-[#004080] bg-transparent"
-                    )}
+                    onClick={() => {
+                      setCreationType('workout');
+                      if (!athlete.name) setAthlete({...athlete, name: 'NOVO_ATLETA_TREINO'});
+                      setStep(2);
+                    }}
+                    className="p-8 border border-[#001F3F] rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden bg-[#001F3F]/5 hover:border-[#004080] hover:bg-[#001F3F]/10"
                   >
-                    <div className="flex gap-3 group-hover:scale-110 transition-transform relative z-10">
-                      <Dumbbell size={28} className={creationType === 'both' ? "text-white" : "text-[#004080] opacity-50"} />
-                      <div className="w-px h-6 bg-[#001F3F] self-center" />
-                      <Utensils size={28} className={creationType === 'both' ? "text-white" : "text-[#004080] opacity-50"} />
+                    <Dumbbell size={32} className="text-[#004080] group-hover:scale-110 transition-transform" />
+                    <div className="text-center">
+                      <span className="font-mono uppercase tracking-[0.2em] text-xs text-white font-bold block">INICIAR_TREINO_MASTER</span>
+                      <span className="text-[9px] text-[#607080] font-mono mt-1 block">VINCULAR_AUTO_AO_ALUNO</span>
                     </div>
-                    <span className="font-mono uppercase tracking-[0.2em] text-[10px] relative z-10">CORE_SYNC_PROTOCOL</span>
-                    {creationType === 'both' && <div className="absolute inset-0 bg-gradient-to-br from-[#004080]/10 to-transparent animate-pulse" />}
                   </button>
 
                   <button 
-                    onClick={() => setCreationType('workout')}
-                    className={clsx(
-                      "p-6 border rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
-                      creationType === 'workout' ? "border-[#004080] bg-[#001F3F]/20 text-white shadow-[0_0_20px_rgba(0,64,128,0.2)]" : "border-[#001F3F] text-[#607080] hover:border-[#004080]"
-                    )}
+                    onClick={() => {
+                      setCreationType('diet');
+                      if (!athlete.name) setAthlete({...athlete, name: 'NOVO_ATLETA_DIETA'});
+                      setStep(3);
+                    }}
+                    className="p-8 border border-[#001F3F] rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden bg-[#001F3F]/5 hover:border-[#004080] hover:bg-[#001F3F]/10"
                   >
-                    <Dumbbell size={28} className={creationType === 'workout' ? "text-white group-hover:scale-110 transition-transform" : "text-[#004080] opacity-50"} />
-                    <span className="font-mono uppercase tracking-[0.2em] text-[10px]">GEN_TRAINING_ONLY</span>
-                  </button>
-
-                  <button 
-                    onClick={() => setCreationType('diet')}
-                    className={clsx(
-                      "p-6 border rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden",
-                      creationType === 'diet' ? "border-[#004080] bg-[#001F3F]/20 text-white shadow-[0_0_20px_rgba(0,64,128,0.2)]" : "border-[#001F3F] text-[#607080] hover:border-[#004080]"
-                    )}
-                  >
-                    <Utensils size={28} className={creationType === 'diet' ? "text-white group-hover:scale-110 transition-transform" : "text-[#004080] opacity-50"} />
-                    <span className="font-mono uppercase tracking-[0.2em] text-[10px]">GEN_NUTRITION_ONLY</span>
+                    <Utensils size={32} className="text-[#004080] group-hover:scale-110 transition-transform" />
+                    <div className="text-center">
+                      <span className="font-mono uppercase tracking-[0.2em] text-xs text-white font-bold block">INICIAR_DIETA_MASTER</span>
+                      <span className="text-[9px] text-[#607080] font-mono mt-1 block">VINCULAR_AUTO_AO_ALUNO</span>
+                    </div>
                   </button>
                 </div>
               </div>
@@ -334,83 +335,50 @@ export default function DashboardTab() {
                 <button onClick={handleSaveProfileOnly} className="tech-button-secondary">
                   <Save size={18} /> Salvar Apenas Perfil
                 </button>
-                <button onClick={handleNextStep} disabled={!creationType} className="tech-button">
-                  Avançar <ChevronRight size={18} />
-                </button>
               </div>
             </motion.div>
           )}
 
           {step === 2 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <h3 className="tech-heading text-xl text-white border-b border-[#001F3F] pb-2">02. GEN_MODULE_WORKOUT</h3>
-              <p className="text-[#808090] font-mono text-sm">Selecione um modelo ou crie do zero.</p>
-              
-              <div>
-                <label className="tech-label block mb-1">Aplicar Modelo de Treino</label>
-                <select 
-                  className="tech-input mb-4"
-                  value={selectedWorkoutTemplateId}
-                  onChange={e => {
-                    const id = e.target.value;
-                    setSelectedWorkoutTemplateId(id);
-                    if (id) {
-                      const template = state.workoutTemplates.find(t => t.id === id);
-                      if (template) setCustomWorkout({ ...template });
-                    }
-                  }}
-                >
-                  <option value="">-- Selecionar Modelo --</option>
-                  {state.workoutTemplates.map(t => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
-                </select>
+              <div className="flex justify-between items-center border-b border-[#001F3F] pb-2">
+                <h3 className="tech-heading text-xl text-white uppercase italic">02. GEN_PROTOCOL_WORKOUT_v2</h3>
+                <div className="text-[10px] font-mono text-[#004080] animate-pulse">MASTER_PROMPT_ACTIVE</div>
               </div>
-
-              <div className="border border-[#334155] rounded-xl p-4 bg-black/20">
+              
+              <div className="bg-black/40 border border-[#001F3F] p-4 rounded-sm shadow-[inset_0_0_20px_rgba(0,31,63,0.2)]">
                 <WorkoutBuilder template={customWorkout} onChange={setCustomWorkout} />
               </div>
 
-              <div className="flex justify-between pt-6">
-                <button onClick={() => setStep(1)} className="tech-button-secondary">Voltar</button>
-                <button onClick={handleNextStep} className="tech-button">Avançar <ChevronRight size={18} /></button>
+              <div className="flex justify-between pt-6 border-t border-[#001F3F]">
+                <button onClick={() => setStep(1)} className="tech-button-secondary py-2 px-6">
+                  VOLTAR
+                </button>
+                <button onClick={handleFinalizeProtocol} className="tech-button py-2 px-8">
+                  FINALIZAR_&_SALVAR <CheckCircle size={18} className="ml-2" />
+                </button>
               </div>
             </motion.div>
           )}
 
           {step === 3 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <h3 className="tech-heading text-xl text-white border-b border-[#001F3F] pb-2">03. GEN_MODULE_DIET</h3>
-              <p className="text-[#808090] font-mono text-sm">Selecione um modelo ou crie do zero.</p>
-              
-              <div>
-                <label className="tech-label block mb-1">Aplicar Modelo de Dieta</label>
-                <select 
-                  className="tech-input mb-4"
-                  value={selectedDietTemplateId}
-                  onChange={e => {
-                    const id = e.target.value;
-                    setSelectedDietTemplateId(id);
-                    if (id) {
-                      const template = state.dietTemplates.find(t => t.id === id);
-                      if (template) setCustomDiet({ ...template });
-                    }
-                  }}
-                >
-                  <option value="">-- Selecionar Modelo --</option>
-                  {state.dietTemplates.map(t => (
-                    <option key={t.id} value={t.id}>{t.name}</option>
-                  ))}
-                </select>
+              <div className="flex justify-between items-center border-b border-[#001F3F] pb-2">
+                <h3 className="tech-heading text-xl text-white uppercase italic">03. GEN_PROTOCOL_NUTRITION_v2</h3>
+                <div className="text-[10px] font-mono text-[#004080] animate-pulse">MASTER_PROMPT_ACTIVE</div>
               </div>
 
-              <div className="border border-[#001F3F] rounded-sm p-4 bg-black/20">
+              <div className="bg-black/40 border border-[#001F3F] p-4 rounded-sm shadow-[inset_0_0_20px_rgba(0,31,63,0.2)]">
                 <DietBuilder template={customDiet} onChange={setCustomDiet} />
               </div>
 
-              <div className="flex justify-between pt-6">
-                <button onClick={() => setStep(creationType === 'both' ? 2 : 1)} className="tech-button-secondary">Voltar</button>
-                <button onClick={handleNextStep} className="tech-button">Avançar <ChevronRight size={18} /></button>
+              <div className="flex justify-between pt-6 border-t border-[#001F3F]">
+                <button onClick={() => setStep(creationType === 'both' ? 2 : 1)} className="tech-button-secondary py-2 px-6">
+                  VOLTAR
+                </button>
+                <button onClick={handleFinalizeProtocol} className="tech-button py-2 px-8">
+                  FINALIZAR_&_SALVAR <CheckCircle size={18} className="ml-2" />
+                </button>
               </div>
             </motion.div>
           )}

@@ -6,6 +6,7 @@ import { Exercise, WorkoutTemplate } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { motion, Reorder } from "framer-motion";
 import clsx from 'clsx';
+import { generateWorkoutFromAI } from '@/utils/ai-handler';
 
 interface WorkoutBuilderProps {
   template: Partial<WorkoutTemplate>;
@@ -98,12 +99,15 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
               onClick={applyABCStructure} 
               className="px-3 py-1 bg-[#001F3F]/50 border border-[#004080] text-[#607080] hover:text-white hover:bg-[#001F3F] text-[10px] font-mono transition-all rounded-sm uppercase tracking-tighter"
             >
-              [ + ] Aplicar ABC
+              {"[ + ]"} Aplicar ABC
             </button>
           </div>
           <div className="flex gap-2">
             <button 
-              onClick={() => alert("AI_ENGINE_v2.0: AGUARDANDO_INTEGRACAO_API")}
+              onClick={async () => {
+                const aiData = await generateWorkoutFromAI(template.focusMuscle || 'Full Body');
+                onChange({ ...template, ...aiData });
+              }}
               className="px-3 py-1.5 bg-[#001F3F]/20 border border-[#004080] text-[#004080] hover:text-white transition-all rounded-sm flex items-center gap-2 text-[10px] font-mono group"
             >
               <div className="w-2 h-2 rounded-full bg-[#004080] group-hover:bg-white animate-pulse" />
@@ -204,7 +208,7 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
 
         {exercises.length === 0 && (
           <div className="py-12 border border-dashed border-[#001F3F] rounded-sm text-center text-[#607080] font-mono text-xs uppercase tracking-widest">
-            Sem Exercícios. Clique em [+] para iniciar sequência.
+            Sem Exercícios. Clique em {"[+]"} para iniciar sequência.
           </div>
         )}
       </div>

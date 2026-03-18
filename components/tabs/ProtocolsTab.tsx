@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { Plus, Edit, Trash2, Dumbbell, X, Save } from 'lucide-react';
+import { Plus, Edit, Trash2, Dumbbell, X, Save, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { WorkoutTemplate } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import WorkoutBuilder from '../builders/WorkoutBuilder';
 
 export default function ProtocolsTab() {
   const { state, saveWorkoutTemplate, deleteWorkoutTemplate } = useAppContext();
@@ -13,6 +14,7 @@ export default function ProtocolsTab() {
   const [modal, setModal] = useState<{ type: 'confirm' | 'alert' | null, message: string, onConfirm?: () => void }>({ type: null, message: '' });
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Partial<WorkoutTemplate> | null>(null);
 
   const filteredTemplates = state.workoutTemplates.filter(t => {
@@ -20,77 +22,85 @@ export default function ProtocolsTab() {
     return nameStr.toLowerCase().includes(search.toLowerCase());
   });
 
-  const handleOpenModal = (template?: WorkoutTemplate) => {
+  const handleOpenBuilder = (template?: WorkoutTemplate) => {
     if (template) {
       setEditingTemplate({ ...template });
     } else {
       setEditingTemplate({
         id: uuidv4(),
-        name: '',
-        description: '',
+        name: 'NOVO_PROTOCOLO_v2',
+        description: 'MASTER_PROMPT_GENERATED',
         exercises: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
     }
-    setIsModalOpen(true);
+    setIsBuilderOpen(true);
   };
 
   const handleSave = () => {
-    if (!editingTemplate?.name) {
-      setModal({ type: 'alert', message: 'Nome é obrigatório' });
-      return;
-    }
     saveWorkoutTemplate(editingTemplate as WorkoutTemplate);
-    setIsModalOpen(false);
+    setIsBuilderOpen(false);
     setEditingTemplate(null);
   };
 
   return (
     <div className="flex flex-col gap-6 h-full relative">
       <AnimatePresence>
-        {isModalOpen && editingTemplate && (
+        {isBuilderOpen && editingTemplate && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed inset-0 z-50 bg-[#000000] p-4 md:p-8 overflow-y-auto flex flex-col"
           >
-            <motion.div 
-              initial={{ scale: 0.95, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 20 }}
-              className="glass-panel hardware-card p-6 max-w-2xl w-full flex flex-col gap-6 my-8"
-            >
+            <div className="max-w-6xl mx-auto w-full flex flex-col gap-6">
               <div className="flex justify-between items-center border-b border-[#001F3F] pb-4">
-                <h3 className="tech-heading text-xl text-white">
-                  {state.workoutTemplates.some(t => t.id === editingTemplate.id) ? 'CONFIGURAR_PROTOCOLO' : 'NOVO_PROTOCOLO'}
-                </h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-[#607080] hover:text-white transition-colors">
-                  <X size={24} />
+                <div className="flex items-center gap-4">
+                  <button onClick={() => setIsBuilderOpen(false)} className="tech-button-secondary p-2">
+                    <ArrowLeft size={20} />
+                  </button>
+                  <h3 className="tech-heading text-xl text-white italic tracking-widest uppercase">
+                    MASTER_PROMPT_BUILDER_v2.0
+                  </h3>
+                </div>
+                <button onClick={handleSave} className="tech-button py-2 px-8">
+                  <Save size={18} className="mr-2" /> FINALIZAR_PROTOCOLO
                 </button>
-              </div>
-              
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="tech-label block mb-1">Nome do Modelo *</label>
-                  <input type="text" className="tech-input" value={editingTemplate.name} onChange={e => setEditingTemplate({...editingTemplate, name: e.target.value})} />
-                </div>
-                <div>
-                  <label className="tech-label block mb-1">Descrição</label>
-                  <textarea className="tech-input min-h-[100px]" value={editingTemplate.description} onChange={e => setEditingTemplate({...editingTemplate, description: e.target.value})} />
-                </div>
               </div>
 
-              <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-[#001F3F]">
-                <button onClick={() => setIsModalOpen(false)} className="tech-button-secondary">
-                  Cancelar
-                </button>
-                <button onClick={handleSave} className="tech-button">
-                  <Save size={18} /> Salvar
-                </button>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                <div className="lg:col-span-1 space-y-4">
+                  <div className="glass-panel p-4 border-[#001F3F]">
+                    <label className="tech-label block mb-1">NOME_TECNICO</label>
+                    <input 
+                      type="text" 
+                      className="tech-input text-xs" 
+                      value={editingTemplate.name} 
+                      onChange={e => setEditingTemplate({...editingTemplate, name: e.target.value})} 
+                    />
+                  </div>
+                  <div className="glass-panel p-4 border-[#001F3F]">
+                    <label className="tech-label block mb-1">DATA_SEQ_INDEX</label>
+                    <input 
+                      type="text" 
+                      className="tech-input text-xs" 
+                      placeholder="Ex: Seg / Ter / ABC"
+                      value={editingTemplate.description} 
+                      onChange={e => setEditingTemplate({...editingTemplate, description: e.target.value})} 
+                    />
+                  </div>
+                </div>
+                <div className="lg:col-span-3">
+                  <div className="bg-[#050505] border border-[#001F3F] p-6 rounded-sm shadow-[0_0_40px_rgba(0,31,63,0.3)]">
+                    <WorkoutBuilder 
+                      template={editingTemplate} 
+                      onChange={(updated) => setEditingTemplate(updated)} 
+                    />
+                  </div>
+                </div>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
 
@@ -143,8 +153,8 @@ export default function ProtocolsTab() {
           <h2 className="tech-heading text-2xl text-white mb-2 tracking-tighter">PROTOCOLO_TREINO</h2>
           <p className="tech-label text-[#004080]">SISTEMA_GESTAO_V2.0</p>
         </div>
-        <button onClick={() => handleOpenModal()} className="tech-button">
-          <Plus size={18} /> CRIAR_MODELO
+        <button onClick={() => handleOpenBuilder()} className="tech-button py-2 px-8">
+          <Plus size={18} className="mr-2" /> CRIAR_PROTOCOLO_v2
         </button>
       </div>
 
@@ -177,8 +187,8 @@ export default function ProtocolsTab() {
             </div>
 
             <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-[#001F3F]">
-              <button onClick={() => handleOpenModal(template)} className="tech-button-secondary text-[10px] py-1 px-3">
-                EDITAR
+              <button onClick={() => handleOpenBuilder(template)} className="tech-button-secondary text-[10px] py-1 px-3">
+                ABRIR_BUILDER
               </button>
               <button 
                 onClick={() => {
