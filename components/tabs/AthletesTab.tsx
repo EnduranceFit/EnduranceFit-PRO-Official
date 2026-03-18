@@ -5,8 +5,9 @@ import { useAppContext } from '@/context/AppContext';
 import { Search, Edit, MessageCircle, Mail, Plus, X, Save, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from 'clsx';
-import { Athlete } from '@/types';
+import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import WorkoutExporter from '../builders/WorkoutExporter';
 
 export default function AthletesTab() {
   const { state, saveAthlete, deleteAthlete } = useAppContext();
@@ -17,6 +18,7 @@ export default function AthletesTab() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAthlete, setEditingAthlete] = useState<Partial<Athlete> | null>(null);
+  const [printingData, setPrintingData] = useState<{ athlete: Athlete; workout?: WorkoutTemplate; diet?: DietTemplate } | null>(null);
 
   const filteredAthletes = state.athletes.filter(a => {
     const nameStr = a.name || '';
@@ -67,6 +69,24 @@ export default function AthletesTab() {
       message: 'Tem certeza que deseja excluir este atleta?',
       onConfirm: () => deleteAthlete(id)
     });
+  };
+
+  const handlePrint = (athlete: Athlete) => {
+    const workout = state.workoutTemplates.find(t => t.id === athlete.workoutTemplateId);
+    const diet = state.dietTemplates.find(t => t.id === athlete.dietTemplateId);
+    
+    if (!workout && !diet) {
+      setModal({ type: 'alert', message: 'Este atleta não possui treino ou dieta vinculados para exportação.' });
+      return;
+    }
+
+    setPrintingData({ athlete, workout, diet });
+    
+    // Give react time to render the hidden component before printing
+    setTimeout(() => {
+      window.print();
+      setPrintingData(null);
+    }, 100);
   };
 
   return (
@@ -286,10 +306,27 @@ export default function AthletesTab() {
                 <button onClick={() => handleOpenModal(athlete)} className="tech-button-secondary text-[10px] py-1 px-3">
                   EDITAR
                 </button>
+                <button 
+                  onClick={() => handlePrint(athlete)} 
+                  className="bg-[#004080] text-white text-[10px] font-mono py-1 px-3 rounded-sm hover:bg-[#0059b3] transition-colors"
+                >
+                  EXPORTAR_PDF
+                </button>
               </div>
             </div>
           </motion.div>
         ))}
+        
+        {/* Printable Area (Hidden) */}
+        {printingData && (
+          <div className="hidden print:block fixed inset-0 z-[9999] bg-white text-black p-8">
+            <WorkoutExporter 
+              athlete={printingData.athlete}
+              workout={printingData.workout}
+              diet={printingData.diet}
+            />
+          </div>
+        )}
         
         {filteredAthletes.length === 0 && (
           <div className="col-span-full py-20 flex flex-col items-center justify-center border border-dashed border-[#001F3F] rounded-sm bg-[#050505]/50">

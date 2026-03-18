@@ -8,6 +8,7 @@ import { Activity, Dumbbell, Utensils, Save, CheckCircle, X, ChevronRight } from
 import WorkoutBuilder from '../builders/WorkoutBuilder';
 import DietBuilder from '../builders/DietBuilder';
 import ShoppingListExporter from '../builders/ShoppingListExporter';
+import WorkoutExporter from '../builders/WorkoutExporter';
 import clsx from 'clsx';
 import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
 
@@ -115,7 +116,7 @@ export default function DashboardTab() {
   };
 
   const handleFinalizeProtocol = () => {
-    if (!athlete.name) return;
+    if (!athlete.name) return setModal({ type: 'alert', message: 'Nome do atleta é obrigatório para finalizar o protocolo.' });
     
     const athleteData = { ...athlete } as Athlete;
     
@@ -302,7 +303,6 @@ export default function DashboardTab() {
                   <button 
                     onClick={() => {
                       setCreationType('workout');
-                      if (!athlete.name) setAthlete({...athlete, name: 'NOVO_ATLETA_TREINO'});
                       setStep(2);
                     }}
                     className="p-8 border border-[#001F3F] rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden bg-[#001F3F]/5 hover:border-[#004080] hover:bg-[#001F3F]/10"
@@ -317,7 +317,6 @@ export default function DashboardTab() {
                   <button 
                     onClick={() => {
                       setCreationType('diet');
-                      if (!athlete.name) setAthlete({...athlete, name: 'NOVO_ATLETA_DIETA'});
                       setStep(3);
                     }}
                     className="p-8 border border-[#001F3F] rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden bg-[#001F3F]/5 hover:border-[#004080] hover:bg-[#001F3F]/10"
@@ -478,73 +477,11 @@ export default function DashboardTab() {
 
       {/* Printable Area */}
       <div className="hidden print:block w-full bg-white text-black p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="border-b-2 border-black pb-4 mb-8 flex justify-between items-end">
-            <div>
-              <h1 className="text-4xl font-black uppercase tracking-tighter">EnduranceFit Pro</h1>
-              <p className="text-sm text-gray-500 uppercase tracking-widest mt-1">Protocolo Oficial</p>
-            </div>
-            <div className="text-right">
-              <p className="font-bold text-xl">{athlete.name}</p>
-              <p className="text-sm text-gray-500">{new Date().toLocaleDateString('pt-BR')}</p>
-            </div>
-          </div>
-          
-          <div className="mb-10 bg-gray-50 p-6 rounded-lg border border-gray-200">
-            <h2 className="text-lg font-bold uppercase tracking-wider mb-4 text-gray-800 border-b pb-2">Dados do Atleta</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8 text-sm">
-              <div><span className="block text-gray-500 text-xs uppercase">Idade</span><strong className="text-lg">{athlete.age} anos</strong></div>
-              <div><span className="block text-gray-500 text-xs uppercase">Peso</span><strong className="text-lg">{athlete.weight} kg</strong></div>
-              <div><span className="block text-gray-500 text-xs uppercase">Altura</span><strong className="text-lg">{athlete.height} cm</strong></div>
-              <div><span className="block text-gray-500 text-xs uppercase">Objetivo</span><strong className="text-lg capitalize">{athlete.goal === 'hypertrophy' ? 'Hipertrofia' : athlete.goal === 'weight_loss' ? 'Emagrecimento' : athlete.goal === 'maintenance' ? 'Manutenção' : 'Performance'}</strong></div>
-              <div><span className="block text-gray-500 text-xs uppercase">IMC</span><strong className="text-lg">{imc.toFixed(1)}</strong> <span className="text-xs">({imcClass})</span></div>
-              <div><span className="block text-gray-500 text-xs uppercase">TMB</span><strong className="text-lg">{Math.round(tmb)} kcal</strong></div>
-              <div><span className="block text-gray-500 text-xs uppercase">GET</span><strong className="text-lg">{Math.round(get)} kcal</strong></div>
-            </div>
-          </div>
-
-          {selectedWorkoutTemplateId && (
-            <div className="mb-10">
-              <h2 className="text-xl font-bold uppercase tracking-wider mb-4 border-b-2 border-black pb-2 flex items-center gap-2">
-                <Dumbbell size={20} /> Treino: {state.workoutTemplates.find(t => t.id === selectedWorkoutTemplateId)?.name}
-              </h2>
-              <p className="text-sm mb-6 text-gray-700">{state.workoutTemplates.find(t => t.id === selectedWorkoutTemplateId)?.description}</p>
-              
-              <div className="bg-gray-50 p-8 rounded-lg border border-gray-200">
-                {customWorkout.exercises?.map(ex => (
-                  <div key={ex.id} className="mb-4 border-l-2 border-gray-300 pl-4 py-1">
-                    <p className="font-bold">{ex.name} <span className="text-gray-500 font-normal">({ex.muscleGroup})</span></p>
-                    <p className="text-sm">{ex.sets}x {ex.reps} • Descanso: {ex.restTime}s {ex.advancedTechnique && `• Técnica: ${ex.advancedTechnique}`}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {selectedDietTemplateId && (
-            <div className="mb-10">
-              <h2 className="text-xl font-bold uppercase tracking-wider mb-4 border-b-2 border-black pb-2 flex items-center gap-2">
-                <Utensils size={20} /> Dieta: {state.dietTemplates.find(t => t.id === selectedDietTemplateId)?.name}
-              </h2>
-              <p className="text-sm mb-6 text-gray-700">{state.dietTemplates.find(t => t.id === selectedDietTemplateId)?.description}</p>
-              
-              <div className="bg-gray-50 p-8 rounded-lg border border-gray-200">
-                {customDiet.meals?.map(meal => (
-                  <div key={meal.id} className="mb-6 last:mb-0">
-                    <p className="font-bold border-b border-gray-200 mb-2 py-1">{meal.name} <span className="text-gray-500 font-normal">({meal.time})</span></p>
-                    {meal.items.map(item => (
-                      <p key={item.id} className="text-sm ml-4">• {item.name}: {item.amount}g</p>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          <div className="mt-16 pt-8 border-t border-gray-300 text-center text-xs text-gray-400">
-            <p>Gerado por EnduranceFit Pro System</p>
-          </div>
-        </div>
+        <WorkoutExporter 
+          athlete={athlete}
+          workout={creationType === 'workout' || creationType === 'both' ? customWorkout : undefined}
+          diet={creationType === 'diet' || creationType === 'both' ? customDiet : undefined}
+        />
       </div>
     </div>
   );

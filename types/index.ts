@@ -14,6 +14,8 @@ export interface Athlete {
   goal: string;
   status: Status;
   category: Category;
+  workoutTemplateId?: string;
+  dietTemplateId?: string;
   createdAt: string;
   updatedAt: string;
 }
