@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { Search, Edit, MessageCircle, Mail, Plus, X, Save, Trash2 } from 'lucide-react';
+import { Search, Edit, MessageCircle, Mail, Plus, X, Save, Trash2, UserPlus, FileText, ChevronRight, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from 'clsx';
 import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
