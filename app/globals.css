@@ -1,197 +1,127 @@
 @import "tailwindcss";
 
 @theme {
-  --color-tech-bg: #000000;
-  --color-tech-panel: #050505;
-  --color-tech-border: #001F3F;
-  --color-tech-accent: #004080;
-  --color-tech-accent-hover: #0059b3;
-  --color-tech-navy: #001F3F;
-  --color-tech-text: #ffffff;
-  --color-tech-muted: #607080;
+  --color-app-bg: #121212;
+  --color-app-card: #1e1e1e;
+  --color-app-border: #2a2a2a;
+  --color-app-accent: #3b82f6; /* Azul Elétrico */
+  --color-app-success: #22c55e; /* Verde Energia */
+  --color-app-text: #f8fafc;
+  --color-app-muted: #94a3b8;
 }
 
 @layer base {
   body {
-    background-color: var(--color-tech-bg);
-    color: var(--color-tech-text);
+    background-color: var(--color-app-bg);
+    color: var(--color-app-text);
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
-    font-family: var(--font-sans);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
-  /* Dynamic Background: Radial gradients + Carbon Fiber + Scanline */
-  .bg-tech-pattern {
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 100% 100%, rgba(0, 100, 255, 0.05) 0%, transparent 50%),
-      repeating-linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.01) 0px,
-        rgba(255, 255, 255, 0.01) 2px,
-        transparent 2px,
-        transparent 4px
-      );
-    background-size: 100% 100%, 100% 100%, 20px 20px;
+  .bg-app-pattern {
+    background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.03) 0%, transparent 40%);
     background-attachment: fixed;
-    position: relative;
-  }
-
-  .bg-tech-pattern::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: linear-gradient(
-      to bottom,
-      rgba(255,255,255,0),
-      rgba(255,255,255,0) 50%,
-      rgba(0,0,0,0.1) 50%,
-      rgba(0,0,0,0.1)
-    );
-    background-size: 100% 4px;
-    pointer-events: none;
-    z-index: 50;
-    opacity: 0.3;
   }
 }
 
 @layer components {
-  .glass-panel {
-    background: rgba(18, 18, 22, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  /* Material Design 3 Inspired Panels */
+  .app-card {
+    background: var(--color-app-card);
+    border: 1px solid var(--color-app-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .hardware-card {
-    background-color: var(--color-tech-panel);
-    border: 1px solid var(--color-tech-border);
-    border-radius: 4px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .hardware-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--color-tech-accent), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  .app-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
   }
 
-  .hardware-card:hover::before {
-    opacity: 1;
+  /* Professional Typography */
+  .app-heading {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--color-app-text);
   }
 
-  .tech-heading {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .tech-label {
-    font-family: var(--font-mono);
+  .app-label {
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--color-tech-muted);
+    color: var(--color-app-muted);
   }
 
-  .tech-input {
+  /* Native Mobile Inputs */
+  .app-input {
     width: 100%;
-    background-color: #050505;
-    border: 1px solid #001F3F;
-    border-radius: 2px;
-    padding: 0.5rem 0.75rem;
+    background-color: #1a1a1a;
+    border: 1.5px solid var(--color-app-border);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
     color: #ffffff;
-    transition: all 0.2s ease;
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1rem;
   }
   
-  .tech-input:focus {
+  .app-input:focus {
     outline: none;
-    border-color: #004080;
-    box-shadow: 0 0 0 1px #004080;
+    border-color: var(--color-app-accent);
+    background-color: #1e1e1e;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
   }
 
-  .tech-button {
-    padding: 0.5rem 1rem;
-    background-color: #001F3F;
-    border: 1px solid #004080;
+  /* High-Performance Buttons */
+  .app-button-primary {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: #ffffff;
-    font-family: var(--font-mono);
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.875rem;
-    border-radius: 2px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     transition: all 0.2s ease;
-    box-shadow: 0 0 15px rgba(0, 31, 63, 0.3);
     cursor: pointer;
+    border: none;
   }
   
-  .tech-button:hover {
-    background-color: #003366;
+  .app-button-primary:hover {
+    filter: brightness(1.1);
+    transform: scale(1.02);
   }
-  
-  .tech-button:active {
+
+  .app-button-primary:active {
     transform: scale(0.98);
   }
-  
-  .tech-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  .tech-button-secondary {
-    padding: 0.5rem 1rem;
-    background-color: transparent;
-    border: 1px solid #001F3F;
-    color: #607080;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.875rem;
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-  }
-  
-  .tech-button-secondary:hover {
-    border-color: #003366;
+
+  .app-button-success {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     color: #ffffff;
-  }
-  
-  .tech-button-danger {
-    padding: 0.5rem 1rem;
-    background-color: transparent;
-    border: 1px solid #ef4444;
-    color: #ef4444;
-    font-family: var(--font-mono);
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.875rem;
-    border-radius: 2px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .app-button-outline {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 1.5px solid var(--color-app-border);
+    color: var(--color-app-text);
+    font-weight: 600;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -199,46 +129,51 @@
     transition: all 0.2s ease;
   }
   
-  .tech-button-danger:hover {
-    background-color: rgba(239, 68, 68, 0.1);
+  .app-button-outline:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--color-app-accent);
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3b82f6;
   }
 }
+
+/* Backward compatibility for utility classes during migration */
+.tech-heading { @apply app-heading; }
+.tech-label { @apply app-label; }
+.tech-input { @apply app-input; }
+.tech-button { @apply app-button-primary; }
+.tech-button-secondary { @apply app-button-outline; }
+.glass-panel { @apply app-card; }
+.hardware-card { @apply app-card; }
 
 @media print {
   body {
     background: white !important;
     color: black !important;
   }
-  .bg-tech-pattern {
+  .app-card {
     background: white !important;
-  }
-  .bg-tech-pattern::after {
-    display: none !important;
-  }
-  .glass-panel, .hardware-card {
-    background: white !important;
-    border: 1px solid #ccc !important;
+    border: 1px solid #eee !important;
     box-shadow: none !important;
     color: black !important;
   }
-  .tech-heading {
+  .app-heading, .app-label, .app-input {
     color: black !important;
   }
-  .tech-label {
-    color: #333 !important;
-  }
-  .tech-input {
-    background: white !important;
-    border: 1px solid #ccc !important;
-    color: black !important;
-  }
-  /* Hide sidebar and navigation */
   aside, nav, header {
     display: none !important;
-  }
-  main {
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: visible !important;
   }
 }

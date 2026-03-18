@@ -61,20 +61,20 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="tech-label block mb-1">FOCO_MUSCULAR (DIA)</label>
+        <div className="space-y-2">
+          <label className="app-label">Nome do Treino / Foco</label>
           <input 
             type="text" 
-            placeholder="Ex: Peito e Tríceps" 
-            className="tech-input" 
+            placeholder="Ex: Peito e Tríceps - Hipertrofia" 
+            className="app-input" 
             value={template.focusMuscle || ''} 
             onChange={e => onChange({ ...template, focusMuscle: e.target.value })} 
           />
         </div>
-        <div>
-          <label className="tech-label block mb-1">DIA_DA_SEMANA</label>
+        <div className="space-y-2">
+          <label className="app-label">Período / Dia</label>
           <select 
-            className="tech-input" 
+            className="app-input" 
             value={template.dayOfWeek || ''} 
             onChange={e => onChange({ ...template, dayOfWeek: e.target.value })}
           >
@@ -91,30 +91,30 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
       </div>
 
       <div className="space-y-4">
-        <div className="flex justify-between items-center border-b border-[#001F3F] pb-4">
-          <div className="flex gap-3 items-center">
-            <h4 className="tech-heading text-sm text-white uppercase tracking-widest">Protocolo de Treino</h4>
-            <div className="h-4 w-px bg-[#001F3F]" />
+        <div className="flex justify-between items-center border-b border-app-border pb-6">
+          <div className="flex gap-4 items-center">
+            <h4 className="app-heading text-lg">Série de Exercícios</h4>
+            <div className="h-6 w-px bg-app-border" />
             <button 
               onClick={applyABCStructure} 
-              className="px-3 py-1 bg-[#001F3F]/50 border border-[#004080] text-[#607080] hover:text-white hover:bg-[#001F3F] text-[10px] font-mono transition-all rounded-sm uppercase tracking-tighter"
+              className="px-4 py-1.5 bg-app-accent/10 border border-app-accent/20 text-app-accent hover:bg-app-accent hover:text-white text-[10px] font-bold transition-all rounded-xl uppercase tracking-wider"
             >
-              {"[ + ]"} Aplicar ABC
+              Aplicar ABC Master
             </button>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button 
               onClick={async () => {
                 const aiData = await generateWorkoutFromAI(template.focusMuscle || 'Full Body');
                 onChange({ ...template, ...aiData });
               }}
-              className="px-3 py-1.5 bg-[#001F3F]/20 border border-[#004080] text-[#004080] hover:text-white transition-all rounded-sm flex items-center gap-2 text-[10px] font-mono group"
+              className="px-4 py-2 bg-app-card border border-app-border text-app-muted hover:border-app-accent hover:text-app-accent transition-all rounded-xl flex items-center gap-2 text-[10px] font-bold group"
             >
-              <div className="w-2 h-2 rounded-full bg-[#004080] group-hover:bg-white animate-pulse" />
-              GERAR_IA
+              <div className="w-2.5 h-2.5 rounded-full bg-app-accent/50 group-hover:bg-app-accent animate-pulse" />
+              GERAR COM IA
             </button>
-            <button onClick={addExercise} className="tech-button text-xs py-1.5 px-4 h-9">
-              <Plus size={16} /> Novo Exercício
+            <button onClick={addExercise} className="app-button-primary !py-2 !px-6 !text-xs">
+              <Plus size={18} className="mr-1" /> Adicionar Exercício
             </button>
           </div>
         </div>
@@ -124,81 +124,84 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
             <Reorder.Item 
               key={ex.id} 
               value={ex}
-              className="bg-[#050505] border border-[#001F3F] p-4 relative group hover:border-[#004080] transition-colors rounded-sm"
+              className="app-card !p-6 relative group hover:border-app-accent/30 transition-all border-2 border-transparent"
             >
-              <div className="flex gap-4">
-                <div className="flex flex-col items-center gap-2 text-[#607080] cursor-grab active:cursor-grabbing pt-1">
-                  <GripVertical size={18} />
-                  <span className="font-mono text-[9px] opacity-50 tracking-tighter">0{ex.order + 1}</span>
+              <div className="flex gap-6">
+                <div className="flex flex-col items-center gap-3 text-app-muted cursor-grab active:cursor-grabbing pt-1">
+                  <GripVertical size={20} className="hover:text-app-accent transition-colors" />
+                  <span className="font-bold text-[10px] opacity-40">#{ex.order + 1}</span>
                 </div>
                 
-                <div className="flex-1 space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div className="lg:col-span-2">
-                      <label className="text-[10px] text-[#004080] uppercase block mb-1">NOME_DO_EXERCICIO</label>
+                <div className="flex-1 space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="lg:col-span-2 space-y-1">
+                      <label className="app-label text-[9px]">Nome do Exercício</label>
                       <input 
-                        className="tech-input text-white font-bold" 
+                        className="app-input font-bold" 
+                        placeholder="Ex: Supino Reto"
                         value={ex.name} 
                         onChange={e => updateExercise(ex.id, { name: e.target.value })} 
                       />
                     </div>
-                    <div>
-                      <label className="text-[10px] text-[#004080] uppercase block mb-1">FOCO_MUSCULAR</label>
+                    <div className="space-y-1">
+                      <label className="app-label text-[9px]">Grupamento</label>
                       <input 
-                        className="tech-input text-xs" 
+                        className="app-input text-sm" 
+                        placeholder="Peitorais"
                         value={ex.muscleGroup} 
                         onChange={e => updateExercise(ex.id, { muscleGroup: e.target.value })} 
                       />
                     </div>
-                    <div>
-                      <label className="text-[10px] text-[#004080] uppercase block mb-1">SETS_REPS</label>
+                    <div className="space-y-1">
+                      <label className="app-label text-[9px]">Séries x Reps</label>
                       <input 
-                        className="tech-input text-center" 
+                        className="app-input text-center font-bold" 
+                        placeholder="3x 12-15"
                         value={ex.reps} 
                         onChange={e => updateExercise(ex.id, { reps: e.target.value })} 
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                      <label className="text-[10px] text-[#004080] uppercase block mb-1">TECNICA_ADV</label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <label className="app-label text-[9px]">Método Avançado</label>
                       <input 
-                        className="tech-input text-xs" 
-                        placeholder="Drop-set, Rest-pause..."
+                        className="app-input text-xs" 
+                        placeholder="Drop-set, Bi-set..."
                         value={ex.advancedTechnique || ''} 
                         onChange={e => updateExercise(ex.id, { advancedTechnique: e.target.value })} 
                       />
                     </div>
-                    <div>
-                      <label className="text-[10px] text-[#004080] uppercase block mb-1">DESCANSO (seg)</label>
+                    <div className="space-y-1">
+                      <label className="app-label text-[9px]">Descanso (seg)</label>
                       <input 
-                        className="tech-input text-center" 
+                        className="app-input text-center font-bold" 
                         value={ex.restTime || ''} 
                         onChange={e => updateExercise(ex.id, { restTime: Number(e.target.value) })} 
                       />
                     </div>
-                    <div>
-                      <label className="text-[10px] text-[#004080] uppercase block mb-1">URL_YOUTUBE</label>
+                    <div className="space-y-1">
+                      <label className="app-label text-[9px]">Link de Vídeo (YouTube)</label>
                       <div className="relative">
                         <input 
-                          className="tech-input pl-8 text-xs font-mono" 
-                          placeholder="https://..."
+                          className="app-input pl-10 text-xs" 
+                          placeholder="https://youtube.com/..."
                           value={ex.videoUrl || ''} 
                           onChange={e => updateExercise(ex.id, { videoUrl: e.target.value })} 
                         />
-                        <Video size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#004080]" />
+                        <Video size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-accent" />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1 border-l border-[#001F3F] pl-2">
-                  <button onClick={() => cloneExercise(ex)} className="p-2 text-[#607080] hover:text-white transition-colors" title="Duplicar">
-                    <Copy size={16} />
+                <div className="flex flex-col gap-2 border-l border-app-border pl-4">
+                  <button onClick={() => cloneExercise(ex)} className="p-3 bg-app-accent/5 text-app-muted hover:text-app-accent hover:bg-app-accent/10 rounded-xl transition-all shadow-sm" title="Duplicar">
+                    <Copy size={18} />
                   </button>
-                  <button onClick={() => removeExercise(ex.id)} className="p-2 text-red-900/50 hover:text-red-500 transition-colors" title="Remover">
-                    <Trash2 size={16} />
+                  <button onClick={() => removeExercise(ex.id)} className="p-3 bg-red-500/5 text-red-500/30 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all shadow-sm" title="Remover">
+                    <Trash2 size={18} />
                   </button>
                 </div>
               </div>
@@ -207,8 +210,12 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
         </Reorder.Group>
 
         {exercises.length === 0 && (
-          <div className="py-12 border border-dashed border-[#001F3F] rounded-sm text-center text-[#607080] font-mono text-xs uppercase tracking-widest">
-            Sem Exercícios. Clique em {"[+]"} para iniciar sequência.
+          <div className="py-16 border-2 border-dashed border-app-border rounded-2xl text-center flex flex-col items-center justify-center gap-4 bg-app-card/30">
+            <div className="p-4 bg-app-accent/5 rounded-full">
+              <Plus size={32} className="text-app-accent opacity-30" />
+            </div>
+            <p className="text-app-muted text-sm font-medium">Nenhum exercício pautado ainda.</p>
+            <button onClick={addExercise} className="app-button-outline !py-2">Iniciar Sequência</button>
           </div>
         )}
       </div>

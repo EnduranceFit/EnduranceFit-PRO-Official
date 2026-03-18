@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Plus, Trash2, Copy, Clock, Scale, ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
 import { Meal, MealItem, DietTemplate } from '@/types';
+import { Utensils } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { motion, Reorder, AnimatePresence } from "framer-motion";
 import clsx from 'clsx';
@@ -105,20 +106,20 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
   };
 
   const duplicateEntireDay = () => {
-    alert("SYS_SYNC: Dieta completa replicada para o cronograma semanal.");
+    alert("Cópia de segurança: Dieta completa replicada para o cronograma semanal.");
   };
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="tech-label block mb-1">PROT_DIA_REFERENCIA</label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label className="app-label text-xs">Período de Referência</label>
           <select 
-            className="tech-input" 
+            className="app-input" 
             value={template.dayOfWeek || ''} 
             onChange={e => onChange({ ...template, dayOfWeek: e.target.value })}
           >
-            <option value="">Selecione...</option>
+            <option value="">Selecione o dia...</option>
             <option value="Segunda">Segunda-feira</option>
             <option value="Terça">Terça-feira</option>
             <option value="Quarta">Quarta-feira</option>
@@ -129,47 +130,47 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
             <option value="Todos">Global (Todos os Dias)</option>
           </select>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="grid grid-cols-4 gap-2 flex-1">
-            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[0_0_10px_rgba(0,31,63,0.1)]">
-              <span className="text-[8px] text-[#607080] block font-mono">KCAL</span>
-              <span className="font-mono text-xs text-white">{Math.round(totals.calories)}</span>
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-4 gap-3 flex-1">
+            <div className="app-card !p-3 bg-app-card/50 text-center border-app-border">
+              <span className="text-[10px] text-app-muted block font-bold">KCAL</span>
+              <span className="font-black text-sm text-white">{Math.round(totals.calories)}</span>
             </div>
-            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[0_0_10px_rgba(0,31,63,0.1)]">
-              <span className="text-[8px] text-[#004080] block font-mono">PROT</span>
-              <span className="font-mono text-xs text-white">{Math.round(totals.protein)}g</span>
+            <div className="app-card !p-3 bg-app-accent/5 text-center border-app-accent/20">
+              <span className="text-[10px] text-app-accent block font-bold">PROT</span>
+              <span className="font-black text-sm text-white">{Math.round(totals.protein)}g</span>
             </div>
-            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[0_0_10px_rgba(0,31,63,0.1)]">
-              <span className="text-[8px] text-yellow-900 block font-mono">CARB</span>
-              <span className="font-mono text-xs text-white">{Math.round(totals.carbs)}g</span>
+            <div className="app-card !p-3 bg-yellow-500/5 text-center border-yellow-500/20">
+              <span className="text-[10px] text-yellow-500 block font-bold">CARB</span>
+              <span className="font-black text-sm text-white">{Math.round(totals.carbs)}g</span>
             </div>
-            <div className="bg-[#050505] p-2 rounded-sm border border-[#001F3F] text-center shadow-[0_0_10px_rgba(0,31,63,0.1)]">
-              <span className="text-[8px] text-red-900 block font-mono">FAT</span>
-              <span className="font-mono text-xs text-white">{Math.round(totals.fat)}g</span>
+            <div className="app-card !p-3 bg-red-500/5 text-center border-red-500/20">
+              <span className="text-[10px] text-red-500 block font-bold">GOR</span>
+              <span className="font-black text-sm text-white">{Math.round(totals.fat)}g</span>
             </div>
           </div>
-          <button onClick={duplicateEntireDay} className="px-3 h-full bg-[#001F3F]/50 border border-[#004080] hover:bg-[#001F3F] text-[#004080] hover:text-white transition-all rounded-sm text-[10px] font-mono uppercase tracking-tighter">
-             {"[ >> ]"} DUPLICAR_DIA
+          <button onClick={duplicateEntireDay} className="w-full py-2 bg-app-card border border-app-border hover:border-app-accent text-app-muted hover:text-app-accent transition-all rounded-xl text-[10px] font-bold uppercase tracking-wider">
+             Replicar para Semana Inteira
           </button>
         </div>
       </div>
 
       <div className="space-y-4">
-        <div className="flex justify-between items-center border-b border-[#001F3F] pb-4">
-          <h4 className="tech-heading text-sm text-white uppercase tracking-widest">Protocolo Nutricional</h4>
-          <div className="flex gap-2">
+        <div className="flex justify-between items-center border-b border-app-border pb-6">
+          <h4 className="app-heading text-lg">Protocolo Nutricional</h4>
+          <div className="flex gap-3">
             <button 
               onClick={async () => {
                 const aiData = await generateDietFromAI(template.description || 'Cutting');
                 onChange({ ...template, ...aiData });
               }}
-              className="px-3 py-1.5 bg-[#001F3F]/20 border border-[#004080] text-[#004080] hover:text-white transition-all rounded-sm flex items-center gap-2 text-[10px] font-mono group"
+              className="px-4 py-2 bg-app-card border border-app-border text-app-muted hover:border-app-accent hover:text-app-accent transition-all rounded-xl flex items-center gap-2 text-[10px] font-bold group"
             >
-              <div className="w-2 h-2 rounded-full bg-[#004080] group-hover:bg-white animate-pulse" />
-              GERAR_IA
+              <div className="w-2.5 h-2.5 rounded-full bg-app-accent/50 group-hover:bg-app-accent animate-pulse" />
+              GERAR DIETA COM IA
             </button>
-            <button onClick={addMeal} className="tech-button text-xs py-1.5 px-4 h-9">
-              <Plus size={16} /> Nova Refeição
+            <button onClick={addMeal} className="app-button-primary !py-2 !px-6 !text-xs">
+              <Plus size={18} className="mr-1" /> Nova Refeição
             </button>
           </div>
         </div>
@@ -179,52 +180,52 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
             <Reorder.Item 
               key={meal.id} 
               value={meal}
-              className="bg-[#050505] border border-[#001F3F] rounded-sm hover:border-[#004080] transition-colors"
+              className="app-card !p-0 overflow-hidden hover:border-app-accent/30 transition-all border-2 border-transparent"
             >
               <div className={clsx(
-                "p-4 flex items-center gap-4",
-                expandedMealId === meal.id ? "bg-[#001F3F]/10" : ""
+                "p-5 flex items-center gap-6",
+                expandedMealId === meal.id ? "bg-app-accent/5" : "bg-app-card"
               )}>
-                <div className="cursor-grab active:cursor-grabbing text-[#607080] pt-1">
-                  <GripVertical size={18} />
+                <div className="cursor-grab active:cursor-grabbing text-app-muted">
+                  <GripVertical size={20} className="hover:text-app-accent transition-colors" />
                 </div>
                 
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-center">
                   <input 
-                    className="tech-input font-bold text-white uppercase tracking-tight bg-transparent border-none p-0 focus:ring-0" 
+                    className="app-input font-black text-lg text-white uppercase tracking-tight bg-transparent border-none p-0 focus:ring-0 w-full" 
                     value={meal.name} 
                     onChange={e => updateMeal(meal.id, { name: e.target.value })} 
                   />
-                  <div className="flex items-center gap-2">
-                    <Clock size={16} className="text-[#004080]" />
+                  <div className="flex items-center gap-3">
+                    <Clock size={18} className="text-app-accent" />
                     <input 
                       type="time" 
-                      className="tech-input text-xs w-24" 
+                      className="app-input text-sm w-32 font-bold" 
                       value={meal.time || ''} 
                       onChange={e => updateMeal(meal.id, { time: e.target.value })} 
                     />
                   </div>
-                  <div className="flex items-center gap-4 text-[10px] font-mono text-[#607080]">
-                    <span className="hidden lg:inline">{meal.items.length} ITENS_SYNC</span>
-                    <span className="bg-[#001F3F]/30 px-2 py-0.5 rounded-sm border border-[#001F3F] text-white">
+                  <div className="flex items-center gap-4 text-[10px] font-bold text-app-muted">
+                    <span className="hidden lg:inline uppercase tracking-widest">{meal.items.length} ITENS</span>
+                    <span className="bg-app-accent/10 px-3 py-1.5 rounded-xl text-app-accent border border-app-accent/20">
                       {Math.round(meal.items.reduce((sum, i) => sum + i.calories, 0))} KCAL
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 border-l border-[#001F3F] pl-2">
-                  <button onClick={() => applyMealToDays(meal)} className="p-2 text-[#607080] hover:text-white" title="Replicar">
-                    <Scale size={16} />
+                <div className="flex items-center gap-2 border-l border-app-border pl-4">
+                  <button onClick={() => applyMealToDays(meal)} className="p-3 bg-app-accent/5 text-app-muted hover:text-app-accent hover:bg-app-accent/10 rounded-xl transition-all shadow-sm" title="Replicar">
+                    <Scale size={18} />
                   </button>
-                  <button onClick={() => cloneMeal(meal)} className="p-2 text-[#607080] hover:text-white" title="Duplicar">
-                    <Copy size={16} />
+                  <button onClick={() => cloneMeal(meal)} className="p-3 bg-app-accent/5 text-app-muted hover:text-app-accent hover:bg-app-accent/10 rounded-xl transition-all shadow-sm" title="Duplicar">
+                    <Copy size={18} />
                   </button>
-                  <button onClick={() => removeMeal(meal.id)} className="p-2 text-red-900/50 hover:text-red-500" title="Remover">
-                    <Trash2 size={16} />
+                  <button onClick={() => removeMeal(meal.id)} className="p-3 bg-red-500/5 text-red-500/30 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all shadow-sm" title="Remover">
+                    <Trash2 size={18} />
                   </button>
                   <button 
                     onClick={() => setExpandedMealId(expandedMealId === meal.id ? null : meal.id)}
-                    className="p-2 text-[#004080] hover:scale-110 transition-transform"
+                    className="p-3 bg-app-card border border-app-border text-app-accent hover:scale-110 transition-all rounded-xl"
                   >
                     {expandedMealId === meal.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                   </button>
@@ -237,47 +238,47 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="border-t border-[#001F3F] p-4 bg-black/40"
+                    className="border-t border-app-border p-6 bg-app-card/50"
                   >
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {meal.items.map(item => (
-                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end border-b border-[#001F3F]/30 pb-3 last:border-0 last:pb-0">
-                          <div className="md:col-span-4">
-                            <label className="text-[9px] text-[#004080] uppercase block mb-1">ALIMENTO</label>
+                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end border-b border-app-border pb-4 last:border-0 last:pb-0 group/item">
+                          <div className="md:col-span-4 space-y-1">
+                            <label className="app-label text-[9px]">Alimento / Ingrediente</label>
                             <input 
-                              placeholder="Nome do Alimento" 
-                              className="tech-input text-xs" 
+                              placeholder="Fille de Frango, Arroz..." 
+                              className="app-input text-xs font-bold" 
                               value={item.name} 
                               onChange={e => updateFoodItem(meal.id, item.id, { name: e.target.value })} 
                             />
                           </div>
-                          <div className="md:col-span-2">
-                            <label className="text-[9px] text-[#004080] uppercase block mb-1">QTD (G/ML)</label>
+                          <div className="md:col-span-2 space-y-1">
+                            <label className="app-label text-[9px]">Qtd (g/ml)</label>
                             <input 
                               type="number" 
-                              className="tech-input text-xs text-center" 
+                              className="app-input text-xs text-center font-bold" 
                               value={item.amount} 
                               onChange={e => updateFoodItem(meal.id, item.id, { amount: Number(e.target.value) })} 
                             />
                           </div>
-                          <div className="md:col-span-1">
-                            <label className="text-[9px] text-[#004080] uppercase block mb-1 text-center">KCAL</label>
-                            <input type="number" className="tech-input text-[10px] text-center p-1" value={item.calories} onChange={e => updateFoodItem(meal.id, item.id, { calories: Number(e.target.value) })} />
+                          <div className="md:col-span-1 space-y-1">
+                            <label className="app-label text-[9px] text-center">Kcal</label>
+                            <input type="number" className="app-input text-[11px] text-center p-2 font-bold" value={item.calories} onChange={e => updateFoodItem(meal.id, item.id, { calories: Number(e.target.value) })} />
                           </div>
-                          <div className="md:col-span-1">
-                            <label className="text-[9px] text-[#004080] uppercase block mb-1 text-center">P</label>
-                            <input type="number" className="tech-input text-[10px] text-center p-1" value={item.protein} onChange={e => updateFoodItem(meal.id, item.id, { protein: Number(e.target.value) })} />
+                          <div className="md:col-span-1 space-y-1">
+                            <label className="app-label text-[9px] text-center text-app-accent">P (g)</label>
+                            <input type="number" className="app-input text-[11px] text-center p-2 font-bold border-app-accent/20" value={item.protein} onChange={e => updateFoodItem(meal.id, item.id, { protein: Number(e.target.value) })} />
                           </div>
-                          <div className="md:col-span-1">
-                            <label className="text-[9px] text-[#004080] uppercase block mb-1 text-center">C</label>
-                            <input type="number" className="tech-input text-[10px] text-center p-1" value={item.carbs} onChange={e => updateFoodItem(meal.id, item.id, { carbs: Number(e.target.value) })} />
+                          <div className="md:col-span-1 space-y-1">
+                            <label className="app-label text-[9px] text-center text-yellow-500">C (g)</label>
+                            <input type="number" className="app-input text-[11px] text-center p-2 font-bold border-yellow-500/20" value={item.carbs} onChange={e => updateFoodItem(meal.id, item.id, { carbs: Number(e.target.value) })} />
                           </div>
-                          <div className="md:col-span-1">
-                            <label className="text-[9px] text-[#004080] uppercase block mb-1 text-center">G</label>
-                            <input type="number" className="tech-input text-[10px] text-center p-1" value={item.fat} onChange={e => updateFoodItem(meal.id, item.id, { fat: Number(e.target.value) })} />
+                          <div className="md:col-span-1 space-y-1">
+                            <label className="app-label text-[9px] text-center text-red-500">G (g)</label>
+                            <input type="number" className="app-input text-[11px] text-center p-2 font-bold border-red-500/20" value={item.fat} onChange={e => updateFoodItem(meal.id, item.id, { fat: Number(e.target.value) })} />
                           </div>
                           <div className="md:col-span-1 flex justify-end">
-                            <button onClick={() => removeFoodItem(meal.id, item.id)} className="p-2 text-[#607080] hover:text-red-500">
+                            <button onClick={() => removeFoodItem(meal.id, item.id)} className="p-2 text-app-muted hover:text-red-500 transition-colors bg-app-card border border-app-border rounded-xl">
                               <Trash2 size={16} />
                             </button>
                           </div>
@@ -285,9 +286,9 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
                       ))}
                       <button 
                         onClick={() => addFoodItem(meal.id)}
-                        className="w-full py-2 border border-dashed border-[#001F3F] rounded-sm text-[#004080] hover:text-white hover:border-[#004080] text-[10px] font-mono uppercase transition-all"
+                        className="w-full py-4 border-2 border-dashed border-app-border rounded-xl text-app-accent hover:bg-app-accent/5 font-bold text-xs uppercase transition-all flex items-center justify-center gap-2"
                       >
-                        {"[ + ] ADICIONAR_ALIMENTO"}
+                        <Plus size={16} /> Adicionar Novo Item
                       </button>
                     </div>
                   </motion.div>
@@ -298,8 +299,15 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
         </Reorder.Group>
 
         {meals.length === 0 && (
-          <div className="py-12 border border-dashed border-[#001F3F] rounded-sm text-center text-[#607080] font-mono text-xs uppercase tracking-widest">
-            Sem Refeições. Clique em [+] para iniciar protocolo.
+          <div className="py-20 border-2 border-dashed border-app-border rounded-3xl text-center flex flex-col items-center justify-center gap-6 bg-app-card/30">
+            <div className="p-6 bg-app-accent/5 rounded-full">
+              <Utensils size={40} className="text-app-accent opacity-30" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="app-heading text-xl opacity-60">Nenhuma refeição planejada</h4>
+              <p className="text-app-muted text-sm">Inicie o protocolo nutricional elite agora.</p>
+            </div>
+            <button onClick={addMeal} className="app-button-outline !px-10">Montar Primeiro Cardápio</button>
           </div>
         )}
       </div>

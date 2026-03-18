@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from 'react';
-import { Users, Dumbbell, Utensils, Settings, LogOut, Activity, Menu, X } from 'lucide-react';
+import { Users, Dumbbell, Utensils, Settings, LogOut, Home, Menu, X, Plus } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from 'clsx';
 
-// Placeholder components for the tabs
+// Tab components
 import DashboardTab from './tabs/DashboardTab';
 import AthletesTab from './tabs/AthletesTab';
 import ProtocolsTab from './tabs/ProtocolsTab';
@@ -16,52 +16,33 @@ import SystemTab from './tabs/SystemTab';
 export default function Wizard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { lock, state } = useAppContext();
+  const { lock } = useAppContext();
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: Activity, component: DashboardTab },
-    { id: 'athletes', label: 'Atletas', icon: Users, component: AthletesTab },
-    { id: 'protocols', label: 'Protocolos', icon: Dumbbell, component: ProtocolsTab },
-    { id: 'nutrition', label: 'Nutrição', icon: Utensils, component: NutritionTab },
-    { id: 'system', label: 'Sistema', icon: Settings, component: SystemTab },
+    { id: 'dashboard', label: 'Home', icon: Home, component: DashboardTab },
+    { id: 'athletes', label: 'Alunos', icon: Users, component: AthletesTab },
+    { id: 'protocols', label: 'Treinos', icon: Dumbbell, component: ProtocolsTab },
+    { id: 'nutrition', label: 'Dieta', icon: Utensils, component: NutritionTab },
+    { id: 'system', label: 'Ajustes', icon: Settings, component: SystemTab },
   ];
 
   const ActiveComponent = tabs.find(t => t.id === activeTab)?.component || DashboardTab;
 
   return (
-    <div className="flex h-screen bg-tech-pattern overflow-hidden">
-      {/* Desktop Floating Navigation Rail */}
-      <aside className="hidden md:flex flex-col w-24 h-full py-6 px-2 items-center justify-between z-10">
-        <div className="flex flex-col items-center gap-8 w-full">
-          {/* Logo */}
-          <div className="flex flex-col items-center gap-3 w-full">
-            <div className="relative w-14 h-14 flex items-center justify-center">
-              <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_20px_rgba(0,64,128,0.6)]">
-                <defs>
-                  <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#004080" />
-                    <stop offset="100%" stopColor="#001F3F" />
-                  </linearGradient>
-                  <pattern id="hex-grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                    <path d="M5 0 L10 2.5 L10 7.5 L5 10 L0 7.5 L0 2.5 Z" fill="none" stroke="#004080" strokeWidth="0.2" opacity="0.3" />
-                  </pattern>
-                </defs>
-                <path d="M50 5 L90 27 V73 L50 95 L10 73 V27 Z" fill="none" stroke="url(#logo-grad)" strokeWidth="2" className="animate-pulse" />
-                <path d="M50 12 L82 30 V70 L50 88 L18 70 V30 Z" fill="#050505" stroke="#001F3F" strokeWidth="1" />
-                <path d="M50 12 L82 30 V70 L50 88 L18 70 V30 Z" fill="url(#hex-grid)" />
-                <text x="50" y="60" textAnchor="middle" fill="white" className="font-sans font-black text-[28px] tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">EF</text>
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#004080" strokeWidth="0.5" strokeDasharray="2 6" className="animate-[spin_30s_linear_infinite]" />
-              </svg>
+    <div className="flex h-screen bg-app-bg bg-app-pattern overflow-hidden text-app-text font-sans">
+      {/* Desktop Sidebar (Navigation Rail) */}
+      <aside className="hidden md:flex flex-col w-24 h-full py-8 border-r border-app-border items-center justify-between bg-app-card/30 backdrop-blur-xl z-20">
+        <div className="flex flex-col items-center gap-12 w-full">
+          {/* Professional Logo */}
+          <div className="flex flex-col items-center gap-2 group cursor-pointer">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-app-accent to-blue-600 flex items-center justify-center shadow-lg shadow-app-accent/20 group-hover:scale-105 transition-transform">
+              <span className="font-black text-xl tracking-tighter">EF</span>
             </div>
-            <div className="text-center font-mono text-[9px] tracking-[0.3em] leading-tight">
-              <span className="text-white block opacity-80">ENDURANCE</span>
-              <span className="text-[#004080] block font-bold">FIT_PRO</span>
-              <span className="text-[#607080] block text-[7px] mt-1">v2.0_SYSTEM</span>
-            </div>
+            <span className="text-[10px] font-bold tracking-widest text-app-muted group-hover:text-app-accent transition-colors">PRO</span>
           </div>
 
-          {/* Nav Items */}
-          <nav className="flex flex-col gap-4 w-full">
+          {/* Vertical Nav */}
+          <nav className="flex flex-col gap-6">
             {tabs.map(tab => {
               const isActive = activeTab === tab.id;
               return (
@@ -69,20 +50,24 @@ export default function Wizard() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={clsx(
-                    "relative flex flex-col items-center justify-center p-3 rounded-sm transition-all duration-300 group",
-                    isActive ? "text-white bg-[rgba(0,31,63,0.3)] border border-[#004080]" : "text-[#607080] hover:text-white hover:bg-[#050505]"
+                    "relative p-3 rounded-2xl transition-all duration-300 group",
+                    isActive 
+                      ? "bg-app-accent/10 text-app-accent" 
+                      : "text-app-muted hover:text-app-text hover:bg-white/5"
                   )}
-                  title={tab.label}
                 >
-                  <tab.icon size={24} className={clsx("mb-1 transition-transform", isActive && "scale-110")} />
-                  <span className="text-[10px] font-mono uppercase tracking-wider opacity-0 group-hover:opacity-100 absolute -bottom-4 whitespace-nowrap transition-opacity">
+                  <tab.icon size={26} className={clsx("transition-transform", isActive && "scale-110")} />
+                  
+                  {/* Tooltip */}
+                  <span className="absolute left-full ml-4 px-2 py-1 bg-app-card border border-app-border rounded-md text-[10px] font-bold opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
                     {tab.label}
                   </span>
+
+                  {/* Active Bullet */}
                   {isActive && (
                     <motion.div
-                      layoutId="active-nav-indicator"
-                      className="absolute left-0 w-1 h-8 bg-[#004080] rounded-r-full shadow-[0_0_10px_rgba(0,64,128,0.8)]"
-                      initial={false}
+                      layoutId="active-pill"
+                      className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-app-accent rounded-r-full shadow-glow"
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}
@@ -92,117 +77,87 @@ export default function Wizard() {
           </nav>
         </div>
 
-        {/* Bottom Actions */}
-        <div className="flex flex-col items-center gap-6 w-full">
-          {/* System Status Indicator */}
-          <div className="flex flex-col items-center gap-2">
-            <div className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#004080] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#004080]"></span>
-            </div>
-            <span className="text-[9px] font-mono text-[#004080] uppercase tracking-widest">Active</span>
-          </div>
-
-          <button
-            onClick={lock}
-            className="p-3 text-red-500 hover:bg-[rgba(239,68,68,0.1)] rounded-xl transition-colors"
-            title="Bloquear Sistema"
-          >
-            <LogOut size={24} />
-          </button>
-        </div>
+        <button
+          onClick={lock}
+          className="p-3 text-app-muted hover:text-red-400 transition-colors"
+          title="Bloquear"
+        >
+          <LogOut size={24} />
+        </button>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 h-full relative z-0 flex flex-col overflow-hidden">
+      {/* Main Container */}
+      <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 bg-[#050505] border-b border-[#001F3F] z-20">
+        <header className="md:hidden flex items-center justify-between p-5 bg-app-bg/80 backdrop-blur-md border-b border-app-border z-30">
           <div className="flex items-center gap-3">
-             <div className="w-8 h-8 flex items-center justify-center">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  <path d="M50 5 L90 27 V73 L50 95 L10 73 V27 Z" fill="none" stroke="#004080" strokeWidth="4" />
-                  <text x="50" y="62" textAnchor="middle" fill="white" className="font-sans font-black text-[35px]">EF</text>
-                </svg>
-             </div>
-            <span className="tech-heading text-sm tracking-widest text-white uppercase">
-               SYSTEM_PRO_v2.0
-            </span>
+            <div className="w-8 h-8 rounded-lg bg-app-accent flex items-center justify-center font-black text-xs">
+              EF
+            </div>
+            <h1 className="font-extrabold tracking-tight text-lg">EnduranceFit Pro</h1>
           </div>
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white">
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          <button 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="w-10 h-10 rounded-full bg-app-card flex items-center justify-center border border-app-border"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </header>
 
-        {/* Mobile Menu Overlay */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-[60px] left-0 right-0 glass-panel border-b border-[#334155] z-30 flex flex-col p-4 gap-2 md:hidden shadow-2xl"
-            >
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={clsx(
-                    "flex items-center gap-4 p-4 rounded-lg font-mono uppercase tracking-wider text-sm transition-colors",
-                    activeTab === tab.id ? "bg-[#001F3F]/30 text-white" : "text-[#607080] hover:bg-[#050505] hover:text-white"
-                  )}
-                >
-                  <tab.icon size={20} />
-                  {tab.label}
-                </button>
-              ))}
-              <div className="h-px bg-[#334155] my-2" />
-              <button
-                onClick={lock}
-                className="flex items-center gap-4 p-4 rounded-lg font-mono uppercase tracking-wider text-sm text-red-500 hover:bg-[rgba(239,68,68,0.1)] transition-colors"
+        {/* Content Viewport */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden relative">
+          <div className="max-w-7xl mx-auto p-4 md:p-10 pb-32 md:pb-10 min-h-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="h-full"
               >
-                <LogOut size={20} />
-                Bloquear Sistema
+                <ActiveComponent />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </main>
+
+        {/* Bottom Navigation (Mobile Only) */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 px-6 pb-8 pt-4 bg-app-bg/90 backdrop-blur-xl border-t border-app-border/50 z-40 flex justify-between items-center">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={clsx(
+                  "flex flex-col items-center gap-1 transition-all",
+                  isActive ? "text-app-accent scale-110" : "text-app-muted"
+                )}
+              >
+                <div className={clsx(
+                  "p-2 rounded-xl transition-colors",
+                  isActive && "bg-app-accent/10"
+                )}>
+                  <tab.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                </div>
+                <span className="text-[10px] font-bold">{tab.label}</span>
               </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            );
+          })}
+        </nav>
+      </div>
 
-        {/* Content Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8 scroll-smooth">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="h-full max-w-7xl mx-auto"
-            >
-              <ActiveComponent />
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </main>
-
-      {/* Mobile Bottom Navigation (Optional, but requested) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#050505] border-t border-[#001F3F] z-20 flex items-center justify-around p-2 pb-safe">
-        {tabs.slice(0, 4).map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={clsx(
-              "flex flex-col items-center p-2 rounded-lg transition-colors",
-              activeTab === tab.id ? "text-white" : "text-[#607080]"
-            )}
-          >
-            <tab.icon size={20} className="mb-1" />
-            <span className="text-[9px] font-mono uppercase tracking-widest">{tab.label}</span>
-          </button>
-        ))}
-      </nav>
+      {/* FAB - Quick Prescription (Mobile) */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileTap={{ scale: 0.9 }}
+        className="md:hidden fixed bottom-28 right-6 w-14 h-14 bg-app-accent rounded-2xl shadow-xl shadow-app-accent/30 flex items-center justify-center text-white z-50 border-4 border-app-bg"
+        onClick={() => setActiveTab('dashboard')}
+      >
+        <Plus size={28} strokeWidth={3} />
+      </motion.button>
     </div>
   );
 }

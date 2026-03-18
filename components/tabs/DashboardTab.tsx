@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { v4 as uuidv4 } from 'uuid';
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, Dumbbell, Utensils, Save, CheckCircle, X, ChevronRight } from 'lucide-react';
+import { Activity, Dumbbell, Utensils, Save, CheckCircle, X, ChevronRight, UserPlus, Info } from 'lucide-react';
 import WorkoutBuilder from '../builders/WorkoutBuilder';
 import DietBuilder from '../builders/DietBuilder';
 import ShoppingListExporter from '../builders/ShoppingListExporter';
@@ -108,44 +108,45 @@ export default function DashboardTab() {
     });
   };
 
-  const handleSaveProfileOnly = () => {
-    if (!athlete.name) return setModal({ type: 'alert', message: 'Nome é obrigatório' });
-    saveAthlete(athlete as Athlete);
+  const handleSaveProfileOnly = async () => {
+    if (!athlete.name) return setModal({ type: 'alert', message: 'Por favor, insira o nome do aluno.' });
+    setIsProcessing(true);
+    await saveAthlete(athlete as Athlete);
     resetSession();
-    setModal({ type: 'alert', message: 'Perfil salvo com sucesso!' });
+    setIsProcessing(false);
+    setModal({ type: 'alert', message: 'Aluno cadastrado com sucesso!' });
   };
 
-  const handleFinalizeProtocol = () => {
-    if (!athlete.name) return setModal({ type: 'alert', message: 'Nome do atleta é obrigatório para finalizar o protocolo.' });
+  const handleFinalizeProtocol = async () => {
+    if (!athlete.name) return setModal({ type: 'alert', message: 'O nome do aluno é obrigatório para gerar o protocolo.' });
     
+    setIsProcessing(true);
     const athleteData = { ...athlete } as Athlete;
     
-    // 1. Save Workout to Global & Athlete if exists
     if (creationType === 'workout' || creationType === 'both') {
       const workoutRepo = { 
         ...customWorkout, 
         id: uuidv4(), 
-        name: `TREINO_${athlete.name.toUpperCase()}`,
-        description: `GERADO_VIA_DASHBOARD_${new Date().toLocaleDateString()}`
+        name: `Treino: ${athlete.name}`,
+        description: `Prescrição gerada em ${new Date().toLocaleDateString()}`
       } as WorkoutTemplate;
-      saveWorkoutTemplate(workoutRepo);
+      await saveWorkoutTemplate(workoutRepo);
       athleteData.workoutTemplateId = workoutRepo.id;
     }
 
-    // 2. Save Diet to Global & Athlete if exists
     if (creationType === 'diet' || creationType === 'both') {
       const dietRepo = { 
         ...customDiet, 
         id: uuidv4(), 
-        name: `DIETA_${athlete.name.toUpperCase()}`,
-        description: `GERADA_VIA_DASHBOARD_${new Date().toLocaleDateString()}`
+        name: `Dieta: ${athlete.name}`,
+        description: `Plano alimentar gerado em ${new Date().toLocaleDateString()}`
       } as DietTemplate;
-      saveDietTemplate(dietRepo);
+      await saveDietTemplate(dietRepo);
       athleteData.dietTemplateId = dietRepo.id;
     }
 
-    // 3. Save Final Athlete with vinculated IDs
-    saveAthlete(athleteData);
+    await saveAthlete(athleteData);
+    setIsProcessing(false);
     setStep(4);
   };
 
@@ -193,24 +194,29 @@ export default function DashboardTab() {
         )}
       </AnimatePresence>
 
-      {/* Main Wizard Area */}
-      <div className="flex-1 flex flex-col gap-6 print:hidden">
-        <div className="bg-[#050505] border border-[#001F3F] p-6 rounded-sm shadow-[0_0_20px_rgba(0,31,63,0.3)]">
-          <h2 className="tech-heading text-2xl text-white mb-2 tracking-tighter">ASSISTENTE_CRIACAO_v2.0</h2>
-          <p className="tech-label text-[#004080]">CONFIGURAR_NOVO_PROTOCOLO</p>
+      {/* Main Flow Area */}
+      <div className="flex-1 flex flex-col gap-8 print:hidden">
+        <div className="app-card p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden relative group">
+          <div className="relative z-10">
+            <h2 className="app-heading text-3xl mb-1">Criar Novo Plano</h2>
+            <p className="text-app-accent font-bold text-sm tracking-wide uppercase">Assistente de Prescrição Elite</p>
+          </div>
           
-          {/* Progress Bar */}
-          <div className="flex items-center justify-between mt-8 mb-4 relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[1px] bg-[#001F3F] -z-10"></div>
+          {/* Progress Indicators */}
+          <div className="flex items-center gap-3 relative z-10">
             {[1, 2, 3, 4].map(s => (
               <div key={s} className={clsx(
-                "w-8 h-8 rounded-sm flex items-center justify-center font-mono text-xs border transition-all",
-                step >= s ? "bg-[#001F3F] border-[#004080] text-white shadow-[0_0_10px_rgba(0,31,63,0.5)]" : "bg-[#050505] border-[#001F3F] text-[#607080]"
+                "w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-all border-2",
+                step === s ? "bg-app-accent border-app-accent text-white shadow-lg shadow-app-accent/30 scale-110" : 
+                step > s ? "bg-app-success/10 border-app-success text-app-success" : 
+                "bg-transparent border-app-border text-app-muted"
               )}>
-                {s}
+                {step > s ? <CheckCircle size={18} /> : s}
               </div>
             ))}
           </div>
+
+          <div className="absolute -right-10 -top-10 w-40 h-40 bg-app-accent/5 rounded-full blur-3xl group-hover:bg-app-accent/10 transition-colors" />
         </div>
 
         <div className="bg-[#050505] border border-[#001F3F] p-6 flex-1 overflow-y-auto rounded-sm relative">
@@ -220,257 +226,245 @@ export default function DashboardTab() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center"
+                className="absolute inset-0 z-50 bg-app-card/90 backdrop-blur-md flex flex-col items-center justify-center text-center p-8"
               >
-                <div className="w-16 h-16 border-4 border-t-[#004080] border-r-transparent border-b-[#004080] border-l-transparent rounded-full animate-spin mb-4" />
-                <h3 className="tech-heading text-white text-lg animate-pulse tracking-widest">INITIALIZING_MODULE...</h3>
-                <p className="font-mono text-[10px] text-[#004080] mt-2">ACCESSING_KERNEL_v2.0_ENGINE</p>
+                <div className="w-12 h-12 border-4 border-app-accent/20 border-t-app-accent rounded-full animate-spin mb-6" />
+                <h3 className="text-xl font-bold animate-pulse">Sincronizando Dados...</h3>
+                <p className="text-app-muted text-sm mt-2 max-w-xs">Salvando informações no banco de dados de alto desempenho.</p>
               </motion.div>
             )}
           </AnimatePresence>
           {step === 1 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <h3 className="tech-heading text-xl text-white border-b border-[#001F3F] pb-2">01. PERFIL_ATLETA</h3>
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+              <div className="flex items-center gap-3 border-b border-app-border pb-4">
+                <div className="p-2 bg-app-accent/10 rounded-lg text-app-accent">
+                  <UserPlus size={24} />
+                </div>
+                <h3 className="app-heading text-xl">Perfil do Aluno</h3>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="tech-label block mb-1">Nome Completo</label>
-                  <input type="text" className="tech-input" value={athlete.name} onChange={e => setAthlete({...athlete, name: e.target.value})} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="app-label">Nome Completo</label>
+                  <input type="text" placeholder="Ex: João Silva" className="app-input" value={athlete.name} onChange={e => setAthlete({...athlete, name: e.target.value})} />
                 </div>
-                <div>
-                  <label className="tech-label block mb-1">Email</label>
-                  <input type="email" className="tech-input" value={athlete.email} onChange={e => setAthlete({...athlete, email: e.target.value})} />
+                <div className="space-y-2">
+                  <label className="app-label">E-mail de Contato</label>
+                  <input type="email" placeholder="email@exemplo.com" className="app-input" value={athlete.email} onChange={e => setAthlete({...athlete, email: e.target.value})} />
                 </div>
-                <div>
-                  <label className="tech-label block mb-1">WhatsApp</label>
-                  <input type="tel" className="tech-input" value={athlete.whatsapp} onChange={e => setAthlete({...athlete, whatsapp: e.target.value})} />
+                <div className="space-y-2">
+                  <label className="app-label">WhatsApp (Nativo)</label>
+                  <input type="tel" placeholder="(00) 00000-0000" className="app-input" value={athlete.whatsapp} onChange={e => setAthlete({...athlete, whatsapp: e.target.value})} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="tech-label block mb-1">Status</label>
-                    <select className="tech-input" value={athlete.status} onChange={e => setAthlete({...athlete, status: e.target.value as 'Ativo' | 'Inativo' | 'Pendente'})}>
-                      <option value="Ativo">Ativo</option>
-                      <option value="Inativo">Inativo</option>
-                      <option value="Pendente">Pendente</option>
+                  <div className="space-y-2">
+                    <label className="app-label">Status do Plano</label>
+                    <select className="app-input" value={athlete.status} onChange={e => setAthlete({...athlete, status: e.target.value as any})}>
+                      <option value="Ativo">✅ Ativo</option>
+                      <option value="Inativo">❌ Inativo</option>
+                      <option value="Pendente">⏳ Pendente</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="tech-label block mb-1">Categoria</label>
-                    <select className="tech-input" value={athlete.category} onChange={e => setAthlete({...athlete, category: e.target.value as 'Online' | 'Presencial'})}>
-                      <option value="Online">Online</option>
-                      <option value="Presencial">Presencial</option>
+                  <div className="space-y-2">
+                    <label className="app-label">Acompanhamento</label>
+                    <select className="app-input" value={athlete.category} onChange={e => setAthlete({...athlete, category: e.target.value as any})}>
+                      <option value="Online">🌐 Online</option>
+                      <option value="Presencial">🏋️ Presencial</option>
                     </select>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 pt-4 border-t border-[#334155]">
-                <div>
-                  <label className="tech-label block mb-1">Peso (kg)</label>
-                  <input type="number" className="tech-input" value={athlete.weight || ''} onChange={e => setAthlete({...athlete, weight: Number(e.target.value)})} />
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 pt-8 border-t border-app-border">
+                <div className="space-y-2">
+                  <label className="app-label">Peso (kg)</label>
+                  <input type="number" className="app-input text-center font-bold" value={athlete.weight || ''} onChange={e => setAthlete({...athlete, weight: Number(e.target.value)})} />
                 </div>
-                <div>
-                  <label className="tech-label block mb-1">Altura (cm)</label>
-                  <input type="number" className="tech-input" value={athlete.height || ''} onChange={e => setAthlete({...athlete, height: Number(e.target.value)})} />
+                <div className="space-y-2">
+                  <label className="app-label">Altura (cm)</label>
+                  <input type="number" className="app-input text-center font-bold" value={athlete.height || ''} onChange={e => setAthlete({...athlete, height: Number(e.target.value)})} />
                 </div>
-                <div>
-                  <label className="tech-label block mb-1">Idade</label>
-                  <input type="number" className="tech-input" value={athlete.age || ''} onChange={e => setAthlete({...athlete, age: Number(e.target.value)})} />
+                <div className="space-y-2">
+                  <label className="app-label">Idade</label>
+                  <input type="number" className="app-input text-center font-bold" value={athlete.age || ''} onChange={e => setAthlete({...athlete, age: Number(e.target.value)})} />
                 </div>
-                <div>
-                  <label className="tech-label block mb-1">Gênero</label>
-                  <select className="tech-input" value={athlete.gender} onChange={e => setAthlete({...athlete, gender: e.target.value as 'M' | 'F'})}>
-                    <option value="M">Masculino</option>
-                    <option value="F">Feminino</option>
+                <div className="space-y-2">
+                  <label className="app-label">Sexo</label>
+                  <select className="app-input" value={athlete.gender} onChange={e => setAthlete({...athlete, gender: e.target.value as any})}>
+                    <option value="M">Masc.</option>
+                    <option value="F">Fem.</option>
                   </select>
                 </div>
-                <div>
-                  <label className="tech-label block mb-1">Objetivo</label>
-                  <select className="tech-input" value={athlete.goal} onChange={e => setAthlete({...athlete, goal: e.target.value})}>
+                <div className="space-y-2">
+                  <label className="app-label">Objetivo</label>
+                  <select className="app-input" value={athlete.goal} onChange={e => setAthlete({...athlete, goal: e.target.value})}>
                     <option value="hypertrophy">Hipertrofia</option>
-                    <option value="weight_loss">Emagrecimento</option>
-                    <option value="maintenance">Manutenção</option>
+                    <option value="weight_loss">Definição</option>
+                    <option value="maintenance">Saúde</option>
                     <option value="performance">Performance</option>
                   </select>
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-[#001F3F]">
-                <div className="flex justify-between items-center mb-6">
-                  <h4 className="tech-label text-[#004080]">GEN_DIRECT_INITIALIZER</h4>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <button 
-                    onClick={() => {
-                      setCreationType('workout');
-                      setStep(2);
-                    }}
-                    className="p-8 border border-[#001F3F] rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden bg-[#001F3F]/5 hover:border-[#004080] hover:bg-[#001F3F]/10"
-                  >
-                    <Dumbbell size={32} className="text-[#004080] group-hover:scale-110 transition-transform" />
-                    <div className="text-center">
-                      <span className="font-mono uppercase tracking-[0.2em] text-xs text-white font-bold block">INICIAR_TREINO_MASTER</span>
-                      <span className="text-[9px] text-[#607080] font-mono mt-1 block">VINCULAR_AUTO_AO_ALUNO</span>
-                    </div>
-                  </button>
+              <div className="flex flex-col md:flex-row gap-6 pt-10 border-t border-app-border">
+                <button 
+                  onClick={() => { setCreationType('workout'); setStep(2); }}
+                  className="flex-1 p-8 rounded-2xl border-2 border-app-border bg-app-card hover:border-app-accent hover:bg-app-accent/5 transition-all group text-center flex flex-col items-center gap-4"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-app-accent/10 flex items-center justify-center text-app-accent group-hover:scale-110 transition-transform">
+                    <Dumbbell size={32} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-lg">Montar Treino</h4>
+                    <p className="text-app-muted text-xs">Prescrever rotina de exercícios</p>
+                  </div>
+                </button>
 
-                  <button 
-                    onClick={() => {
-                      setCreationType('diet');
-                      setStep(3);
-                    }}
-                    className="p-8 border border-[#001F3F] rounded-sm flex flex-col items-center gap-4 transition-all group relative overflow-hidden bg-[#001F3F]/5 hover:border-[#004080] hover:bg-[#001F3F]/10"
-                  >
-                    <Utensils size={32} className="text-[#004080] group-hover:scale-110 transition-transform" />
-                    <div className="text-center">
-                      <span className="font-mono uppercase tracking-[0.2em] text-xs text-white font-bold block">INICIAR_DIETA_MASTER</span>
-                      <span className="text-[9px] text-[#607080] font-mono mt-1 block">VINCULAR_AUTO_AO_ALUNO</span>
-                    </div>
-                  </button>
-                </div>
+                <button 
+                  onClick={() => { setCreationType('diet'); setStep(3); }}
+                  className="flex-1 p-8 rounded-2xl border-2 border-app-border bg-app-card hover:border-app-success hover:bg-app-success/5 transition-all group text-center flex flex-col items-center gap-4"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-app-success/10 flex items-center justify-center text-app-success group-hover:scale-110 transition-transform">
+                    <Utensils size={32} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-lg">Criar Dieta</h4>
+                    <p className="text-app-muted text-xs">Planejamento alimentar reativo</p>
+                  </div>
+                </button>
               </div>
 
-              <div className="flex justify-between pt-6">
-                <button onClick={handleSaveProfileOnly} className="tech-button-secondary">
-                  <Save size={18} /> Salvar Apenas Perfil
+              <div className="flex justify-center pt-6">
+                <button onClick={handleSaveProfileOnly} className="app-button-outline px-12">
+                  <Save size={20} className="mr-2" /> Salvar Apenas Perfil
                 </button>
               </div>
             </motion.div>
           )}
 
           {step === 2 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <div className="flex justify-between items-center border-b border-[#001F3F] pb-2">
-                <h3 className="tech-heading text-xl text-white uppercase italic">02. GEN_PROTOCOL_WORKOUT_v2</h3>
-                <div className="text-[10px] font-mono text-[#004080] animate-pulse">MASTER_PROMPT_ACTIVE</div>
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+              <div className="flex justify-between items-center border-b border-app-border pb-4">
+                <h3 className="app-heading text-xl">02. Prescrever Treinamento</h3>
+                <div className="px-3 py-1 bg-app-accent/10 text-app-accent rounded-full text-[10px] font-bold tracking-widest uppercase">Editor Premium</div>
               </div>
-              
-              <div className="bg-black/40 border border-[#001F3F] p-4 rounded-sm shadow-[inset_0_0_20px_rgba(0,31,63,0.2)]">
-                <WorkoutBuilder template={customWorkout} onChange={setCustomWorkout} />
-              </div>
-
-              <div className="flex justify-between pt-6 border-t border-[#001F3F]">
-                <button onClick={() => setStep(1)} className="tech-button-secondary py-2 px-6">
-                  VOLTAR
-                </button>
-                <button onClick={handleFinalizeProtocol} className="tech-button py-2 px-8">
-                  FINALIZAR_&_SALVAR <CheckCircle size={18} className="ml-2" />
+              <WorkoutBuilder template={customWorkout} onChange={setCustomWorkout} />
+              <div className="flex justify-between pt-8 border-t border-app-border">
+                <button onClick={() => setStep(1)} className="app-button-outline px-8">VOLTAR</button>
+                <button onClick={handleFinalizeProtocol} className="app-button-primary px-10">
+                  FINALIZAR PLANO <ChevronRight size={18} className="ml-1" />
                 </button>
               </div>
             </motion.div>
           )}
 
           {step === 3 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <div className="flex justify-between items-center border-b border-[#001F3F] pb-2">
-                <h3 className="tech-heading text-xl text-white uppercase italic">03. GEN_PROTOCOL_NUTRITION_v2</h3>
-                <div className="text-[10px] font-mono text-[#004080] animate-pulse">MASTER_PROMPT_ACTIVE</div>
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+              <div className="flex justify-between items-center border-b border-app-border pb-4">
+                <h3 className="app-heading text-xl">03. Planejamento Alimentar</h3>
+                <div className="px-3 py-1 bg-app-success/10 text-app-success rounded-full text-[10px] font-bold tracking-widest uppercase">Nutri Master</div>
               </div>
-
-              <div className="bg-black/40 border border-[#001F3F] p-4 rounded-sm shadow-[inset_0_0_20px_rgba(0,31,63,0.2)]">
-                <DietBuilder template={customDiet} onChange={setCustomDiet} />
-              </div>
-
-              <div className="flex justify-between pt-6 border-t border-[#001F3F]">
-                <button onClick={() => setStep(creationType === 'both' ? 2 : 1)} className="tech-button-secondary py-2 px-6">
-                  VOLTAR
-                </button>
-                <button onClick={handleFinalizeProtocol} className="tech-button py-2 px-8">
-                  FINALIZAR_&_SALVAR <CheckCircle size={18} className="ml-2" />
+              <DietBuilder template={customDiet} onChange={setCustomDiet} />
+              <div className="flex justify-between pt-8 border-t border-app-border">
+                <button onClick={() => setStep(1)} className="app-button-outline px-8">VOLTAR</button>
+                <button onClick={handleFinalizeProtocol} className="app-button-success px-10">
+                  FINALIZAR PLANO <ChevronRight size={18} className="ml-1" />
                 </button>
               </div>
             </motion.div>
           )}
 
           {step === 4 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-              <h3 className="tech-heading text-xl text-white border-b border-[#001F3F] pb-2">04. FINALIZAR_PROTOCOLO</h3>
-              
-              <div className="bg-[#050505] p-6 rounded-sm border border-[#004080] shadow-[0_0_20px_rgba(0,64,128,0.1)]">
-                <div className="flex items-center gap-4 mb-4">
-                  <CheckCircle className="text-[#004080]" size={32} />
-                  <div>
-                    <h4 className="tech-heading text-lg text-white uppercase">SUCCESS_PROTO_GEN</h4>
-                    <p className="tech-label text-[#004080]">Atleta: {athlete.name}</p>
-                  </div>
-                </div>
-                
-                <div className="mb-6 space-y-2">
-                  {selectedWorkoutTemplateId && (
-                    <p className="text-sm text-white"><strong className="text-[#808090]">Treino:</strong> {state.workoutTemplates.find(t => t.id === selectedWorkoutTemplateId)?.name}</p>
-                  )}
-                  {selectedDietTemplateId && (
-                    <p className="text-sm text-white"><strong className="text-[#808090]">Dieta:</strong> {state.dietTemplates.find(t => t.id === selectedDietTemplateId)?.name}</p>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-3 mb-6">
-                  <div className="flex gap-4 print:hidden">
-                    <button onClick={handleExportPDF} className="tech-button flex-1">Exportar PDF</button>
-                    <button onClick={resetSession} className="tech-button-secondary flex-1">Novo Protocolo</button>
-                  </div>
-                  <ShoppingListExporter diet={customDiet} />
-                </div>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-12 text-center space-y-8">
+              <div className="w-24 h-24 rounded-full bg-app-success/20 flex items-center justify-center text-app-success shadow-glow-success">
+                <CheckCircle size={56} />
               </div>
+              <div className="space-y-2">
+                <h2 className="app-heading text-3xl">Protocolo Finalizado!</h2>
+                <p className="text-app-muted">O plano de {athlete.name} foi salvo com sucesso em seu CRM.</p>
+              </div>
+              
+              <div className="flex flex-col md:flex-row gap-4 w-full max-w-md">
+                <button onClick={handleExportPDF} className="app-button-primary flex-1">
+                  Gerar PDF Premium
+                </button>
+                <button onClick={resetSession} className="app-button-outline flex-1">
+                  Novo Cadastro
+                </button>
+              </div>
+
+              <ShoppingListExporter diet={customDiet} />
             </motion.div>
           )}
         </div>
       </div>
 
-      {/* Metabolic Sidebar */}
-      <div className="w-full lg:w-80 flex flex-col gap-6 print:hidden">
-        <div className="bg-[#050505] border border-[#001F3F] p-6 h-full rounded-sm shadow-[0_0_30px_rgba(0,31,63,0.2)]">
-          <h3 className="tech-heading text-sm text-white border-b border-[#001F3F] pb-4 mb-6 flex items-center gap-2 tracking-[0.2em]">
-            <Activity size={18} className="text-[#004080]" />
-            METRIC_ENGINE_v2.0
-          </h3>
+      {/* Metabolic Feedback Sidebar */}
+      <div className="w-full lg:w-96 flex flex-col gap-8 print:hidden">
+        <div className="app-card p-8 flex flex-col h-full overflow-hidden relative">
+          <div className="flex items-center gap-3 border-b border-app-border pb-4 mb-4">
+            <div className="p-2 bg-app-accent/10 rounded-lg text-app-accent">
+              <Activity size={20} />
+            </div>
+            <h3 className="app-heading text-base uppercase tracking-wider">Calculadora Metabólica</h3>
+          </div>
 
-          <div className="space-y-6">
-            <div className="bg-[#050505] p-4 border border-[#001F3F] rounded-sm shadow-[inset_0_0_15px_rgba(0,31,63,0.1)]">
-              <div className="flex justify-between items-end mb-2">
-                <span className="text-[10px] text-[#607080] font-mono uppercase tracking-widest">IMC_INDEX</span>
-                <span className="font-mono text-2xl text-white">{imc > 0 ? imc.toFixed(1) : '--'}</span>
+          <div className="space-y-8 flex-1">
+            <div className="space-y-3">
+               <div className="flex justify-between items-baseline">
+                <span className="app-label">IMC</span>
+                <span className="text-3xl font-black">{imc > 0 ? imc.toFixed(1) : '--'}</span>
               </div>
               {imcClass && (
                 <div className={clsx(
-                  "text-[9px] font-mono uppercase tracking-widest px-2 py-1 rounded-sm border inline-block",
-                  imcClass === 'Peso Normal' ? "border-green-500/30 text-green-400 bg-green-500/5" : 
-                  imcClass === 'Abaixo do Peso' ? "border-yellow-500/30 text-yellow-400 bg-yellow-500/5" : 
-                  "border-red-500/30 text-red-400 bg-red-500/5"
+                  "py-2 px-4 rounded-xl text-xs font-bold transition-all border inline-block",
+                  imcClass === 'Peso Normal' ? "border-app-success/30 text-app-success bg-app-success/5" : 
+                  imcClass === 'Abaixo do Peso' ? "border-yellow-500/30 text-yellow-500 bg-yellow-500/5" : 
+                  "border-red-500/30 text-red-500 bg-red-500/5"
                 )}>
                   {imcClass}
                 </div>
               )}
             </div>
 
-            <div className="bg-[#050505] p-4 border border-[#001F3F] rounded-sm shadow-[inset_0_0_15px_rgba(0,31,63,0.1)]">
-              <div className="flex justify-between items-end">
-                <span className="text-[10px] text-[#607080] font-mono uppercase tracking-widest">TMB_BASAL</span>
-                <span className="font-mono text-2xl text-white">{tmb > 0 ? Math.round(tmb) : '--'} <span className="text-[10px] text-[#607080]">KCAL</span></span>
+            <div className="h-px bg-app-border w-full" />
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-baseline">
+                <span className="app-label">TMB Basal</span>
+                <span className="text-3xl font-black tracking-tight">{tmb > 0 ? Math.round(tmb) : '--'} <span className="text-xs text-app-muted font-normal ml-1">Kcal</span></span>
               </div>
             </div>
 
-            <div className="bg-[#050505] p-4 border border-[#001F3F] rounded-sm shadow-[inset_0_0_15px_rgba(0,31,63,0.1)]">
-              <div className="flex justify-between items-end">
-                <span className="text-[10px] text-[#607080] font-mono uppercase tracking-widest">GET_TOTAL</span>
-                <span className="font-mono text-2xl text-white">{get > 0 ? Math.round(get) : '--'} <span className="text-[10px] text-[#607080]">KCAL</span></span>
+            <div className="space-y-4 pt-6 bg-app-accent/5 rounded-2xl p-6 border border-app-accent/10">
+              <div className="flex justify-between items-baseline">
+                <span className="app-label text-app-accent">GET Total</span>
+                <span className="text-4xl font-black text-app-accent tracking-tighter">{get > 0 ? Math.round(get) : '--'} <span className="text-sm font-normal ml-1">Kcal</span></span>
+              </div>
+              <div className="space-y-2">
+                <label className="app-label">Nível de Atividade</label>
+                <select 
+                  className="app-input border-app-accent/20 bg-app-bg text-sm" 
+                  value={athlete.activityLevel} 
+                  onChange={e => setAthlete({...athlete, activityLevel: Number(e.target.value)})}
+                >
+                  <option value={1.2}>Sedentário (1.2)</option>
+                  <option value={1.375}>Leve (1.375)</option>
+                  <option value={1.55}>Moderado (1.55)</option>
+                  <option value={1.725}>Intenso (1.725)</option>
+                  <option value={1.9}>Atleta (1.9)</option>
+                </select>
               </div>
             </div>
+          </div>
 
-            <div className="pt-4 border-t border-[#001F3F]">
-              <label className="tech-label block mb-2">Fator de Atividade</label>
-              <select 
-                className="tech-input" 
-                value={athlete.activityLevel} 
-                onChange={e => setAthlete({...athlete, activityLevel: Number(e.target.value)})}
-              >
-                <option value={1.2}>Sedentário (1.2)</option>
-                <option value={1.375}>Leve (1.375)</option>
-                <option value={1.55}>Moderado (1.55)</option>
-                <option value={1.725}>Intenso (1.725)</option>
-                <option value={1.9}>Muito Intenso (1.9)</option>
-              </select>
-            </div>
+          <div className="mt-8 p-4 bg-app-card border border-app-border rounded-xl">
+             <div className="flex items-start gap-3">
+               <span className="text-app-accent mt-0.5 shrink-0">ℹ️</span>
+               <p className="text-[10px] text-app-muted leading-relaxed">
+                 Cálculos via Harris-Benedict. Estritamente informativo.
+               </p>
+             </div>
           </div>
         </div>
       </div>
