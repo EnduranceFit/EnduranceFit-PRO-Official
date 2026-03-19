@@ -193,8 +193,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const { error: wError } = await (supabase as any).from('workouts').upsert({
       id: template.id,
       athlete_id: template.athleteId || null,
-      name: template.name,
-      description: template.description,
+      name: template.name || 'Treino sem Nome',
+      description: template.description || '',
       updated_at: new Date().toISOString()
     });
 
@@ -249,8 +249,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const { error: dError } = await (supabase as any).from('diets').upsert({
       id: template.id,
       athlete_id: template.athleteId || null,
-      name: template.name,
-      goal: template.description,
+      name: template.name || 'Dieta sem Nome',
+      goal: template.description || '',
       updated_at: new Date().toISOString()
     });
 

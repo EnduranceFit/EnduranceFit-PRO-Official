@@ -82,8 +82,8 @@ export default function WorkoutBuilder({ template, onChange, otherWorkouts = [] 
             type="text" 
             placeholder="Ex: Peito e Tríceps - Hipertrofia" 
             className="app-input" 
-            value={template.focusMuscle || ''} 
-            onChange={e => onChange({ ...template, focusMuscle: e.target.value })} 
+            value={template.name || ''} 
+            onChange={e => onChange({ ...template, name: e.target.value })} 
           />
         </div>
         <div className="space-y-2">

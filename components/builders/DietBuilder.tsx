@@ -124,6 +124,16 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
+          <label className="app-label text-xs">Nome da Dieta / Protocolo</label>
+          <input 
+            type="text" 
+            placeholder="Ex: Cutting - Fase 1" 
+            className="app-input" 
+            value={template.name || ''} 
+            onChange={e => onChange({ ...template, name: e.target.value })} 
+          />
+        </div>
+        <div className="space-y-2">
           <label className="app-label text-xs">Período de Referência</label>
           <select 
             className="app-input" 
