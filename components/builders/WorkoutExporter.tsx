@@ -44,7 +44,7 @@ export default function WorkoutExporter({ athlete, workout, diet, className }: W
             <Zap size={12} fill="currentColor" /> Documento Oficial
           </div>
           <div className="mt-4">
-            <p className="text-3xl font-black uppercase tracking-tighter">{athlete.name || 'ATLETA_N/D'}</p>
+            <p className="text-3xl font-black uppercase tracking-tighter">{athlete.name || 'ATLETA'}</p>
             <p className="text-xs font-bold text-black/50 uppercase tracking-widest mt-1 flex items-center justify-end gap-2">
               <Calendar size={12} /> {currentDate}
             </p>
@@ -55,11 +55,11 @@ export default function WorkoutExporter({ athlete, workout, diet, className }: W
       {/* Bio Summary Bar */}
       <div className="grid grid-cols-4 gap-4 mb-16 border-y-2 border-black/10 py-8">
         <div className="border-r border-black/10 px-4">
-          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">MÉTRICA_PESO</p>
+          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">PESO ATUAL</p>
           <p className="text-2xl font-black">{athlete.weight || '--'}<span className="text-sm ml-1 text-black/40 uppercase">kg</span></p>
         </div>
         <div className="border-r border-black/10 px-4">
-          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">MÉTRICA_ALTURA</p>
+          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">ALTURA</p>
           <p className="text-2xl font-black">{athlete.height || '--'}<span className="text-sm ml-1 text-black/40 uppercase">cm</span></p>
         </div>
         <div className="border-r border-black/10 px-4">
@@ -67,7 +67,7 @@ export default function WorkoutExporter({ athlete, workout, diet, className }: W
           <p className="text-2xl font-black uppercase">{athlete.category || 'ONLINE'}</p>
         </div>
         <div className="px-4">
-          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">OBJETIVO_FINAL</p>
+          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">OBJETIVO</p>
           <p className="text-2xl font-black uppercase leading-none">{athlete.goal || 'PERFORMANCE'}</p>
         </div>
       </div>
@@ -145,10 +145,10 @@ export default function WorkoutExporter({ athlete, workout, diet, className }: W
       {/* Premium Footer */}
       <footer className="mt-24 pt-10 border-t-2 border-black/10 flex justify-between items-center text-[10px] font-bold uppercase tracking-[0.2em] text-black/40">
         <div>
-           ENGENHARIA_DO_RESULTADO_EXTREMO
+           Documento de Prescrição Elite
         </div>
         <div className="text-right italic">
-           Powered by {settings.appName || 'ENDURANCEFIT PRO'} v3.0
+           Sincronizado via {settings.appName || 'ENDURANCEFIT PRO'}
         </div>
       </footer>
 

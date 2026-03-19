@@ -154,21 +154,21 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-4 gap-3 flex-1">
             <div className="app-card !p-3 bg-app-card/50 text-center border-app-border">
-              <span className="text-[10px] text-app-muted block font-bold">KCAL</span>
-              <span className="font-black text-sm text-white">{Math.round(totals.calories)}</span>
-            </div>
-            <div className="app-card !p-3 bg-app-accent/5 text-center border-app-accent/20">
-              <span className="text-[10px] text-app-accent block font-bold">PROT</span>
-              <span className="font-black text-sm text-white">{Math.round(totals.protein)}g</span>
-            </div>
-            <div className="app-card !p-3 bg-yellow-500/5 text-center border-yellow-500/20">
-              <span className="text-[10px] text-yellow-500 block font-bold">CARB</span>
-              <span className="font-black text-sm text-white">{Math.round(totals.carbs)}g</span>
-            </div>
-            <div className="app-card !p-3 bg-red-500/5 text-center border-red-500/20">
-              <span className="text-[10px] text-red-500 block font-bold">GOR</span>
-              <span className="font-black text-sm text-white">{Math.round(totals.fat)}g</span>
-            </div>
+            <span className="text-[10px] text-app-muted block font-bold uppercase tracking-widest">Calorias</span>
+            <span className="font-black text-sm text-white">{Math.round(totals.calories)}</span>
+          </div>
+          <div className="app-card !p-3 bg-app-accent/5 text-center border-app-accent/20">
+            <span className="text-[10px] text-app-accent block font-bold uppercase tracking-widest">Proteína</span>
+            <span className="font-black text-sm text-white">{Math.round(totals.protein)}g</span>
+          </div>
+          <div className="app-card !p-3 bg-yellow-500/5 text-center border-yellow-500/20">
+            <span className="text-[10px] text-yellow-500 block font-bold uppercase tracking-widest">Carbos</span>
+            <span className="font-black text-sm text-white">{Math.round(totals.carbs)}g</span>
+          </div>
+          <div className="app-card !p-3 bg-red-500/5 text-center border-red-500/20">
+            <span className="text-[10px] text-red-500 block font-bold uppercase tracking-widest">Gordura</span>
+            <span className="font-black text-sm text-white">{Math.round(totals.fat)}g</span>
+          </div>
           </div>
           <button onClick={duplicateEntireDay} className="w-full py-2 bg-app-card border border-app-border hover:border-app-accent text-app-muted hover:text-app-accent transition-all rounded-xl text-[10px] font-bold uppercase tracking-wider">
              Replicar para Semana Inteira
@@ -188,10 +188,10 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
               className="px-4 py-2 bg-app-card border border-app-border text-app-muted hover:border-app-accent hover:text-app-accent transition-all rounded-xl flex items-center gap-2 text-[10px] font-bold group"
             >
               <div className="w-2.5 h-2.5 rounded-full bg-app-accent/50 group-hover:bg-app-accent animate-pulse" />
-              GERAR DIETA COM IA
+              Gerar Dieta com IA
             </button>
-            <button onClick={addMeal} className="app-button-primary !py-2 !px-6 !text-xs">
-              <Plus size={18} className="mr-1" /> Nova Refeição
+            <button onClick={addMeal} className="app-button-primary !py-2 !px-6 !text-xs !font-black uppercase tracking-widest shadow-glow-accent">
+              <Plus size={18} className="mr-1" /> Adicionar Refeição
             </button>
           </div>
         </div>

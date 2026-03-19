@@ -112,9 +112,9 @@ export default function WorkoutBuilder({ template, onChange, otherWorkouts = [] 
             <div className="h-6 w-px bg-app-border" />
             <button 
               onClick={applyABCStructure} 
-              className="px-4 py-1.5 bg-app-accent/10 border border-app-accent/20 text-app-accent hover:bg-app-accent hover:text-white text-[10px] font-bold transition-all rounded-xl uppercase tracking-wider"
+              className="px-4 py-1.5 bg-app-accent/10 border border-app-accent/20 text-app-accent hover:bg-app-accent hover:text-white text-[9px] font-black transition-all rounded-xl uppercase tracking-[0.2em]"
             >
-              Aplicar ABC Master
+              Aplicar Estrutura ABC
             </button>
           </div>
           <div className="flex gap-3">
@@ -124,7 +124,7 @@ export default function WorkoutBuilder({ template, onChange, otherWorkouts = [] 
                 onChange={(e) => importFromOther(e.target.value)}
                 defaultValue=""
               >
-                <option value="" disabled>IMPORTAR DE...</option>
+                <option value="" disabled>IMPORTAR BASE...</option>
                 {otherWorkouts.map(w => (
                   <option key={w.id} value={w.id}>{w.name || w.focusMuscle || 'Sem nome'}</option>
                 ))}
@@ -138,9 +138,9 @@ export default function WorkoutBuilder({ template, onChange, otherWorkouts = [] 
               className="px-4 py-2 bg-app-card border border-app-border text-app-muted hover:border-app-accent hover:text-app-accent transition-all rounded-xl flex items-center gap-2 text-[10px] font-bold group"
             >
               <div className="w-2.5 h-2.5 rounded-full bg-app-accent/50 group-hover:bg-app-accent animate-pulse" />
-              GERAR COM IA
+              Gerar com IA
             </button>
-            <button onClick={addExercise} className="app-button-primary !py-2 !px-6 !text-xs">
+            <button onClick={addExercise} className="app-button-primary !py-2 !px-6 !text-xs !font-black uppercase tracking-widest shadow-glow-accent">
               <Plus size={18} className="mr-1" /> Adicionar Exercício
             </button>
           </div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { Plus, Edit, Trash2, Utensils, X, Save, ArrowLeft } from 'lucide-react';
+import { Plus, Edit, Trash2, Utensils, X, Save, ArrowLeft, Search } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { DietTemplate } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -13,7 +13,6 @@ export default function NutritionTab() {
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState<{ type: 'confirm' | 'alert' | null, message: string, onConfirm?: () => void }>({ type: null, message: '' });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Partial<DietTemplate> | null>(null);
 
@@ -28,8 +27,8 @@ export default function NutritionTab() {
     } else {
       setEditingTemplate({
         id: uuidv4(),
-        name: 'NOVA_DIETA_v2',
-        description: 'MASTER_PROMPT_GENERATED',
+        name: 'Novo Plano Nutricional',
+        description: 'Bulking',
         meals: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -41,68 +40,72 @@ export default function NutritionTab() {
   const handleSave = async () => {
     try {
       if (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
-        throw new Error("Supabase não configurado. Por favor, adicione as chaves no arquivo .env.local");
+        throw new Error("Supabase não configurado.");
       }
       await saveDietTemplate(editingTemplate as DietTemplate);
       setIsBuilderOpen(false);
       setEditingTemplate(null);
     } catch (error: any) {
-      console.error("Save diet error:", error);
-      setModal({ type: 'alert', message: `Erro ao salvar: ${error.message || 'Erro de conexão.'}` });
+      setModal({ type: 'alert', message: `Erro ao salvar: ${error.message}` });
     }
   };
 
   return (
-    <div className="flex flex-col gap-6 h-full relative">
+    <div className="flex flex-col gap-8 h-full relative">
       <AnimatePresence>
         {isBuilderOpen && editingTemplate && (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-50 bg-[#000000] p-4 md:p-8 overflow-y-auto flex flex-col"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-[#121212] p-4 md:p-8 overflow-y-auto flex flex-col"
           >
-            <div className="max-w-6xl mx-auto w-full flex flex-col gap-6">
-              <div className="flex justify-between items-center border-b border-[#001F3F] pb-4">
-                <div className="flex items-center gap-4">
-                  <button onClick={() => setIsBuilderOpen(false)} className="tech-button-secondary p-2">
+            <div className="max-w-6xl mx-auto w-full flex flex-col gap-8">
+              <div className="flex justify-between items-center border-b border-app-border pb-6">
+                <div className="flex items-center gap-6">
+                  <button onClick={() => setIsBuilderOpen(false)} className="app-button-outline !p-3">
                     <ArrowLeft size={20} />
                   </button>
-                  <h3 className="tech-heading text-xl text-white italic tracking-widest uppercase">
-                    MASTER_AI_NUTRITION_v2.0
-                  </h3>
+                   <div className="space-y-1">
+                    <h3 className="text-2xl font-black uppercase tracking-tighter italic">
+                        Editor Nutricional
+                    </h3>
+                    <p className="text-[10px] font-bold text-app-energy uppercase tracking-[0.3em]">Cálculo de Macros Elite</p>
+                  </div>
                 </div>
-                <button onClick={handleSave} className="tech-button py-2 px-8">
-                  <Save size={18} className="mr-2" /> FINALIZAR_DIETA
+                <button onClick={handleSave} className="app-button-energy px-10 shadow-glow-energy">
+                  <Save size={18} className="mr-2" /> Finalizar Dieta
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-                <div className="lg:col-span-1 space-y-4">
-                  <div className="glass-panel p-4 border-[#001F3F]">
-                    <label className="tech-label block mb-1">NOME_TECNICO</label>
-                    <input 
-                      type="text" 
-                      className="tech-input text-xs" 
-                      value={editingTemplate.name} 
-                      onChange={e => setEditingTemplate({...editingTemplate, name: e.target.value})} 
-                    />
-                  </div>
-                  <div className="glass-panel p-4 border-[#001F3F]">
-                    <label className="tech-label block mb-1">GOAL_PARAMETER</label>
-                    <select 
-                      className="tech-input text-xs"
-                      value={editingTemplate.description}
-                      onChange={e => setEditingTemplate({...editingTemplate, description: e.target.value})}
-                    >
-                      <option value="Bulking">Bulking</option>
-                      <option value="Cutting">Cutting</option>
-                      <option value="Manutenção">Manutenção</option>
-                    </select>
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="lg:col-span-1 space-y-6">
+                   <div className="app-card p-6 space-y-4">
+                    <div className="space-y-2">
+                        <label className="app-label">Título da Dieta</label>
+                        <input 
+                        type="text" 
+                        className="app-input text-sm" 
+                        value={editingTemplate.name} 
+                        onChange={e => setEditingTemplate({...editingTemplate, name: e.target.value})} 
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="app-label">Objetivo Principal</label>
+                        <select 
+                        className="app-input text-sm"
+                        value={editingTemplate.description}
+                        onChange={e => setEditingTemplate({...editingTemplate, description: e.target.value})}
+                        >
+                        <option value="Bulking">Bulking</option>
+                        <option value="Cutting">Cutting</option>
+                        <option value="Manutenção">Manutenção</option>
+                        </select>
+                    </div>
                   </div>
                 </div>
                 <div className="lg:col-span-3">
-                  <div className="bg-[#050505] border border-[#001F3F] p-6 rounded-sm shadow-[0_0_40px_rgba(0,31,63,0.3)]">
+                   <div className="app-card p-8">
                     <DietBuilder 
                       template={editingTemplate} 
                       onChange={(updated) => setEditingTemplate(updated)} 
@@ -114,120 +117,100 @@ export default function NutritionTab() {
           </motion.div>
         )}
         {modal.type && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          >
-            <motion.div 
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              className="glass-panel hardware-card p-6 max-w-md w-full flex flex-col gap-4"
-            >
-              <div className="flex justify-between items-center border-b border-[#001F3F] pb-2">
-                <h3 className="tech-heading text-lg text-white">{modal.type === 'confirm' ? 'Confirmação' : 'Aviso'}</h3>
-                <button onClick={() => setModal({ type: null, message: '' })} className="text-[#808090] hover:text-white">
-                  <X size={20} />
-                </button>
-              </div>
-              <p className="text-[#808090] font-mono text-sm">{modal.message}</p>
-              <div className="flex justify-end gap-3 mt-4">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+            <div className="app-card p-10 max-w-md w-full">
+               <h3 className="text-xl font-bold border-b border-app-border pb-4 mb-4">Aviso do Sistema</h3>
+               <p className="text-app-muted leading-relaxed mb-8">{modal.message}</p>
+                <div className="flex justify-end gap-4">
                 {modal.type === 'confirm' && (
-                  <button 
-                    onClick={() => setModal({ type: null, message: '' })}
-                    className="tech-button-secondary"
-                  >
-                    Cancelar
-                  </button>
+                  <button onClick={() => setModal({ type: null, message: '' })} className="app-button-outline">Cancelar</button>
                 )}
                 <button 
                   onClick={() => {
                     if (modal.onConfirm) modal.onConfirm();
                     setModal({ type: null, message: '' });
                   }}
-                  className={modal.type === 'confirm' ? "tech-button-danger" : "tech-button"}
+                  className={modal.type === 'confirm' ? "px-8 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-all" : "app-button-primary"}
                 >
-                  {modal.type === 'confirm' ? 'Confirmar' : 'OK'}
+                  Confirmar
                 </button>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="flex justify-between items-center bg-[#050505] p-6 border border-[#001F3F] rounded-sm shadow-[0_0_20px_rgba(0,31,63,0.2)]">
-        <div>
-          <h2 className="tech-heading text-2xl text-white mb-2 tracking-tighter">ESTRUTURA_NUTRICIONAL</h2>
-          <p className="tech-label text-[#004080]">SISTEMA_GESTAO_V2.0</p>
+      <div className="app-card p-8 flex justify-between items-center relative overflow-hidden group">
+        <div className="relative z-10">
+          <h2 className="text-3xl font-black tracking-tighter uppercase mb-1">Biblioteca de Dietas</h2>
+          <p className="text-app-energy font-bold text-xs uppercase tracking-widest">Performance Coaching Hub</p>
         </div>
-        <button onClick={() => handleOpenBuilder()} className="tech-button py-2 px-8">
-          <Plus size={18} className="mr-2" /> CRIAR_DIETA_v2
+        <button onClick={() => handleOpenBuilder()} className="app-button-energy px-10 relative z-10 shadow-glow-energy">
+          <Plus size={20} className="mr-2" /> Nova Dieta
         </button>
+        <div className="absolute -right-10 -top-10 w-40 h-40 bg-app-energy/5 rounded-full blur-3xl group-hover:bg-app-energy/10 transition-colors" />
       </div>
 
-      <div className="glass-panel hardware-card p-6">
+      <div className="app-card p-6 relative group">
+        <Search className="absolute left-10 top-1/2 -translate-y-1/2 text-app-muted group-focus-within:text-app-energy transition-colors" size={20} />
         <input 
           type="text" 
-          placeholder="Buscar modelos..." 
-          className="tech-input w-full md:w-1/3"
+          placeholder="Buscar modelos nutricionais..." 
+          className="app-input pl-14"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredTemplates.map(template => (
           <motion.div 
             key={template.id}
+            layout
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-[#050505] border border-[#001F3F] p-6 flex flex-col gap-4 rounded-sm hover:border-[#004080] transition-all group"
+            className="app-card p-8 flex flex-col gap-6 group hover:border-app-energy/40 transition-all active:scale-[0.98]"
           >
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-[#001F3F]/20 border border-[#001F3F] text-[#004080] group-hover:text-white transition-colors">
-                <Utensils size={24} />
+            <div className="flex items-start gap-5">
+              <div className="p-4 bg-app-energy/10 border border-app-energy/20 text-app-energy rounded-2xl group-hover:bg-app-energy group-hover:text-black transition-all transform group-hover:-rotate-6">
+                <Utensils size={28} />
               </div>
-              <div>
-                <h3 className="tech-heading text-lg text-white group-hover:text-[#004080] transition-colors">{template.name}</h3>
-                <p className="font-mono text-xs text-[#607080] mt-1 line-clamp-2 uppercase tracking-tighter">{template.description}</p>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl font-bold tracking-tight truncate group-hover:text-app-energy transition-colors uppercase leading-none mb-2">{template.name}</h3>
+                <p className="text-[10px] font-bold text-app-muted uppercase tracking-widest line-clamp-1">{template.description}</p>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-[#001F3F]">
-              <button onClick={() => handleOpenBuilder(template)} className="tech-button-secondary text-[10px] py-1 px-3">
-                ABRIR_BUILDER
-              </button>
-              <button 
+            <div className="flex justify-between items-center mt-auto pt-6 border-t border-app-border/40">
+                <button 
                 onClick={() => {
                   setModal({
                     type: 'confirm',
-                    message: 'CONFIRMAR_EXCLUSAO_DIETA?',
+                    message: 'Deseja excluir esta dieta permanentemente?',
                     onConfirm: async () => {
-                      try {
                         await deleteDietTemplate(template.id);
-                      } catch (error: any) {
-                        console.error("Delete diet error:", error);
-                        setModal({ type: 'alert', message: `Erro ao excluir: ${error.message || 'Erro de conexão.'}` });
-                      }
                     }
                   });
                 }}
-                className="tech-button-danger text-[10px] py-1 px-3 opacity-50 hover:opacity-100"
+                className="p-3 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                title="Excluir"
               >
-                DELETAR
+                <Trash2 size={18} />
+              </button>
+
+              <button onClick={() => handleOpenBuilder(template)} className="app-button-outline !py-3 !px-6 !text-xs !font-black uppercase tracking-widest">
+                Acessar Editor
               </button>
             </div>
           </motion.div>
         ))}
         
         {filteredTemplates.length === 0 && (
-          <div className="col-span-full py-20 flex flex-col items-center justify-center border border-dashed border-[#001F3F] rounded-sm bg-[#050505]/50">
-            <div className="w-16 h-16 border border-[#001F3F] rounded-full flex items-center justify-center mb-4 opacity-20">
-               <Utensils size={32} className="text-[#004080]" />
+          <div className="col-span-full py-32 flex flex-col items-center justify-center border-2 border-dashed border-app-border rounded-[32px] bg-app-card/20">
+             <div className="w-20 h-20 bg-app-muted/5 rounded-full flex items-center justify-center mb-6">
+               <Utensils size={40} className="text-app-muted opacity-30" />
             </div>
-            <span className="text-[#607080] font-mono text-xs tracking-[0.3em] uppercase opacity-40">DATABASE_EMPTY: NENHUMA_DIETA</span>
+            <span className="text-app-muted font-bold text-sm uppercase tracking-widest opacity-40 text-center">Nenhuma dieta encontrada</span>
           </div>
         )}
       </div>

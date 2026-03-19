@@ -197,8 +197,8 @@ export default function DashboardTab() {
           {view === 'selection' && (
             <motion.div key="selection" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-12 py-10">
               <div className="text-center space-y-4">
-                <h1 className="text-5xl font-black tracking-tighter">Bem-vindo, Coach</h1>
-                <p className="text-app-muted text-lg max-w-2xl mx-auto">Sua central de alta performance para prescrição de treinos e dietas.</p>
+                <h1 className="text-5xl font-black tracking-tighter uppercase leading-none">Bem-vindo, Coach</h1>
+                <p className="text-app-muted text-lg font-medium max-w-2xl mx-auto uppercase tracking-widest text-[10px]">Consultoria de Performance Elite</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -295,6 +295,17 @@ export default function DashboardTab() {
                         </select>
                       </div>
                     </div>
+
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="app-label">WhatsApp (Celular)</label>
+                        <input type="text" className="app-input" value={athleteForm.whatsapp} onChange={e => setAthleteForm({...athleteForm, whatsapp: e.target.value})} placeholder="5511999999999" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="app-label">E-mail</label>
+                        <input type="email" className="app-input" value={athleteForm.email} onChange={e => setAthleteForm({...athleteForm, email: e.target.value})} placeholder="exemplo@email.com" />
+                      </div>
+                    </div>
                   </div>
 
                   <button 
@@ -363,8 +374,8 @@ export default function DashboardTab() {
           {view === 'workout-builder' && currentAthlete && (
             <motion.div key="workout-builder" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <div className="flex justify-between items-center mb-8">
-                <h2 className="app-heading text-2xl font-black uppercase tracking-tight">Prescrição de Treino</h2>
-                <span className="px-4 py-1 bg-app-accent/10 text-app-accent rounded-full text-xs font-bold">{currentAthlete.name}</span>
+                <h2 className="app-heading text-2xl font-black uppercase tracking-tight">Prescrição de Treinamento</h2>
+                <span className="px-4 py-1 bg-app-accent/10 text-app-accent rounded-full text-[10px] font-black uppercase tracking-widest">{currentAthlete.name}</span>
               </div>
               <WorkoutBuilder 
                 template={customWorkout} 

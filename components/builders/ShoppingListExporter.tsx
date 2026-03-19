@@ -38,7 +38,7 @@ export default function ShoppingListExporter({ diet }: ShoppingListExporterProps
   return (
     <button 
       onClick={generateList}
-      className="tech-button-secondary w-full flex items-center justify-center gap-2"
+      className="app-button-outline w-full flex items-center justify-center gap-2"
     >
       <ShoppingCart size={18} /> Gerar Lista de Compras
     </button>
