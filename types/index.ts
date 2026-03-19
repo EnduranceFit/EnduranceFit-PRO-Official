@@ -78,6 +78,8 @@ export interface DietTemplate {
 export interface SystemSettings {
   pin: string | null;
   appName: string;
+  trainerName?: string;
+  logoUrl?: string; // For white-label PDF
 }
 
 export interface AppState {

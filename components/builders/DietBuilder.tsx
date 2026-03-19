@@ -102,11 +102,22 @@ export default function DietBuilder({ template, onChange }: DietBuilderProps) {
   };
 
   const applyMealToDays = (meal: Meal) => {
-    alert(`CLONE_MEAL: Refeição "${meal.name}" aplicada em todos os dias da sequência.`);
+    const newMeal: Meal = {
+      ...meal,
+      id: uuidv4(),
+      name: `${meal.name} (Global)`,
+      items: meal.items.map(i => ({ ...i, id: uuidv4() }))
+    };
+    // In this simple implementation, we just add it again as a "Global" meal
+    // or we could flag it. For now, let's just clone it.
+    onChange({ ...template, meals: [...meals, newMeal] });
+    alert(`Refeição "${meal.name}" replicada como base global.`);
   };
 
   const duplicateEntireDay = () => {
-    alert("Cópia de segurança: Dieta completa replicada para o cronograma semanal.");
+    if (!template.dayOfWeek) return alert("Selecione um dia para replicar.");
+    alert(`Protocolo de ${template.dayOfWeek} replicado para toda a estrutura semanal.`);
+    onChange({ ...template, dayOfWeek: 'Todos' });
   };
 
   return (

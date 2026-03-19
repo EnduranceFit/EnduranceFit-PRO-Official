@@ -8,12 +8,19 @@ import { motion, Reorder } from "framer-motion";
 import clsx from 'clsx';
 import { generateWorkoutFromAI } from '@/utils/ai-handler';
 
+const getYouTubeId = (url: string) => {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
+
 interface WorkoutBuilderProps {
   template: Partial<WorkoutTemplate>;
   onChange: (template: Partial<WorkoutTemplate>) => void;
+  otherWorkouts?: WorkoutTemplate[];
 }
 
-export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderProps) {
+export default function WorkoutBuilder({ template, onChange, otherWorkouts = [] }: WorkoutBuilderProps) {
   const exercises = template.exercises || [];
 
   const addExercise = () => {
@@ -56,6 +63,14 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
 
   const applyABCStructure = () => {
     alert("Estrutura ABC aplicada: Peito/Tríceps (A), Costas/Bíceps (B), Pernas/Ombro (C)");
+  };
+
+  const importFromOther = (otherId: string) => {
+    const other = otherWorkouts.find(w => w.id === otherId);
+    if (other) {
+      const clonedExercises = other.exercises.map(ex => ({ ...ex, id: uuidv4() }));
+      onChange({ ...template, exercises: [...exercises, ...clonedExercises] });
+    }
   };
 
   return (
@@ -103,6 +118,18 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
             </button>
           </div>
           <div className="flex gap-3">
+            {otherWorkouts.length > 0 && (
+              <select 
+                className="app-input !py-1 !px-3 !text-[10px] !w-40 font-bold border-app-accent/30 text-app-accent"
+                onChange={(e) => importFromOther(e.target.value)}
+                defaultValue=""
+              >
+                <option value="" disabled>IMPORTAR DE...</option>
+                {otherWorkouts.map(w => (
+                  <option key={w.id} value={w.id}>{w.name || w.focusMuscle || 'Sem nome'}</option>
+                ))}
+              </select>
+            )}
             <button 
               onClick={async () => {
                 const aiData = await generateWorkoutFromAI(template.focusMuscle || 'Full Body');
@@ -183,14 +210,25 @@ export default function WorkoutBuilder({ template, onChange }: WorkoutBuilderPro
                     </div>
                     <div className="space-y-1">
                       <label className="app-label text-[9px]">Link de Vídeo (YouTube)</label>
-                      <div className="relative">
-                        <input 
-                          className="app-input pl-10 text-xs" 
-                          placeholder="https://youtube.com/..."
-                          value={ex.videoUrl || ''} 
-                          onChange={e => updateExercise(ex.id, { videoUrl: e.target.value })} 
-                        />
-                        <Video size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-accent" />
+                      <div className="flex gap-4">
+                        <div className="relative flex-1">
+                          <input 
+                            className="app-input pl-10 text-xs" 
+                            placeholder="https://youtube.com/..."
+                            value={ex.videoUrl || ''} 
+                            onChange={e => updateExercise(ex.id, { videoUrl: e.target.value })} 
+                          />
+                          <Video size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-app-accent" />
+                        </div>
+                        {ex.videoUrl && getYouTubeId(ex.videoUrl) && (
+                          <div className="w-20 h-12 rounded-lg overflow-hidden border border-app-border bg-black flex-shrink-0">
+                            <img 
+                              src={`https://img.youtube.com/vi/${getYouTubeId(ex.videoUrl)}/mqdefault.jpg`} 
+                              alt="Thumbnail"
+                              className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity"
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

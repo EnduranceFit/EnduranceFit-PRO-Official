@@ -28,6 +28,8 @@ const defaultState: AppState = {
   settings: {
     pin: null,
     appName: 'ENDURANCEFIT PRO',
+    trainerName: 'PERSONAL COACH',
+    logoUrl: ''
   },
 };
 
@@ -109,7 +111,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
           })),
           settings: settings ? {
             pin: settings.pin,
-            appName: settings.app_name
+            appName: settings.app_name,
+            trainerName: settings.trainer_name,
+            logoUrl: settings.logo_url
           } : defaultState.settings
         });
 
@@ -313,6 +317,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       id: 'global-settings', // fixed ID for simple settings
       app_name: newSettings.appName || state.settings.appName,
       pin: newSettings.pin !== undefined ? newSettings.pin : state.settings.pin,
+      trainer_name: newSettings.trainerName || state.settings.trainerName,
+      logo_url: newSettings.logoUrl || state.settings.logoUrl,
       updated_at: new Date().toISOString()
     });
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { Dumbbell, Utensils } from 'lucide-react';
+import { Dumbbell, Utensils, CheckCircle2, User, Calendar, Activity, Zap } from 'lucide-react';
 import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
+import { useAppContext } from '@/context/AppContext';
 
 interface WorkoutExporterProps {
   athlete: Partial<Athlete>;
@@ -11,140 +12,154 @@ interface WorkoutExporterProps {
 }
 
 export default function WorkoutExporter({ athlete, workout, diet, className }: WorkoutExporterProps) {
-  const currentDate = new Date().toLocaleDateString('pt-BR');
+  const { state } = useAppContext();
+  const { settings } = state;
+  const currentDate = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
   return (
-    <div className={`workout-print-container ${className || ''}`}>
-      {/* Header Branding */}
-      <div className="flex justify-between items-end border-b-4 border-black pb-6 mb-8">
-        <div>
-          <h1 className="text-5xl font-black uppercase tracking-tighter leading-tight">
-            PERSONAL<br />
-            <span className="text-[#004080] print:text-black">JEAN ADLER</span>
-          </h1>
-          <p className="text-xs font-mono uppercase tracking-[0.4em] mt-2 text-gray-500">
-            Consultoria de Treinamento de Alta Performance
-          </p>
-        </div>
-        <div className="text-right">
-          <div className="bg-black text-white px-4 py-2 mb-2 inline-block font-black skew-x-[-10deg]">
-             PROTOCOLO_OFICIAL
+    <div className={`w-full bg-white text-black min-h-screen p-12 print:p-0 font-sans ${className || ''}`}>
+      {/* Premium Header */}
+      <div className="flex justify-between items-start border-b-[6px] border-black pb-10 mb-12">
+        <div className="space-y-4">
+          {settings.logoUrl ? (
+            <img src={settings.logoUrl} alt="Logo" className="h-16 w-auto object-contain mb-4" />
+          ) : (
+            <div className="bg-black text-white px-6 py-2 inline-block font-black text-2xl tracking-tighter">
+              {settings.appName || 'ENDURANCEFIT'}
+            </div>
+          )}
+          <div>
+            <h1 className="text-4xl font-black uppercase tracking-tight leading-none">
+              CONSULTORIA <br />
+              <span className="text-black/60 italic">{settings.trainerName || 'PROFESSIONAL COACH'}</span>
+            </h1>
+            <p className="text-[10px] font-bold uppercase tracking-[0.5em] mt-3 text-black/40">
+              PLATINUM PERFORMANCE PROTOCOL
+            </p>
           </div>
-          <p className="font-bold text-xl">{athlete.name || 'ATLETA_N/D'}</p>
-          <p className="text-sm font-mono text-gray-500">{currentDate}</p>
+        </div>
+        
+        <div className="text-right flex flex-col items-end gap-3">
+          <div className="flex items-center gap-2 bg-black text-white px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase">
+            <Zap size={12} fill="currentColor" /> Documento Oficial
+          </div>
+          <div className="mt-4">
+            <p className="text-3xl font-black uppercase tracking-tighter">{athlete.name || 'ATLETA_N/D'}</p>
+            <p className="text-xs font-bold text-black/50 uppercase tracking-widest mt-1 flex items-center justify-end gap-2">
+              <Calendar size={12} /> {currentDate}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Athlete Biometrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10 bg-gray-50 p-6 rounded-sm border-l-8 border-black">
-        <div>
-          <span className="block text-[10px] text-gray-400 font-mono uppercase tracking-widest">Idade</span>
-          <strong className="text-xl">{athlete.age || '--'} <span className="text-xs">anos</span></strong>
+      {/* Bio Summary Bar */}
+      <div className="grid grid-cols-4 gap-4 mb-16 border-y-2 border-black/10 py-8">
+        <div className="border-r border-black/10 px-4">
+          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">MÉTRICA_PESO</p>
+          <p className="text-2xl font-black">{athlete.weight || '--'}<span className="text-sm ml-1 text-black/40 uppercase">kg</span></p>
         </div>
-        <div>
-          <span className="block text-[10px] text-gray-400 font-mono uppercase tracking-widest">Peso / Altura</span>
-          <strong className="text-xl">{athlete.weight || '--'}kg / {athlete.height || '--'}cm</strong>
+        <div className="border-r border-black/10 px-4">
+          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">MÉTRICA_ALTURA</p>
+          <p className="text-2xl font-black">{athlete.height || '--'}<span className="text-sm ml-1 text-black/40 uppercase">cm</span></p>
         </div>
-        <div>
-          <span className="block text-[10px] text-gray-400 font-mono uppercase tracking-widest">Objetivo</span>
-          <strong className="text-xl uppercase">{athlete.goal === 'hypertrophy' ? 'Hipertrofia' : athlete.goal === 'weight_loss' ? 'Emagrecimento' : athlete.goal === 'maintenance' ? 'Manutenção' : athlete.goal || 'Performance'}</strong>
+        <div className="border-r border-black/10 px-4">
+          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">CATEGORIA</p>
+          <p className="text-2xl font-black uppercase">{athlete.category || 'ONLINE'}</p>
         </div>
-        <div>
-          <span className="block text-[10px] text-gray-400 font-mono uppercase tracking-widest">Status</span>
-          <strong className="text-xl">{athlete.category || 'Online'}</strong>
+        <div className="px-4">
+          <p className="text-[9px] font-black uppercase tracking-widest text-black/40 mb-1">OBJETIVO_FINAL</p>
+          <p className="text-2xl font-black uppercase leading-none">{athlete.goal || 'PERFORMANCE'}</p>
         </div>
       </div>
 
-      {/* Workout Content */}
-      {workout && (
-        <div className="mb-12">
-          <div className="flex items-center gap-3 border-b-2 border-black pb-2 mb-6">
-            <Dumbbell size={28} />
-            <h2 className="text-2xl font-black uppercase tracking-tight">Protocolo de Treino: {workout.name || 'TREINO_PERSONALIZADO'}</h2>
-          </div>
-          
-          <div className="space-y-4">
-            {workout.exercises?.length ? (
-              workout.exercises.map((ex, idx) => (
-                <div key={ex.id || idx} className="grid grid-cols-12 gap-4 p-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors">
-                  <div className="col-span-1 font-mono text-xl font-bold opacity-20">
-                    {(idx + 1).toString().padStart(2, '0')}
+      {/* Content Sections */}
+      <div className="space-y-20">
+        {workout && (
+          <section className="page-break-inside-avoid">
+            <div className="flex items-center gap-4 border-b-4 border-black pb-4 mb-8">
+              <Dumbbell size={32} className="text-black" />
+              <h2 className="text-3xl font-black uppercase tracking-tighter italic">PROGRAMA DE TREINAMENTO</h2>
+            </div>
+            
+            <div className="space-y-1">
+              {workout.exercises?.map((ex, idx) => (
+                <div key={ex.id || idx} className="grid grid-cols-12 gap-6 p-6 border-b border-black/5 items-center hover:bg-black/[0.02] transition-colors page-break-inside-avoid">
+                  <div className="col-span-1">
+                    <span className="text-4xl font-black opacity-10 leading-none">{(idx + 1).toString().padStart(2, '0')}</span>
                   </div>
-                  <div className="col-span-11">
-                    <div className="flex justify-between items-baseline mb-1">
-                      <h3 className="font-bold text-lg">{ex.name}</h3>
-                      <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-600 uppercase">{ex.muscleGroup}</span>
+                  <div className="col-span-7">
+                    <h3 className="text-xl font-black uppercase tracking-tight mb-1">{ex.name}</h3>
+                    <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">{ex.muscleGroup}</p>
+                  </div>
+                  <div className="col-span-4 grid grid-cols-2 gap-4 text-center">
+                    <div className="bg-black/5 p-2 rounded-sm">
+                      <p className="text-[8px] font-black uppercase tracking-tighter opacity-50 mb-1">REPS</p>
+                      <p className="text-sm font-black">{ex.reps}</p>
                     </div>
-                    <div className="grid grid-cols-3 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="text-[10px] text-gray-400 uppercase block">Sets x Reps</span>
-                        <span className="font-bold">{ex.sets}x {ex.reps}</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-gray-400 uppercase block">Descanso</span>
-                        <span className="font-bold">{ex.restTime || 60}s</span>
-                      </div>
-                      {ex.advancedTechnique && (
-                        <div className="col-span-1 lg:col-span-2">
-                          <span className="text-[10px] text-gray-400 uppercase block">Técnica</span>
-                          <span className="font-bold text-red-700">{ex.advancedTechnique}</span>
-                        </div>
-                      )}
+                    <div className="bg-black/5 p-2 rounded-sm">
+                      <p className="text-[8px] font-black uppercase tracking-tighter opacity-50 mb-1">SETS</p>
+                      <p className="text-sm font-black text-black">{ex.sets}</p>
                     </div>
                   </div>
+                  {ex.advancedTechnique && (
+                    <div className="col-start-2 col-span-11 mt-2">
+                       <p className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-black text-white inline-block">MÉTODO: {ex.advancedTechnique}</p>
+                    </div>
+                  )}
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-400 italic font-mono text-sm uppercase">DATABASE_EMPTY: Nenhum exercício vinculado.</p>
-            )}
-          </div>
-        </div>
-      )}
+              ))}
+            </div>
+          </section>
+        )}
 
-      {/* Diet Content */}
-      {diet && (
-        <div className="mb-12">
-          <div className="flex items-center gap-3 border-b-2 border-black pb-2 mb-6">
-            <Utensils size={28} />
-            <h2 className="text-2xl font-black uppercase tracking-tight">Protocolo Nutricional: {diet.name || 'DIETA_PERSONALIZADA'}</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {diet.meals?.length ? (
-              diet.meals.sort((a, b) => (a.order || 0) - (b.order || 0)).map((meal) => (
-                <div key={meal.id} className="bg-gray-50 p-6 rounded-sm border border-gray-200">
-                  <div className="flex justify-between items-center border-b border-gray-200 pb-2 mb-4">
-                    <h3 className="font-bold uppercase tracking-wider">{meal.name}</h3>
-                    <span className="font-mono text-xs text-blue-800 font-bold">{meal.time || '--:--'}</span>
+        {diet && (
+          <section className="page-break-before-auto">
+            <div className="flex items-center gap-4 border-b-4 border-black pb-4 mb-8">
+              <Utensils size={32} className="text-black" />
+              <h2 className="text-3xl font-black uppercase tracking-tighter italic">PLANEJAMENTO NUTRICIONAL</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              {diet.meals?.map((meal) => (
+                <div key={meal.id} className="border-l-4 border-black p-6 bg-black/[0.02] page-break-inside-avoid">
+                  <div className="flex justify-between items-end mb-6 border-b border-black/10 pb-2">
+                    <h3 className="text-xl font-black uppercase tracking-tighter">{meal.name}</h3>
+                    <span className="text-xs font-black opacity-40">{meal.time}</span>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {meal.items.map((item) => (
-                      <li key={item.id} className="text-sm flex justify-between items-center">
-                        <span className="text-gray-700">• {item.name}</span>
-                        <span className="font-bold">{item.amount}g</span>
+                      <li key={item.id} className="flex justify-between items-baseline group">
+                        <span className="text-sm font-bold uppercase tracking-tight text-black/70">• {item.name}</span>
+                        <div className="flex-1 border-b border-dotted border-black/10 mx-2 mb-1"></div>
+                        <span className="text-sm font-black">{item.amount}g</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-400 italic font-mono text-sm uppercase col-span-2">DATABASE_EMPTY: Nenhuma refeição vinculada.</p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Footer Branding */}
-      <div className="mt-20 pt-8 border-t border-gray-200 flex justify-between items-center">
-        <div>
-          <p className="text-[10px] font-mono uppercase tracking-widest text-gray-400">
-            © {new Date().getFullYear()} Personal Jean Adler | EnduranceFit Pro System
-          </p>
-        </div>
-        <div className="flex items-center gap-4 grayscale opacity-30">
-           <span className="font-black text-xl italic uppercase tracking-tighter">EF_PRO_v2.0</span>
-        </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
+
+      {/* Premium Footer */}
+      <footer className="mt-24 pt-10 border-t-2 border-black/10 flex justify-between items-center text-[10px] font-bold uppercase tracking-[0.2em] text-black/40">
+        <div>
+           ENGENHARIA_DO_RESULTADO_EXTREMO
+        </div>
+        <div className="text-right italic">
+           Powered by {settings.appName || 'ENDURANCEFIT PRO'} v3.0
+        </div>
+      </footer>
+
+      <style jsx global>{`
+        @media print {
+          body { -webkit-print-color-adjust: exact; background: white !important; }
+          .print-hidden { display: none !important; }
+          @page { margin: 1cm; size: auto; }
+          .page-break-inside-avoid { page-break-inside: avoid; }
+        }
+      `}</style>
     </div>
   );
 }
