@@ -137,6 +137,10 @@ export default function DashboardTab() {
 
       const athleteData = { ...athlete } as Athlete;
       
+      // 1. Save athlete FIRST to avoid Foreign Key violations
+      await saveAthlete(athleteData);
+
+      // 2. Save protocols referencing the newly saved athlete
       if (creationType === 'workout' || creationType === 'both') {
         const workoutRepo = { 
           ...customWorkout, 
@@ -161,7 +165,11 @@ export default function DashboardTab() {
         athleteData.dietTemplateId = dietRepo.id;
       }
 
-      await saveAthlete(athleteData);
+      // 3. Update athlete with template IDs if necessary
+      if (athleteData.workoutTemplateId || athleteData.dietTemplateId) {
+        await saveAthlete(athleteData);
+      }
+      
       setStep(4);
     } catch (error: any) {
       console.error("Protocol save error:", error);
