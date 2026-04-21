@@ -3,15 +3,17 @@
 import { Dumbbell, Utensils, CheckCircle2, User, Calendar, Activity, Zap } from 'lucide-react';
 import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
 import { useAppContext } from '@/context/AppContext';
+import clsx from 'clsx';
 
 interface WorkoutExporterProps {
   athlete: Partial<Athlete>;
   workout?: Partial<WorkoutTemplate>;
+  workouts?: Partial<WorkoutTemplate>[];
   diet?: Partial<DietTemplate>;
   className?: string;
 }
 
-export default function WorkoutExporter({ athlete, workout, diet, className }: WorkoutExporterProps) {
+export default function WorkoutExporter({ athlete, workout, workouts, diet, className }: WorkoutExporterProps) {
   const { state } = useAppContext();
   const { settings } = state;
   const currentDate = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -74,15 +76,26 @@ export default function WorkoutExporter({ athlete, workout, diet, className }: W
 
       {/* Content Sections */}
       <div className="space-y-20">
-        {workout && (
-          <section className="page-break-inside-avoid">
+        {(workouts && workouts.length > 0 ? workouts : (workout ? [workout] : [])).map((w, wIdx) => (
+          <section key={w.id || wIdx} className="page-break-before-auto mb-16">
             <div className="flex items-center gap-4 border-b-4 border-black pb-4 mb-8">
               <Dumbbell size={32} className="text-black" />
-              <h2 className="text-3xl font-black uppercase tracking-tighter italic">PROGRAMA DE TREINAMENTO</h2>
+              <div className="flex flex-col">
+                 <h2 className="text-3xl font-black uppercase tracking-tighter italic">PROGRAMA DE TREINAMENTO</h2>
+                 {w.name && <h3 className="text-lg font-bold text-black/70 tracking-widest uppercase mt-1">{w.name}</h3>}
+              </div>
             </div>
             
             <div className="space-y-1">
-              {workout.exercises?.map((ex, idx) => (
+              {w.exercises?.map((ex, idx) => {
+                if (ex.muscleGroup?.toUpperCase() === 'SEPARADOR') {
+                  return (
+                    <div key={ex.id || idx} className="col-span-12 py-4 mt-8 mb-4 border-b-2 border-black/20 text-center page-break-inside-avoid">
+                      <h3 className="text-xl font-black uppercase tracking-[0.2em] italic text-black/80">{ex.name}</h3>
+                    </div>
+                  );
+                }
+                return (
                 <div key={ex.id || idx} className="grid grid-cols-12 gap-6 p-6 border-b border-black/5 items-center hover:bg-black/[0.02] transition-colors page-break-inside-avoid">
                   <div className="col-span-1">
                     <span className="text-4xl font-black opacity-10 leading-none">{(idx + 1).toString().padStart(2, '0')}</span>
@@ -91,13 +104,13 @@ export default function WorkoutExporter({ athlete, workout, diet, className }: W
                     <h3 className="text-xl font-black uppercase tracking-tight mb-1">{ex.name}</h3>
                     <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">{ex.muscleGroup}</p>
                   </div>
-                  <div className="col-span-4 grid grid-cols-2 gap-4 text-center">
-                    <div className="bg-black/5 p-2 rounded-sm">
-                      <p className="text-[8px] font-black uppercase tracking-tighter opacity-50 mb-1">REPS</p>
-                      <p className="text-sm font-black">{ex.reps}</p>
+                  <div className="col-span-5 grid grid-cols-1 md:grid-cols-3 gap-2 text-center">
+                    <div className="bg-black/5 p-2 rounded-sm md:col-span-2 text-left px-3">
+                      <p className="text-[8px] font-black uppercase tracking-tighter opacity-50 mb-1">SÉRIES / EXECUÇÃO</p>
+                      <p className={clsx("font-black", (ex.reps || '').length > 25 ? "text-[9px] leading-tight" : "text-sm")}>{ex.reps}</p>
                     </div>
-                    <div className="bg-black/5 p-2 rounded-sm">
-                      <p className="text-[8px] font-black uppercase tracking-tighter opacity-50 mb-1">SETS</p>
+                    <div className="bg-black/5 p-2 rounded-sm flex flex-col justify-center">
+                      <p className="text-[8px] font-black uppercase tracking-tighter opacity-50 mb-1">TOTAL SETS</p>
                       <p className="text-sm font-black text-black">{ex.sets}</p>
                     </div>
                   </div>
@@ -107,10 +120,10 @@ export default function WorkoutExporter({ athlete, workout, diet, className }: W
                     </div>
                   )}
                 </div>
-              ))}
+              )})}
             </div>
           </section>
-        )}
+        ))}
 
         {diet && (
           <section className="page-break-before-auto">

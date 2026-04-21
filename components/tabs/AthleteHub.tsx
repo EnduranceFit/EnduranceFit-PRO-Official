@@ -81,7 +81,7 @@ export default function AthleteHub({
               <span className="px-2 py-0.5 bg-app-accent/10 text-app-accent rounded font-bold text-[9px] uppercase tracking-[0.2em]">
                 {athlete.category}
               </span>
-              <span className="text-app-muted text-xs font-medium">Sincronizado: {new Date(athlete.updatedAt).toLocaleDateString()}</span>
+              <span className="text-app-muted text-xs font-medium">Sincronizado: {athlete.updatedAt ? new Date(athlete.updatedAt).toLocaleDateString() : 'Recente'}</span>
             </div>
           </div>
         </div>
@@ -159,7 +159,7 @@ export default function AthleteHub({
                         {workout.exercises.length} EXERCÍCIOS
                       </span>
                       <span className="text-[10px] text-app-muted font-medium">
-                        Sincronizado: {new Date(workout.updatedAt).toLocaleDateString()}
+                        Sincronizado: {workout.updatedAt ? new Date(workout.updatedAt).toLocaleDateString() : 'Recente'}
                       </span>
                     </div>
                   </div>
@@ -218,7 +218,7 @@ export default function AthleteHub({
                         {diet.meals.length} REFEIÇÕES
                       </span>
                       <span className="text-[10px] text-app-muted font-medium">
-                        Sincronizado: {new Date(diet.updatedAt).toLocaleDateString()}
+                        Sincronizado: {diet.updatedAt ? new Date(diet.updatedAt).toLocaleDateString() : 'Recente'}
                       </span>
                     </div>
                   </div>

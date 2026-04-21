@@ -374,8 +374,14 @@ export default function DashboardTab() {
           {view === 'workout-builder' && currentAthlete && (
             <motion.div key="workout-builder" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <div className="flex justify-between items-center mb-8">
-                <h2 className="app-heading text-2xl font-black uppercase tracking-tight">Prescrição de Treinamento</h2>
-                <span className="px-4 py-1 bg-app-accent/10 text-app-accent rounded-full text-[10px] font-black uppercase tracking-widest">{currentAthlete.name}</span>
+                <div className="flex items-center gap-4">
+                  <h2 className="app-heading text-2xl font-black uppercase tracking-tight">Prescrição de Treinamento</h2>
+                  <span className="px-4 py-1 bg-app-accent/10 text-app-accent rounded-full text-[10px] font-black uppercase tracking-widest hidden sm:inline-block">{currentAthlete.name}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => setView('hub')} className="app-button-outline !py-2 !px-4 !text-[10px] font-bold">CANCELAR</button>
+                  <button onClick={() => handleSaveWorkout({ ...customWorkout, id: editId || uuidv4(), athleteId: currentAthlete.id } as any)} className="app-button-primary !py-2 !px-6 !text-[10px] font-bold shadow-glow-accent">SALVAR TREINO</button>
+                </div>
               </div>
               <WorkoutBuilder 
                 template={customWorkout} 
@@ -392,8 +398,14 @@ export default function DashboardTab() {
           {view === 'diet-builder' && currentAthlete && (
             <motion.div key="diet-builder" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <div className="flex justify-between items-center mb-8">
-                <h2 className="app-heading text-2xl font-black uppercase tracking-tight">Planejamento Nutricional</h2>
-                <span className="px-4 py-1 bg-app-energy/10 text-app-energy rounded-full text-xs font-bold">{currentAthlete.name}</span>
+                <div className="flex items-center gap-4">
+                  <h2 className="app-heading text-2xl font-black uppercase tracking-tight">Planejamento Nutricional</h2>
+                  <span className="px-4 py-1 bg-app-energy/10 text-app-energy rounded-full text-[10px] font-bold uppercase tracking-widest hidden sm:inline-block">{currentAthlete.name}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => setView('hub')} className="app-button-outline !py-2 !px-4 !text-[10px] font-bold">CANCELAR</button>
+                  <button onClick={() => handleSaveDiet({ ...customDiet, id: editId || uuidv4(), athleteId: currentAthlete.id } as any)} className="app-button-energy !py-2 !px-6 !text-[10px] font-bold shadow-glow-energy">SALVAR DIETA</button>
+                </div>
               </div>
               <DietBuilder template={customDiet} onChange={setCustomDiet} />
               <div className="flex justify-between mt-10">
@@ -409,8 +421,8 @@ export default function DashboardTab() {
       <div className="hidden print:block w-full bg-white text-black p-8">
         <WorkoutExporter 
           athlete={currentAthlete || ({} as Athlete)}
-          workout={customWorkout.id ? (customWorkout as WorkoutTemplate) : undefined}
-          diet={customDiet.id ? (customDiet as DietTemplate) : undefined}
+          workouts={currentAthlete ? state.workoutTemplates.filter(w => w.athleteId === currentAthlete.id) : undefined}
+          diet={currentAthlete ? state.dietTemplates.find(d => d.athleteId === currentAthlete.id) : undefined}
         />
       </div>
     </div>

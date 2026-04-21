@@ -180,9 +180,9 @@ export default function WorkoutBuilder({ template, onChange, otherWorkouts = [] 
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="app-label text-[9px]">Séries x Reps</label>
+                      <label className="app-label text-[9px]">Séries x Reps / Orientação</label>
                       <input 
-                        className="app-input text-center font-bold" 
+                        className="app-input font-bold" 
                         placeholder="3x 12-15"
                         value={ex.reps} 
                         onChange={e => updateExercise(ex.id, { reps: e.target.value })} 
