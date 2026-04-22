@@ -69,7 +69,12 @@ export default function WorkoutBuilder({ template, onChange, otherWorkouts = [] 
     const other = otherWorkouts.find(w => w.id === otherId);
     if (other) {
       const clonedExercises = other.exercises.map(ex => ({ ...ex, id: uuidv4() }));
-      onChange({ ...template, exercises: [...exercises, ...clonedExercises] });
+      onChange({ 
+        ...template, 
+        name: template.name || other.name,
+        description: template.description || other.description,
+        exercises: [...exercises, ...clonedExercises] 
+      });
     }
   };
 

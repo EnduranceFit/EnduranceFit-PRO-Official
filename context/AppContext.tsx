@@ -81,11 +81,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           })),
           workoutTemplates: (workouts || []).map((w: any) => ({
             id: w.id,
+            athleteId: w.athlete_id || undefined,
             name: w.name,
             description: w.description || '',
             createdAt: w.created_at || new Date().toISOString(),
             updatedAt: w.updated_at || new Date().toISOString(),
-            exercises: w.workout_exercises.map((ex: any) => ({
+            exercises: (w.workout_exercises || []).map((ex: any) => ({
               ...ex,
               id: ex.id || '',
               muscleGroup: ex.muscle_group,
@@ -96,14 +97,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
           })),
           dietTemplates: (diets || []).map((d: any) => ({
             id: d.id,
+            athleteId: d.athlete_id || undefined,
             name: d.name,
             description: d.goal || '',
             createdAt: d.created_at || new Date().toISOString(),
             updatedAt: d.updated_at || new Date().toISOString(),
-            meals: d.diet_meals.map((m: any) => ({
+            meals: (d.diet_meals || []).map((m: any) => ({
               ...m,
               order: m.order_index,
-              items: m.meal_items.map((it: any) => ({
+              items: (m.meal_items || []).map((it: any) => ({
                 ...it,
                 order: it.order_index
               }))
@@ -314,13 +316,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const updateSettings = async (newSettings: Partial<SystemSettings>) => {
     if (!supabase) return;
     const { error } = await (supabase as any).from('settings').upsert({
-      id: 'global-settings', // fixed ID for simple settings
+      id: '00000000-0000-0000-0000-000000000001',
       app_name: newSettings.appName || state.settings.appName,
       pin: newSettings.pin !== undefined ? newSettings.pin : state.settings.pin,
       trainer_name: newSettings.trainerName || state.settings.trainerName,
-      logo_url: newSettings.logoUrl || state.settings.logoUrl,
+      logo_url: newSettings.logoUrl !== undefined ? newSettings.logoUrl : state.settings.logoUrl,
       updated_at: new Date().toISOString()
     });
+
+    if (error) {
+      console.error('Error saving settings:', error);
+    }
 
     if (!error) {
       setState(s => ({ ...s, settings: { ...s.settings, ...newSettings } }));

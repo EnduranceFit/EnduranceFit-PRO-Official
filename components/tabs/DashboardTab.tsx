@@ -107,20 +107,32 @@ export default function DashboardTab() {
 
   const startNewProtocol = (type: 'workout' | 'diet') => {
     if (!currentAthlete) return;
-    setEditId(null);
+    const newId = uuidv4();
+    setEditId(newId);
     if (type === 'workout') {
-      setCustomWorkout({ exercises: [], athleteId: currentAthlete.id });
+      setCustomWorkout({ id: newId, exercises: [], athleteId: currentAthlete.id, name: '', description: '' });
       setView('workout-builder');
     } else {
-      setCustomDiet({ meals: [], athleteId: currentAthlete.id });
+      setCustomDiet({ id: newId, meals: [], athleteId: currentAthlete.id, name: '', description: '' });
       setView('diet-builder');
     }
   };
 
-  const handleSaveWorkout = async (workout: WorkoutTemplate) => {
+  const handleSaveWorkout = async () => {
+    if (!currentAthlete) return;
     setIsProcessing(true);
     try {
-      await saveWorkoutTemplate(workout);
+      const workoutId = editId || customWorkout.id || uuidv4();
+      const finalWorkout = {
+        ...customWorkout,
+        id: workoutId,
+        athleteId: currentAthlete.id,
+        name: customWorkout.name || 'Treino sem Nome',
+        createdAt: customWorkout.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as WorkoutTemplate;
+      await saveWorkoutTemplate(finalWorkout);
+      setEditId(workoutId);
       setView('hub');
     } catch (e: any) {
       setModal({ type: 'alert', message: `Erro ao salvar: ${e.message}` });
@@ -129,10 +141,21 @@ export default function DashboardTab() {
     }
   };
 
-  const handleSaveDiet = async (diet: DietTemplate) => {
+  const handleSaveDiet = async () => {
+    if (!currentAthlete) return;
     setIsProcessing(true);
     try {
-      await saveDietTemplate(diet);
+      const dietId = editId || customDiet.id || uuidv4();
+      const finalDiet = {
+        ...customDiet,
+        id: dietId,
+        athleteId: currentAthlete.id,
+        name: customDiet.name || 'Dieta sem Nome',
+        createdAt: customDiet.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as DietTemplate;
+      await saveDietTemplate(finalDiet);
+      setEditId(dietId);
       setView('hub');
     } catch (e: any) {
       setModal({ type: 'alert', message: `Erro ao salvar: ${e.message}` });
@@ -380,7 +403,7 @@ export default function DashboardTab() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button onClick={() => setView('hub')} className="app-button-outline !py-2 !px-4 !text-[10px] font-bold">CANCELAR</button>
-                  <button onClick={() => handleSaveWorkout({ ...customWorkout, id: editId || uuidv4(), athleteId: currentAthlete.id } as any)} className="app-button-primary !py-2 !px-6 !text-[10px] font-bold shadow-glow-accent">SALVAR TREINO</button>
+                  <button onClick={handleSaveWorkout} className="app-button-primary !py-2 !px-6 !text-[10px] font-bold shadow-glow-accent">SALVAR TREINO</button>
                 </div>
               </div>
               <WorkoutBuilder 
@@ -390,7 +413,7 @@ export default function DashboardTab() {
               />
               <div className="flex justify-between mt-10">
                 <button onClick={() => setView('hub')} className="app-button-outline">CANCELAR</button>
-                <button onClick={() => handleSaveWorkout({ ...customWorkout, id: editId || uuidv4(), athleteId: currentAthlete.id } as any)} className="app-button-primary">SALVAR TREINO</button>
+                <button onClick={handleSaveWorkout} className="app-button-primary">SALVAR TREINO</button>
               </div>
             </motion.div>
           )}
@@ -404,13 +427,13 @@ export default function DashboardTab() {
                 </div>
                 <div className="flex items-center gap-3">
                   <button onClick={() => setView('hub')} className="app-button-outline !py-2 !px-4 !text-[10px] font-bold">CANCELAR</button>
-                  <button onClick={() => handleSaveDiet({ ...customDiet, id: editId || uuidv4(), athleteId: currentAthlete.id } as any)} className="app-button-energy !py-2 !px-6 !text-[10px] font-bold shadow-glow-energy">SALVAR DIETA</button>
+                  <button onClick={handleSaveDiet} className="app-button-energy !py-2 !px-6 !text-[10px] font-bold shadow-glow-energy">SALVAR DIETA</button>
                 </div>
               </div>
               <DietBuilder template={customDiet} onChange={setCustomDiet} />
               <div className="flex justify-between mt-10">
                 <button onClick={() => setView('hub')} className="app-button-outline">CANCELAR</button>
-                <button onClick={() => handleSaveDiet({ ...customDiet, id: editId || uuidv4(), athleteId: currentAthlete.id } as any)} className="app-button-energy">SALVAR DIETA</button>
+                <button onClick={handleSaveDiet} className="app-button-energy">SALVAR DIETA</button>
               </div>
             </motion.div>
           )}
