@@ -168,20 +168,20 @@ interface AthleteHubProps {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <div className="flex flex-col gap-1 mr-2 border-r border-app-border pr-2">
+                    <div className="flex flex-col gap-2 mr-3 border-r border-app-border pr-3">
                       <button 
                         onClick={(e) => { e.stopPropagation(); reorderWorkouts(athlete.id, workout.id, 'up'); }}
-                        className="p-1.5 hover:bg-app-accent/10 text-app-muted hover:text-app-accent rounded-lg transition-all"
+                        className="p-1 hover:bg-white/10 text-white hover:text-app-accent rounded-lg transition-all"
                         title="Mover para cima"
                       >
-                        <ChevronUp size={16} />
+                        <ChevronUp size={20} />
                       </button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); reorderWorkouts(athlete.id, workout.id, 'down'); }}
-                        className="p-1.5 hover:bg-app-accent/10 text-app-muted hover:text-app-accent rounded-lg transition-all"
+                        className="p-1 hover:bg-white/10 text-white hover:text-app-accent rounded-lg transition-all"
                         title="Mover para baixo"
                       >
-                        <ChevronDown size={16} />
+                        <ChevronDown size={20} />
                       </button>
                     </div>
                     <button 
