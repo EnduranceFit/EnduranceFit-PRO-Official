@@ -166,58 +166,35 @@
 }
 
 @media print {
-  /* Hide EVERYTHING */
-  body > * {
-    display: none !important;
+  /* Make everything invisible but keep in flow */
+  body * {
+    visibility: hidden !important;
   }
 
-  /* Then show only the print area */
+  /* Show ONLY the print area and its children */
+  .print-area,
+  .print-area * {
+    visibility: visible !important;
+  }
+
   .print-area {
     display: block !important;
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
-    z-index: 99999 !important;
     background: white !important;
     color: black !important;
-    overflow: visible !important;
+    z-index: 99999 !important;
   }
 
-  /* Make sure parent containers don't clip */
+  /* Reset body for clean print */
   body, html {
     background: white !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: visible !important;
-    height: auto !important;
-    width: 100% !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-  }
-
-  /* Walk up the DOM tree and un-hide parents of .print-area */
-  body,
-  body > div,
-  body > div > div,
-  body > div > div > div,
-  body > div > div > div > div,
-  body > div > div > div > div > div,
-  body > div > div > div > div > div > div {
-    display: block !important;
-    overflow: visible !important;
-    position: static !important;
-    height: auto !important;
-    width: auto !important;
-    max-height: none !important;
-    background: transparent !important;
-  }
-
-  /* Kill all sidebars, navs, headers, modals, buttons */
-  aside, nav, header, footer,
-  [class*="sidebar"], [class*="modal"], [class*="toast"],
-  button, select, .app-button-primary, .app-button-energy, .app-button-outline {
-    display: none !important;
   }
 
   /* Page setup */
@@ -226,7 +203,7 @@
     size: A4;
   }
 
-  /* Ensure page breaks work */
+  /* Page breaks */
   .page-break {
     break-before: page !important;
     page-break-before: always !important;
