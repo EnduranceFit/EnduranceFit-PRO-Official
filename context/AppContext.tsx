@@ -79,40 +79,63 @@ export function AppProvider({ children }: { children: ReactNode }) {
             ...a,
             activityLevel: a.activity_level, // Map snake_case to camelCase
           })),
-          workoutTemplates: (workouts || []).map((w: any) => ({
-            id: w.id,
-            athleteId: w.athlete_id || undefined,
-            name: w.name,
-            description: w.description || '',
-            dayOfWeek: w.day_of_week || '',
-            createdAt: w.created_at || new Date().toISOString(),
-            updatedAt: w.updated_at || new Date().toISOString(),
-            exercises: (w.workout_exercises || []).map((ex: any) => ({
-              ...ex,
-              id: ex.id || '',
-              muscleGroup: ex.muscle_group,
-              restTime: ex.rest_time,
-              videoUrl: ex.video_url,
-              order: ex.order_index
-            }))
-          })),
-          dietTemplates: (diets || []).map((d: any) => ({
-            id: d.id,
-            athleteId: d.athlete_id || undefined,
-            name: d.name,
-            description: d.description || '',
-            dayOfWeek: d.day_of_week || '',
-            createdAt: d.created_at || new Date().toISOString(),
-            updatedAt: d.updated_at || new Date().toISOString(),
-            meals: (d.diet_meals || []).map((m: any) => ({
-              ...m,
-              order: m.order_index,
-              items: (m.meal_items || []).map((it: any) => ({
-                ...it,
-                order: it.order_index
+          workoutTemplates: (workouts || []).map((w: any) => {
+            // Extract day from name if it follows the [Day] pattern
+            let decodedName = w.name || '';
+            let extractedDay = w.day_of_week || ''; // Fallback to DB column if it exists later
+            
+            const dayMatch = decodedName.match(/^\[(Segunda|Terça|Quarta|Quinta|Sexta|Sábado|Domingo)\]\s*(.*)/);
+            if (dayMatch && !extractedDay) {
+              extractedDay = dayMatch[1];
+              decodedName = dayMatch[2];
+            }
+
+            return {
+              id: w.id,
+              athleteId: w.athlete_id || undefined,
+              name: decodedName || 'Treino sem Nome',
+              description: w.description || '',
+              dayOfWeek: extractedDay,
+              createdAt: w.created_at || new Date().toISOString(),
+              updatedAt: w.updated_at || new Date().toISOString(),
+              exercises: (w.workout_exercises || []).map((ex: any) => ({
+                ...ex,
+                id: ex.id || '',
+                muscleGroup: ex.muscle_group,
+                restTime: ex.rest_time,
+                videoUrl: ex.video_url,
+                order: ex.order_index
               }))
-            }))
-          })),
+            };
+          }),
+          dietTemplates: (diets || []).map((d: any) => {
+            let decodedName = d.name || '';
+            let extractedDay = d.day_of_week || ''; // Use DB column if it exists later
+            
+            const dayMatch = decodedName.match(/^\[(Segunda|Terça|Quarta|Quinta|Sexta|Sábado|Domingo)\]\s*(.*)/);
+            if (dayMatch && !extractedDay) {
+              extractedDay = dayMatch[1];
+              decodedName = dayMatch[2];
+            }
+
+            return {
+              id: d.id,
+              athleteId: d.athlete_id || undefined,
+              name: decodedName || 'Dieta sem Nome',
+              description: d.description || '',
+              dayOfWeek: extractedDay,
+              createdAt: d.created_at || new Date().toISOString(),
+              updatedAt: d.updated_at || new Date().toISOString(),
+              meals: (d.diet_meals || []).map((m: any) => ({
+                ...m,
+                order: m.order_index,
+                items: (m.meal_items || []).map((it: any) => ({
+                  ...it,
+                  order: it.order_index
+                }))
+              }))
+            };
+          }),
           settings: settings ? {
             pin: settings.pin,
             appName: settings.app_name,
@@ -188,16 +211,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const saveWorkoutTemplate = async (template: WorkoutTemplate) => {
-    if (!supabase || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
-      console.error("Supabase not configured. Cannot save workout.");
-      return;
-    }
+    if (!supabase || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') return;
 
-    // 1. Save main workout
+    // Workaround: Persist dayOfWeek in the name field to avoid DB schema errors
+    const persistedName = template.dayOfWeek 
+      ? `[${template.dayOfWeek}] ${template.name.replace(/^\[.*?\]\s*/, '')}`
+      : template.name;
+
     const { error: wError } = await (supabase as any).from('workouts').upsert({
       id: template.id,
       athlete_id: template.athleteId || null,
-      name: template.name || 'Treino sem Nome',
+      name: persistedName,
       description: template.description || '',
       updated_at: new Date().toISOString()
     });
@@ -244,16 +268,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const saveDietTemplate = async (template: DietTemplate) => {
-    if (!supabase || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
-      console.error("Supabase not configured. Cannot save diet.");
-      return;
-    }
+    if (!supabase || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') return;
 
-    // 1. Save main diet
+    const persistedName = template.dayOfWeek 
+      ? `[${template.dayOfWeek}] ${template.name.replace(/^\[.*?\]\s*/, '')}`
+      : template.name;
+
     const { error: dError } = await (supabase as any).from('diets').upsert({
       id: template.id,
       athlete_id: template.athleteId || null,
-      name: template.name || 'Dieta sem Nome',
+      name: persistedName,
       description: template.description || '',
       updated_at: new Date().toISOString()
     });
