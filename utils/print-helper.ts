@@ -58,11 +58,10 @@ export function openPrintWindow(data: PrintData) {
         </tr>`;
     });
 
-    const pageBreak = wIdx > 0 ? 'page-break-before:always;' : '';
     const dayLabel = w.dayOfWeek ? `<span style="background:#a3e635;color:#000;padding:2px 8px;border-radius:4px;margin-right:10px;font-size:11px;">${w.dayOfWeek.toUpperCase()}</span>` : '';
     
     workoutsHTML += `
-      <div style="margin-bottom:16px;${pageBreak}">
+      <div style="margin-bottom:24px;page-break-inside:avoid;padding-top:${wIdx > 0 ? '16px' : '0'};">
         <div style="border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
           <div style="background:#111;color:#fff;padding:3px 10px;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;">
             ${wIdx + 1}
@@ -112,7 +111,7 @@ export function openPrintWindow(data: PrintData) {
     });
 
     dietHTML = `
-      <div style="page-break-before:always;margin-bottom:20px;">
+      <div style="page-break-inside:avoid;margin-top:24px;margin-bottom:20px;">
         <div style="border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
           <div style="background:#111;color:#fff;padding:3px 10px;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;">NUTRIÇÃO</div>
           <div style="font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:-0.3px;">${diet.name || 'Planejamento Nutricional'}</div>

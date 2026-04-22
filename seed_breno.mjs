@@ -118,10 +118,13 @@ async function seed() {
   for (const w of workouts) {
     const workoutId = crypto.randomUUID();
     
-    console.log(`Inserindo: ${w.name}...`);
+    // Workaround: Prefix name with day for persistence
+    const persistedName = `[${w.day_of_week}] ${w.name}`;
+    
+    console.log(`Inserindo: ${persistedName}...`);
     const { error: wError } = await supabase.from('workouts').insert({
       id: workoutId,
-      name: w.name,
+      name: persistedName,
       description: w.description,
       athlete_id: w.athlete_id,
       updated_at: new Date().toISOString()
