@@ -1,100 +1,153 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
-const supabaseUrl = "https://bnwoimrydwuvpyatxetn.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJud29pbXJ5ZHd1dnB5YXR4ZXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MDU4NzQsImV4cCI6MjA4OTM4MTg3NH0.3PtRpB2U0poWPbNh9lxSnLWfFFTL1KFIcAYTVyQMc18";
+const supabase = createClient(
+  'https://bnwoimrydwuvpyatxetn.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJud29pbXJ5ZHd1dnB5YXR4ZXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MDU4NzQsImV4cCI6MjA4OTM4MTg3NH0.3PtRpB2U0poWPbNh9lxSnLWfFFTL1KFIcAYTVyQMc18'
+);
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const BRENO_ID = '5e8f015d-265c-4404-aaf8-c4e0874e74c8';
 
-const workoutData = {
-  name: 'Protocolo Oficial Breno Marinho (A,B,C,D)',
-  description: 'Treinamento completo de Hipertrofia com blocos separados.',
-  exercises: [
-    // TREINO A
-    { name: 'TREINO A (Peito / Tríceps)', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
-    { name: 'Supino inclinado (barra ou maq)', muscle_group: 'Peito', sets: 3, reps: '1 Aquec, 2 Feeder 40%, 3 Válidas 8-12', rest_time: 120 },
-    { name: 'Supino reto (máquina ou hammer)', muscle_group: 'Peito', sets: 3, reps: '2 Feeder 40%, 3 Válidas 8-12', rest_time: 180 },
-    { name: 'Supino vertical incl. / Crucifixo', muscle_group: 'Peito', sets: 3, reps: '1 Ajuste, 3 Válidas até 12', rest_time: 120 },
-    { name: 'Packdeck / voador', muscle_group: 'Peito', sets: 3, reps: '1 Ajuste 60%, 3 Válidas (Falha)', rest_time: 120 },
-    { name: 'Tríceps corda', muscle_group: 'Tríceps', sets: 3, reps: '1 Aquec, 3 Válidas 12-15', rest_time: 120 },
-    { name: 'Tríceps francês na polia', muscle_group: 'Tríceps', sets: 3, reps: '3 Válidas (Falha)', rest_time: 120 },
-    { name: 'Tríceps testa (com barra W)', muscle_group: 'Tríceps', sets: 3, reps: '3 Válidas (Max 10 pesadas)', rest_time: 120 },
-
-    // TREINO B
-    { name: 'TREINO B (Costas / Bíceps)', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
-    { name: 'Puxada alta aberta na polia', muscle_group: 'Costas', sets: 3, reps: '1 Aquec 12, 2 Feeder 5, 3 Válidas 12', rest_time: 120 },
-    { name: 'Puxada alta fechada (triângulo)', muscle_group: 'Costas', sets: 3, reps: '3 Válidas (Falha em todas)', rest_time: 120 },
-    { name: 'Remada baixa sentado', muscle_group: 'Costas', sets: 3, reps: '1 Aquec 10, 2 Feeder 5, 3 Válidas 12', rest_time: 120 },
-    { name: 'Remada curvada (Barra ou Máq)', muscle_group: 'Costas', sets: 3, reps: '3 Válidas 10 (Abaixo umbigo)', rest_time: 120 },
-    { name: 'Pulldown c/ Corda', muscle_group: 'Costas', sets: 3, reps: '1 Ajuste 8, 3 Válidas 12', rest_time: 120 },
-    { name: 'Rosca direta pulley corda', muscle_group: 'Bíceps', sets: 3, reps: '1 Aquec 10, 1 Feeder 6, 3 Válidas 12', rest_time: 120 },
-    { name: 'Rosca alternada (incl 45)', muscle_group: 'Bíceps', sets: 3, reps: '1 Feeder 5, 3 Válidas 12', rest_time: 120 },
-    { name: 'Rosca Concentrada', muscle_group: 'Bíceps', sets: 3, reps: '3 Válidas (Falha)', rest_time: 120 },
-
-    // TREINO C
-    { name: 'TREINO C (Quadríceps / Posterior / Pantu)', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
-    { name: 'Cadeira extensora', muscle_group: 'Quadríceps', sets: 3, reps: '1 Aquec 12, 2 Feeder 5, 3 Válidas 12 cadenciadas', rest_time: 120 },
-    { name: 'Leg press', muscle_group: 'Quadríceps', sets: 4, reps: '1 Aquec, progride nas 3/4 Válidas. Focar Exec.', rest_time: 120 },
-    { name: 'Hack Machine', muscle_group: 'Quadríceps', sets: 3, reps: '1 Ajuste, 3 Válidas 10', rest_time: 120 },
-    { name: 'Flexora em pé', muscle_group: 'Posterior', sets: 3, reps: '1 Aquec 12, 1 Ajuste 6, 3 Válidas 12', rest_time: 120 },
-    { name: 'Cadeira Flexora', muscle_group: 'Posterior', sets: 3, reps: '1 Ajuste 8, 3 Válidas 15 max', rest_time: 120 },
-    { name: 'Abdutora', muscle_group: 'Abd/Adutores', sets: 3, reps: '1 Aquec 12, 3 Válidas 12', rest_time: 120 },
-    { name: 'Gêmeos sentado / Panturrilha', muscle_group: 'Panturrilha', sets: 4, reps: '1 Aquec sem peso, 4 Válidas (Falha)', rest_time: 120 },
-
-    // TREINO D
-    { name: 'TREINO D (Ombro + Estímulo Tríceps)', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
-    { name: 'Desenvolvimento na máquina', muscle_group: 'Ombro', sets: 3, reps: '1 Aquec 12, 2 Feeder 5, 3 Válidas 10-12', rest_time: 120 },
-    { name: 'Elevação lateral na polia', muscle_group: 'Ombro', sets: 3, reps: '1 Ajuste 8, 3 Válidas 12 (Carga Max)', rest_time: 120 },
-    { name: 'Elevação frontal com corda', muscle_group: 'Ombro', sets: 3, reps: '1 Ajuste 8, 3 Válidas 10-12', rest_time: 120 },
-    { name: 'Crucifixo inverso no pack deck', muscle_group: 'Ombro', sets: 2, reps: '1 Ajuste 10. Progredir até 2 Válidas (Falha)', rest_time: 120 },
-    { name: 'Estímulo: Tríceps à escolha', muscle_group: 'Tríceps', sets: 1, reps: 'Fazer 2 Ex. de Tríceps como estímulo', rest_time: 120 }
-  ]
-};
+const workouts = [
+  {
+    name: 'Treino 1 — Peito / Tríceps',
+    description: 'Após o treino, realizar 40min de cardio (esteira/bike).',
+    athlete_id: BRENO_ID,
+    exercises: [
+      // PEITO
+      { name: '── PEITO ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Supino Inclinado (barra ou máq.)', muscle_group: 'Peito', sets: 3, reps: '1x Aquec 12 (leve) → 2x Feeder 5 (40% carga, 1min desc) → 3x Válidas 8-12 (carga máx)', rest_time: 150 },
+      { name: 'Supino Reto (máq. ou hammer)', muscle_group: 'Peito', sets: 3, reps: '2x Feeder 5 (40% carga, 1min desc) → 3x Válidas 8-12 (carga máx)', rest_time: 180 },
+      { name: 'Supino Inclinado Vert. ou Crucifixo', muscle_group: 'Peito', sets: 3, reps: '1x Ajuste 6 (metade da carga) → 3x Válidas até 12 (carga máx)', rest_time: 120 },
+      { name: 'Peck Deck / Voador', muscle_group: 'Peito', sets: 3, reps: '1x Ajuste (60% carga) → 3x Válidas até a falha (carga máx)', rest_time: 120 },
+      // TRÍCEPS
+      { name: '── TRÍCEPS (2min intervalo em tudo) ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Tríceps Corda', muscle_group: 'Tríceps', sets: 3, reps: '1x Aquec 12 (leve) → 3x Válidas 12-15 (carga máx)', rest_time: 120 },
+      { name: 'Tríceps Francês na Polia', muscle_group: 'Tríceps', sets: 3, reps: '3x Válidas até a falha (carga máx)', rest_time: 120 },
+      { name: 'Tríceps Testa (barra W)', muscle_group: 'Tríceps', sets: 3, reps: '3x Válidas no máx 10 (bem pesadas)', rest_time: 120 },
+      // CARDIO
+      { name: '── CARDIO PÓS-TREINO ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Esteira ou Bicicleta', muscle_group: 'Cardio', sets: 1, reps: '40 minutos — caminhada acelerada ou bike', rest_time: 0 },
+    ]
+  },
+  {
+    name: 'Treino 2 — Costas / Bíceps',
+    description: 'Após o treino, realizar 40min de cardio (esteira/bike).',
+    athlete_id: BRENO_ID,
+    exercises: [
+      // COSTAS
+      { name: '── COSTAS ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Puxada Alta Aberta (Polia)', muscle_group: 'Costas', sets: 3, reps: '1x Aquec 12 (leve) → 2x Feeder 5 (40% carga, 1min) → 3x Válidas 12 (carga máx)', rest_time: 120 },
+      { name: 'Puxada Alta Fechada (Triângulo)', muscle_group: 'Costas', sets: 3, reps: '3x Válidas até a falha (carga máx)', rest_time: 120 },
+      { name: 'Remada Baixa Sentado', muscle_group: 'Costas', sets: 3, reps: '1x Aquec 10 (leve) → 2x Feeder 5 (40% carga) → 3x Válidas 12 (carga máx)', rest_time: 120 },
+      { name: 'Remada Curvada (Barra ou Máq.)', muscle_group: 'Costas', sets: 3, reps: '3x Válidas 10 (carga máx, barra até abaixo do umbigo)', rest_time: 120 },
+      { name: 'Pulldown c/ Corda', muscle_group: 'Costas', sets: 3, reps: '1x Ajuste 8 (metade carga) → 3x Válidas 12 (carga máx)', rest_time: 120 },
+      // BÍCEPS
+      { name: '── BÍCEPS ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Rosca Direta Pulley (Corda)', muscle_group: 'Bíceps', sets: 3, reps: '1x Aquec 10 (leve) → 1x Feeder 6 (40% carga) → 3x Válidas 12 (carga máx)', rest_time: 120 },
+      { name: 'Rosca Alternada (Inclinado 45º)', muscle_group: 'Bíceps', sets: 3, reps: '1x Feeder 5 (50% carga) → 3x Válidas 12 (carga máx)', rest_time: 120 },
+      { name: 'Rosca Concentrada', muscle_group: 'Bíceps', sets: 3, reps: '3x Válidas até a falha (peso máximo)', rest_time: 120 },
+      // CARDIO
+      { name: '── CARDIO PÓS-TREINO ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Esteira ou Bicicleta', muscle_group: 'Cardio', sets: 1, reps: '40 minutos — caminhada acelerada ou bike', rest_time: 0 },
+    ]
+  },
+  {
+    name: 'Treino 3 — Quadríceps / Posterior / Pantu',
+    description: 'Focar em cadência e execução. Após o treino, realizar 40min de cardio.',
+    athlete_id: BRENO_ID,
+    exercises: [
+      // QUADRÍCEPS
+      { name: '── QUADRÍCEPS ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Cadeira Extensora', muscle_group: 'Quadríceps', sets: 3, reps: '1x Aquec 12 (leve) → 2x Feeder 5 (50% carga) → 3x Válidas 12 (carga mod., cadenciado)', rest_time: 120 },
+      { name: 'Leg Press', muscle_group: 'Quadríceps', sets: 4, reps: '1x Aquec 10 (20kg/lado) → 3-4x Válidas 12 (progredir, focar execução, NÃO carga máx)', rest_time: 120 },
+      { name: 'Hack Machine', muscle_group: 'Quadríceps', sets: 3, reps: '1x Ajuste (pouca carga) → 3x Válidas 10 (carga moderada, subir cadenciado)', rest_time: 120 },
+      // POSTERIOR
+      { name: '── POSTERIOR ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Flexora em Pé', muscle_group: 'Posterior', sets: 3, reps: '1x Aquec 12 (leve) → 1x Ajuste 6 (carga média) → 3x Válidas 12 (pouco menos que máx)', rest_time: 120 },
+      { name: 'Cadeira Flexora', muscle_group: 'Posterior', sets: 3, reps: '1x Ajuste 8 (moderada) → 3x Válidas 15 (carga máx)', rest_time: 120 },
+      // ADUTORES + PANTURRILHA
+      { name: '── ADUTORES / PANTURRILHA ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Abdutora', muscle_group: 'Adutores', sets: 3, reps: '1x Aquec 12 (leve) → 3x Válidas 12 (carga máx)', rest_time: 120 },
+      { name: 'Gêmeos Sentado (Panturrilha)', muscle_group: 'Panturrilha', sets: 4, reps: '1x Aquec 15 (sem carga) → 4x Válidas até a falha (carga máx)', rest_time: 90 },
+      // CARDIO
+      { name: '── CARDIO PÓS-TREINO ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Esteira ou Bicicleta', muscle_group: 'Cardio', sets: 1, reps: '40 minutos — caminhada acelerada ou bike', rest_time: 0 },
+    ]
+  },
+  {
+    name: 'Treino 4 — Ombro + Estímulo Tríceps',
+    description: '⚠️ Após este treino: 1-2 DIAS OFF de musculação antes de reiniciar pelo Treino 1. Manter cardio nos off.',
+    athlete_id: BRENO_ID,
+    exercises: [
+      // OMBRO
+      { name: '── OMBRO ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Desenvolvimento na Máquina', muscle_group: 'Ombro', sets: 3, reps: '1x Aquec 12 (leve) → 2x Feeder 5 (60% carga) → 3x Válidas 10-12 (carga máx)', rest_time: 120 },
+      { name: 'Elevação Lateral na Polia', muscle_group: 'Ombro', sets: 3, reps: '1x Ajuste 8 (moderada) → 3x Válidas 12 (carga máx)', rest_time: 120 },
+      { name: 'Elevação Frontal com Corda', muscle_group: 'Ombro', sets: 3, reps: '1x Ajuste 8 (50% carga) → 3x Válidas 10-12 (carga máx)', rest_time: 120 },
+      { name: 'Crucifixo Inverso Peck Deck', muscle_group: 'Ombro', sets: 2, reps: '1x Ajuste 10 (leve) → progredir peso → 2x Válidas até a falha (carga total)', rest_time: 120 },
+      // ESTÍMULO
+      { name: '── ESTÍMULO TRÍCEPS ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Tríceps (2 exercícios à escolha)', muscle_group: 'Tríceps', sets: 2, reps: 'Escolher 2 exercícios do Treino 1 como estímulo final', rest_time: 120 },
+      // CARDIO
+      { name: '── CARDIO PÓS-TREINO ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Esteira ou Bicicleta', muscle_group: 'Cardio', sets: 1, reps: '40 minutos — caminhada acelerada ou bike', rest_time: 0 },
+    ]
+  },
+  {
+    name: 'Cardio — Dias sem Musculação',
+    description: 'Nos dias sem treino de hipertrofia, realizar ao menos o cardio. Manter todos os dias da semana.',
+    athlete_id: BRENO_ID,
+    exercises: [
+      { name: '── CARDIO (dias sem musculação) ──', muscle_group: 'Separador', sets: 0, reps: '', rest_time: 0 },
+      { name: 'Esteira — Caminhada Acelerada', muscle_group: 'Cardio', sets: 1, reps: '40 minutos em ritmo acelerado, inclinação 2-4%', rest_time: 0 },
+      { name: 'OU Bicicleta Ergométrica', muscle_group: 'Cardio', sets: 1, reps: '40 minutos em intensidade moderada', rest_time: 0 },
+    ]
+  }
+];
 
 async function seed() {
-  console.log('Deletando treinos antigos...');
-  await supabase.from('workouts').delete().like('name', '%(Breno)%');
-  
-  // Apagar possivel template com o nome novo
-  await supabase.from('workouts').delete().eq('name', workoutData.name);
+  for (const w of workouts) {
+    const workoutId = crypto.randomUUID();
+    
+    console.log(`Inserindo: ${w.name}...`);
+    const { error: wError } = await supabase.from('workouts').insert({
+      id: workoutId,
+      name: w.name,
+      description: w.description,
+      athlete_id: w.athlete_id,
+      updated_at: new Date().toISOString()
+    });
 
-  console.log('Inserindo bloco unificado...');
-  
-  const workoutId = crypto.randomUUID();
-  
-  // Inserir workout template
-  const { data: wData, error: wError } = await supabase.from('workouts').insert({
-    id: workoutId,
-    name: workoutData.name,
-    description: workoutData.description,
-    athlete_id: null // Configura como Template
-  }).select().single();
+    if (wError) {
+      console.error('ERRO workout:', w.name, wError);
+      continue;
+    }
 
-  if (wError) {
-    console.error('Error inserting workout', workoutData.name, wError);
-    return;
+    const exercisesToInsert = w.exercises.map((ex, index) => ({
+      workout_id: workoutId,
+      name: ex.name,
+      muscle_group: ex.muscle_group,
+      sets: ex.sets,
+      reps: ex.reps,
+      rest_time: ex.rest_time,
+      order_index: index
+    }));
+
+    const { error: eError } = await supabase.from('workout_exercises').insert(exercisesToInsert);
+    
+    if (eError) {
+      console.error('ERRO exercícios:', w.name, eError);
+    } else {
+      console.log(`✅ ${w.name} — ${w.exercises.length} exercícios`);
+    }
   }
 
-  // Inserir workout exercises
-  const exercisesToInsert = workoutData.exercises.map((ex, index) => ({
-    workout_id: workoutId,
-    name: ex.name,
-    muscle_group: ex.muscle_group,
-    sets: ex.sets,
-    reps: ex.reps,
-    rest_time: ex.rest_time,
-    order_index: index
-  }));
-
-  const { error: eError } = await supabase.from('workout_exercises').insert(exercisesToInsert);
-  
-  if (eError) {
-    console.error('Error inserting exercises for', workoutData.name, eError);
-  } else {
-    console.log(`Sucesso: O bloco completo de treinos foi inserido unificado!`);
-  }
-
-  console.log('Finalizado!');
+  // Verificação
+  const { data: check } = await supabase.from('workouts').select('id, name, athlete_id').eq('athlete_id', BRENO_ID);
+  console.log(`\n📊 Total treinos do Breno: ${check?.length}`);
+  check?.forEach(w => console.log(`   • ${w.name}`));
+  console.log('\n🎯 Concluído!');
 }
 
 seed();

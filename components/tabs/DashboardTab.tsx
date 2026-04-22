@@ -441,7 +441,7 @@ export default function DashboardTab() {
       </div>
 
       {/* Printable Area */}
-      <div className="hidden print:block w-full bg-white text-black p-8">
+      <div className="print-area">
         <WorkoutExporter 
           athlete={currentAthlete || ({} as Athlete)}
           workouts={currentAthlete ? state.workoutTemplates.filter(w => w.athleteId === currentAthlete.id) : undefined}

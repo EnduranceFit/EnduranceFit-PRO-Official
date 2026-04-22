@@ -377,7 +377,7 @@ export default function AthletesTab() {
         
         {/* Printable Area (Hidden) */}
         {printingData && (
-          <div className="hidden print:block fixed inset-0 z-[9999] bg-white text-black p-8">
+          <div className="print-area">
             <WorkoutExporter 
               athlete={printingData.athlete}
               workouts={printingData.workouts as any}
