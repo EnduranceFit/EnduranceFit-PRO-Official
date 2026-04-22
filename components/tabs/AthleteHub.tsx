@@ -16,7 +16,9 @@ import {
   User,
   Scale,
   Zap,
-  MessageCircle
+  MessageCircle,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
 import { useAppContext } from '@/context/AppContext';
@@ -32,7 +34,7 @@ interface AthleteHubProps {
   onBack: () => void;
 }
 
-export default function AthleteHub({ 
+ export default function AthleteHub({ 
   athlete, 
   onAddWorkout, 
   onAddDiet, 
@@ -41,9 +43,11 @@ export default function AthleteHub({
   onExportPDF,
   onBack 
 }: AthleteHubProps) {
-  const { state } = useAppContext();
+  const { state, reorderWorkouts } = useAppContext();
   
-  const workouts = state.workoutTemplates.filter(w => w.athleteId === athlete.id);
+  const workouts = [...state.workoutTemplates]
+    .filter(w => w.athleteId === athlete.id)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
   const diets = state.dietTemplates.filter(d => d.athleteId === athlete.id);
 
   const calculateMetabolics = () => {
@@ -164,6 +168,22 @@ export default function AthleteHub({
                     </div>
                   </div>
                   <div className="flex gap-2">
+                    <div className="flex flex-col gap-1 mr-2 border-r border-app-border pr-2">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); reorderWorkouts(athlete.id, workout.id, 'up'); }}
+                        className="p-1.5 hover:bg-app-accent/10 text-app-muted hover:text-app-accent rounded-lg transition-all"
+                        title="Mover para cima"
+                      >
+                        <ChevronUp size={16} />
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); reorderWorkouts(athlete.id, workout.id, 'down'); }}
+                        className="p-1.5 hover:bg-app-accent/10 text-app-muted hover:text-app-accent rounded-lg transition-all"
+                        title="Mover para baixo"
+                      >
+                        <ChevronDown size={16} />
+                      </button>
+                    </div>
                     <button 
                       onClick={() => onDuplicateProtocol('workout', workout.id)}
                       className="p-3 bg-app-surface hover:bg-app-accent/10 text-app-muted hover:text-app-accent rounded-xl transition-all shadow-sm"

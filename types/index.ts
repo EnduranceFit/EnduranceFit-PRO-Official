@@ -40,6 +40,7 @@ export interface WorkoutTemplate {
   name: string;
   description: string;
   dayOfWeek?: string;
+  order?: number;
   focusMuscle?: string;
   exercises: Exercise[];
   createdAt: string;

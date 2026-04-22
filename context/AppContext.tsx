@@ -13,6 +13,7 @@ interface AppContextType {
   saveAthlete: (athlete: Athlete) => Promise<void>;
   deleteAthlete: (id: string) => Promise<void>;
   saveWorkoutTemplate: (template: WorkoutTemplate) => Promise<void>;
+  reorderWorkouts: (athleteId: string, workoutId: string, direction: 'up' | 'down') => Promise<void>;
   deleteWorkoutTemplate: (id: string) => Promise<void>;
   saveDietTemplate: (template: DietTemplate) => Promise<void>;
   deleteDietTemplate: (id: string) => Promise<void>;
@@ -80,10 +81,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
             activityLevel: a.activity_level, // Map snake_case to camelCase
           })),
           workoutTemplates: (workouts || []).map((w: any) => {
-            // Extract day from name if it follows the [Day] pattern
+            // Extract day and order from name if they follow our patterns
             let decodedName = w.name || '';
-            let extractedDay = w.day_of_week || ''; // Fallback to DB column if it exists later
+            let extractedDay = w.day_of_week || ''; 
+            let extractedOrder = 0;
             
+            // Extract Order: [O:1]
+            const orderMatch = decodedName.match(/^\[O:(\d+)\]\s*(.*)/);
+            if (orderMatch) {
+              extractedOrder = parseInt(orderMatch[1]);
+              decodedName = orderMatch[2];
+            }
+
+            // Extract Day: [Segunda]
             const dayMatch = decodedName.match(/^\[(Segunda|Terça|Quarta|Quinta|Sexta|Sábado|Domingo)\]\s*(.*)/);
             if (dayMatch && !extractedDay) {
               extractedDay = dayMatch[1];
@@ -96,6 +106,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
               name: decodedName || 'Treino sem Nome',
               description: w.description || '',
               dayOfWeek: extractedDay,
+              order: extractedOrder,
               createdAt: w.created_at || new Date().toISOString(),
               updatedAt: w.updated_at || new Date().toISOString(),
               exercises: (w.workout_exercises || []).map((ex: any) => ({
@@ -213,10 +224,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const saveWorkoutTemplate = async (template: WorkoutTemplate) => {
     if (!supabase || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') return;
 
-    // Workaround: Persist dayOfWeek in the name field to avoid DB schema errors
-    const persistedName = template.dayOfWeek 
-      ? `[${template.dayOfWeek}] ${template.name.replace(/^\[.*?\]\s*/, '')}`
-      : template.name;
+    // Workaround: Persist order and dayOfWeek in the name field to avoid DB schema errors
+    let prefix = '';
+    if (template.order !== undefined) prefix += `[O:${template.order}]`;
+    if (template.dayOfWeek) prefix += `[${template.dayOfWeek}]`;
+    
+    // Clean name from previous prefixes to avoid stacking
+    const cleanName = template.name.replace(/^(\[O:\d+\])?(\[(Segunda|Terça|Quarta|Quinta|Sexta|Sábado|Domingo)\])?\s*/, '');
+    const persistedName = prefix ? `${prefix} ${cleanName}` : cleanName;
 
     const { error: wError } = await (supabase as any).from('workouts').upsert({
       id: template.id,
@@ -257,6 +272,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (exists) return { ...s, workoutTemplates: s.workoutTemplates.map(t => t.id === template.id ? template : t) };
       return { ...s, workoutTemplates: [...s.workoutTemplates, template] };
     });
+  };
+
+  const reorderWorkouts = async (athleteId: string, workoutId: string, direction: 'up' | 'down') => {
+    const athleteWorkouts = [...state.workoutTemplates]
+      .filter(w => w.athleteId === athleteId)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    const index = athleteWorkouts.findIndex(w => w.id === workoutId);
+    if (index === -1) return;
+    
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= athleteWorkouts.length) return;
+    
+    // Swap
+    const temp = athleteWorkouts[index];
+    athleteWorkouts[index] = athleteWorkouts[targetIndex];
+    athleteWorkouts[targetIndex] = temp;
+    
+    // Update orders and save
+    const updates = athleteWorkouts.map((w, idx) => ({ ...w, order: idx }));
+    
+    // Patch local state first for instant UI feedback
+    setState(s => ({
+      ...s,
+      workoutTemplates: s.workoutTemplates.map(w => {
+        const up = updates.find(u => u.id === w.id);
+        return up ? up : w;
+      })
+    }));
+
+    // Persist to DB
+    for (const workout of updates) {
+      await saveWorkoutTemplate(workout);
+    }
   };
 
   const deleteWorkoutTemplate = async (id: string) => {
@@ -374,7 +423,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={{
       state, isLocked, isHydrated, unlock, lock,
-      saveAthlete, deleteAthlete, saveWorkoutTemplate, deleteWorkoutTemplate,
+      saveAthlete, deleteAthlete, saveWorkoutTemplate, reorderWorkouts, deleteWorkoutTemplate,
       saveDietTemplate, deleteDietTemplate, updateSettings, wipeData, importData
     }}>
       {children}

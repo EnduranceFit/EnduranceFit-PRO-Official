@@ -19,9 +19,14 @@ export function openPrintWindow(data: PrintData) {
   };
 
   const sortedWorkouts = [...workouts].sort((a, b) => {
-    const orderA = a.dayOfWeek ? (dayOrder[a.dayOfWeek] || 99) : 99;
-    const orderB = b.dayOfWeek ? (dayOrder[b.dayOfWeek] || 99) : 99;
-    return orderA - orderB;
+    const orderA = a.order !== undefined ? a.order : 999;
+    const orderB = b.order !== undefined ? b.order : 999;
+    
+    if (orderA !== orderB) return orderA - orderB;
+    
+    const dayA = a.dayOfWeek ? (dayOrder[a.dayOfWeek] || 99) : 99;
+    const dayB = b.dayOfWeek ? (dayOrder[b.dayOfWeek] || 99) : 99;
+    return dayA - dayB;
   });
 
   // Build workout HTML
@@ -57,7 +62,7 @@ export function openPrintWindow(data: PrintData) {
         </tr>`;
     });
 
-    const dayPill = w.dayOfWeek ? `<span style="border:1.5px solid #000;color:#000;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:900;margin-right:12px;text-transform:uppercase;">${w.dayOfWeek}</span>` : '';
+    const dayPill = w.dayOfWeek ? `<span style="background:#a3e635;color:#000;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:900;margin-right:12px;text-transform:uppercase;">${w.dayOfWeek}</span>` : '';
     
     workoutsHTML += `
       <div style="margin-bottom:35px;page-break-inside:avoid;padding-top:${wIdx > 0 ? '20px' : '0'};">
