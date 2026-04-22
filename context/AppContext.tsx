@@ -199,7 +199,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       athlete_id: template.athleteId || null,
       name: template.name || 'Treino sem Nome',
       description: template.description || '',
-      day_of_week: template.dayOfWeek || '',
       updated_at: new Date().toISOString()
     });
 
@@ -256,7 +255,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       athlete_id: template.athleteId || null,
       name: template.name || 'Dieta sem Nome',
       description: template.description || '',
-      day_of_week: template.dayOfWeek || '',
       updated_at: new Date().toISOString()
     });
 
