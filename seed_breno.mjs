@@ -11,6 +11,7 @@ const BRENO_ID = '5e8f015d-265c-4404-aaf8-c4e0874e74c8';
 const workouts = [
   {
     name: 'Treino 1 — Peito / Tríceps',
+    day_of_week: 'Segunda',
     description: 'Após o treino, realizar 40min de cardio (esteira/bike).',
     athlete_id: BRENO_ID,
     exercises: [
@@ -32,6 +33,7 @@ const workouts = [
   },
   {
     name: 'Treino 2 — Costas / Bíceps',
+    day_of_week: 'Terça',
     description: 'Após o treino, realizar 40min de cardio (esteira/bike).',
     athlete_id: BRENO_ID,
     exercises: [
@@ -54,6 +56,7 @@ const workouts = [
   },
   {
     name: 'Treino 3 — Quadríceps / Posterior / Pantu',
+    day_of_week: 'Quinta',
     description: 'Focar em cadência e execução. Após o treino, realizar 40min de cardio.',
     athlete_id: BRENO_ID,
     exercises: [
@@ -77,6 +80,7 @@ const workouts = [
   },
   {
     name: 'Treino 4 — Ombro + Estímulo Tríceps',
+    day_of_week: 'Sexta',
     description: '⚠️ Após este treino: 1-2 DIAS OFF de musculação antes de reiniciar pelo Treino 1. Manter cardio nos off.',
     athlete_id: BRENO_ID,
     exercises: [
@@ -96,6 +100,7 @@ const workouts = [
   },
   {
     name: 'Cardio — Dias sem Musculação',
+    day_of_week: 'Quarta',
     description: 'Nos dias sem treino de hipertrofia, realizar ao menos o cardio. Manter todos os dias da semana.',
     athlete_id: BRENO_ID,
     exercises: [
@@ -107,15 +112,19 @@ const workouts = [
 ];
 
 async function seed() {
+  console.log('🧹 Limpando treinos antigos...');
+  await supabase.from('workouts').delete().eq('athlete_id', BRENO_ID);
+
   for (const w of workouts) {
     const workoutId = crypto.randomUUID();
     
-    console.log(`Inserindo: ${w.name}...`);
+    console.log(`Inserindo: ${w.name} (${w.day_of_week})...`);
     const { error: wError } = await supabase.from('workouts').insert({
       id: workoutId,
       name: w.name,
       description: w.description,
       athlete_id: w.athlete_id,
+      day_of_week: w.day_of_week,
       updated_at: new Date().toISOString()
     });
 

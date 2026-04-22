@@ -84,6 +84,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             athleteId: w.athlete_id || undefined,
             name: w.name,
             description: w.description || '',
+            dayOfWeek: w.day_of_week || '',
             createdAt: w.created_at || new Date().toISOString(),
             updatedAt: w.updated_at || new Date().toISOString(),
             exercises: (w.workout_exercises || []).map((ex: any) => ({
@@ -99,7 +100,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
             id: d.id,
             athleteId: d.athlete_id || undefined,
             name: d.name,
-            description: d.goal || '',
+            description: d.description || '',
+            dayOfWeek: d.day_of_week || '',
             createdAt: d.created_at || new Date().toISOString(),
             updatedAt: d.updated_at || new Date().toISOString(),
             meals: (d.diet_meals || []).map((m: any) => ({
@@ -197,6 +199,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       athlete_id: template.athleteId || null,
       name: template.name || 'Treino sem Nome',
       description: template.description || '',
+      day_of_week: template.dayOfWeek || '',
       updated_at: new Date().toISOString()
     });
 
@@ -252,7 +255,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       id: template.id,
       athlete_id: template.athleteId || null,
       name: template.name || 'Dieta sem Nome',
-      goal: template.description || '',
+      description: template.description || '',
+      day_of_week: template.dayOfWeek || '',
       updated_at: new Date().toISOString()
     });
 

@@ -29,6 +29,7 @@ import DietBuilder from '../builders/DietBuilder';
 import AthleteHub from './AthleteHub';
 import ShoppingListExporter from '../builders/ShoppingListExporter';
 import WorkoutExporter from '../builders/WorkoutExporter';
+import { openPrintWindow } from '@/utils/print-helper';
 import clsx from 'clsx';
 
 export default function DashboardTab() {
@@ -388,7 +389,20 @@ export default function DashboardTab() {
                   }
                 }}
                 onDuplicateProtocol={handleDuplicate}
-                onExportPDF={() => window.print()}
+                onExportPDF={() => {
+                  const athleteWorkouts = state.workoutTemplates.filter(w => w.athleteId === currentAthlete.id);
+                  const athleteDiet = state.dietTemplates.find(d => d.athleteId === currentAthlete.id);
+                  if (athleteWorkouts.length === 0 && !athleteDiet) {
+                    setModal({ type: 'alert', message: 'Este atleta não possui treino ou dieta vinculados para exportação.' });
+                    return;
+                  }
+                  openPrintWindow({
+                    athlete: currentAthlete,
+                    workouts: athleteWorkouts,
+                    diet: athleteDiet,
+                    settings: state.settings,
+                  });
+                }}
                 onBack={() => setView('selection')}
               />
             </motion.div>
@@ -440,14 +454,7 @@ export default function DashboardTab() {
         </AnimatePresence>
       </div>
 
-      {/* Printable Area */}
-      <div className="print-area">
-        <WorkoutExporter 
-          athlete={currentAthlete || ({} as Athlete)}
-          workouts={currentAthlete ? state.workoutTemplates.filter(w => w.athleteId === currentAthlete.id) : undefined}
-          diet={currentAthlete ? state.dietTemplates.find(d => d.athleteId === currentAthlete.id) : undefined}
-        />
-      </div>
+
     </div>
   );
 }

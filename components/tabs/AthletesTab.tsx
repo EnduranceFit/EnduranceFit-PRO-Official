@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import clsx from 'clsx';
 import { Athlete, WorkoutTemplate, DietTemplate } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import WorkoutExporter from '../builders/WorkoutExporter';
+import { openPrintWindow } from '@/utils/print-helper';
 
 export default function AthletesTab() {
   const { state, saveAthlete, deleteAthlete } = useAppContext();
@@ -18,7 +18,7 @@ export default function AthletesTab() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAthlete, setEditingAthlete] = useState<Partial<Athlete> | null>(null);
-  const [printingData, setPrintingData] = useState<{ athlete: Athlete; workouts?: WorkoutTemplate[]; workout?: WorkoutTemplate; diet?: DietTemplate } | null>(null);
+
 
   const filteredAthletes = state.athletes.filter(a => {
     const nameStr = a.name || '';
@@ -90,20 +90,19 @@ export default function AthletesTab() {
   const handlePrint = (athlete: Athlete) => {
     const workouts = state.workoutTemplates.filter(t => t.athleteId === athlete.id);
     const diets = state.dietTemplates.filter(t => t.athleteId === athlete.id);
-    const diet = diets.length > 0 ? diets[0] : undefined; // using first diet for now, easy to expand
+    const diet = diets.length > 0 ? diets[0] : undefined;
     
     if (workouts.length === 0 && diets.length === 0) {
       setModal({ type: 'alert', message: 'Este atleta não possui treino ou dieta vinculados para exportação.' });
       return;
     }
 
-    setPrintingData({ athlete, workouts, diet } as any);
-    
-    // Give react time to render the hidden component before printing
-    setTimeout(() => {
-      window.print();
-      setPrintingData(null);
-    }, 100);
+    openPrintWindow({
+      athlete,
+      workouts,
+      diet,
+      settings: state.settings
+    });
   };
 
   return (
@@ -375,16 +374,7 @@ export default function AthletesTab() {
           </motion.div>
         ))}
         
-        {/* Printable Area (Hidden) */}
-        {printingData && (
-          <div className="print-area">
-            <WorkoutExporter 
-              athlete={printingData.athlete}
-              workouts={printingData.workouts as any}
-              diet={printingData.diet}
-            />
-          </div>
-        )}
+
         
         {filteredAthletes.length === 0 && (
           <div className="col-span-full py-24 flex flex-col items-center justify-center border-2 border-dashed border-app-border rounded-3xl bg-app-card/30">
