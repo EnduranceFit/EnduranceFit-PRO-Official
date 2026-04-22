@@ -21,25 +21,6 @@ export default function WorkoutExporter({ athlete, workout, workouts, diet, clas
   return (
     <>
       <style jsx global>{`
-        @media print {
-          body { 
-            margin: 0 !important; 
-            padding: 0 !important;
-            background: white !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          .print-hidden { display: none !important; }
-          .print-doc { 
-            display: block !important; 
-            position: static !important;
-            width: 100% !important;
-          }
-          @page { 
-            margin: 8mm 10mm; 
-            size: A4; 
-          }
-        }
         .print-doc * { box-sizing: border-box; }
         .avoid-break { break-inside: avoid; page-break-inside: avoid; }
         .page-break { break-before: page; page-break-before: always; }

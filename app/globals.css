@@ -179,13 +179,12 @@
 
   .print-area {
     display: block !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+    position: static !important;
     width: 100% !important;
     background: white !important;
     color: black !important;
-    z-index: 99999 !important;
+    overflow: visible !important;
+    height: auto !important;
   }
 
   /* Reset body for clean print */
